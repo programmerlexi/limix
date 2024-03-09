@@ -1,0 +1,11 @@
+build/
+iso_root/
+limine/
+kernel/obj/
+kernel/bin/
+klibc/obj/
+klibc/bin/
+image.*
+compile_commands.json
+.cache/
+.clangd
