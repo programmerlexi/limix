@@ -1,9 +1,10 @@
-#include "config.h"
-#include "hhtp.h"
-#include "smp.h"
+#include <config.h>
 #include <framebuffer.h>
+#include <hhtp.h>
 #include <kipc.h>
 #include <limine.h>
+#include <mm.h>
+#include <smp.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -137,6 +138,10 @@ void _start(void) {
   }
 
   hhaddr = hhdm_request.response->offset;
+  if (!mm_init((struct limine_memmap_response *)&mmap_request.response)) {
+    putstr16(0, 0, "MM init failed! ABORTING!", 0xff0000);
+    hcf();
+  }
 
   for (uint64_t i = 0; i < smp_request.response->cpu_count; i++) {
     if (smp_request.response->bsp_lapic_id ==
