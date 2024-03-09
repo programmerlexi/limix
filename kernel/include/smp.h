@@ -22,10 +22,10 @@
 #define SMP_STATE_FROZEN 0xff
 
 typedef union {
-    struct {
-        uint8_t state;
-        uint8_t cmd_type;
-        uint8_t cmd_args[6];
-    };
-    uint64_t data;
+  struct {
+    uint8_t state;
+    uint8_t cmd_type;
+    uint8_t cmd_args[6];
+  };
+  uint64_t data;
 } smp_cmd_t;
