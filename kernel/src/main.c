@@ -4,6 +4,7 @@
 #include <kipc.h>
 #include <limine.h>
 #include <mm.h>
+#include <serial.h>
 #include <smp.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -125,8 +126,13 @@ void _start(void) {
     hcf();
   }
 
+  serial_early_init();
+  serial_writes("If this is visible serial was successful\n\r");
+
   if (framebuffer_request.response == NULL ||
       framebuffer_request.response->framebuffer_count < 1) {
+    serial_writes("[!!] This kernel is meant for graphical systems. Please "
+                  "attach a monitor!\n\r");
     hcf();
   }
 
@@ -134,22 +140,26 @@ void _start(void) {
 
   if (paging_request.response->mode != USED_PAGING_MODE) {
     putstr16(0, 0, "Paging mode doesn't match! ABORTING!", 0xff0000);
+    serial_writes("[!!] Paging mode isn't matching!\n\r");
     hcf();
   }
 
   hhaddr = hhdm_request.response->offset;
   if (!mm_init((struct limine_memmap_response *)&mmap_request.response)) {
     putstr16(0, 0, "MM init failed! ABORTING!", 0xff0000);
+    serial_writes("[!!] MM seems to have failed\n\r");
     hcf();
   }
+
+  serial_writes("Performing SMP initialization!\n\r");
 
   for (uint64_t i = 0; i < smp_request.response->cpu_count; i++) {
     if (smp_request.response->bsp_lapic_id ==
         smp_request.response->cpus[i]->lapic_id)
       continue;
     smp_request.response->cpus[i]->goto_address = _smp_start;
-    block_on(&smp_cpu);
   }
+  block_on_count(&smp_cpu, smp_request.response->cpu_count - 1);
 
   for (uint64_t i = 0; i < smp_request.response->cpu_count; i++) {
     if (smp_request.response->bsp_lapic_id ==

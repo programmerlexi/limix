@@ -1,5 +1,7 @@
 JOBS=8
 
+COMMON_QEMU_FLAGS=-m 4G -smp 4 -serial stdio
+
 all: hdd iso
 
 base:
@@ -47,10 +49,10 @@ limine:
 	make -j$(JOBS) -C limine
 
 run-hdd: image.hdd
-	qemu-system-x86_64 -hda image.hdd -m 4G -smp 16
+	qemu-system-x86_64 -hda image.hdd $(COMMON_QEMU_FLAGS)
 
 run-iso: image.iso
-	qemu-system-x86_64 -cdrom image.iso -m 4G -smp 16
+	qemu-system-x86_64 -cdrom image.iso $(COMMON_QEMU_FLAGS)
 
 clean:
 	make -C kernel clean
