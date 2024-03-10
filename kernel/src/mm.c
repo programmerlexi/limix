@@ -1,3 +1,4 @@
+#include <hhtp.h>
 #include <limine.h>
 #include <memory.h>
 #include <mm.h>
@@ -8,7 +9,7 @@ memseg_t *first = NULL;
 memseg_t *last = NULL;
 
 void insert_page(void *page) {
-  memseg_t *seg = (memseg_t *)page;
+  memseg_t *seg = (memseg_t *)HHDM(page);
   if (first == NULL) {
     seg->prev = NULL;
     seg->next = NULL;
@@ -68,7 +69,7 @@ void *request_page() {
   return memset(s, 0, 0x1000);
 }
 
-void *request_page_block(uint64_t n) {
+void *request_pages(uint64_t n) {
   if (first == NULL)
     return NULL;
   uint64_t cl = 0;
