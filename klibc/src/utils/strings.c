@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdint.h>
 #include <utils/memory/memory.h>
 #include <utils/strings/strings.h>
 
@@ -18,22 +19,44 @@ int ntos(char *buf, int i, int base, int length, bool unsign, bool pad) {
     return STR_OK;
   }
 
-  int n, p;
-  n = i;
-  p = 0;
-  while (n > 0 && p < length) {
-    char d = (n % base);
-    if (d < 10)
-      buf[p] = '0' + d;
-    else if (d < 35)
-      buf[p] = 'a' + d - 10;
-    else if (d < 60)
-      buf[p] = 'A' + d - 35;
+  int p = 0;
+  if (!unsign) {
+    int n = i;
+    while (n > 0 && p < length) {
+      char d = (n % base);
+      if (d < 10)
+        buf[p] = '0' + d;
+      else if (d < 35)
+        buf[p] = 'a' + d - 10;
+      else if (d < 60)
+        buf[p] = 'A' + d - 35;
+      else
+        buf[p] = '?';
+      n /= base;
+      p++;
+    }
+    if (i < 0)
+      buf[p] = '-';
     else
-      buf[p] = '?';
-    n /= base;
-    p++;
+      buf[p] = '+';
+  } else {
+    uint64_t n = i;
+    while (n > 0 && p < length) {
+      char d = (n % base);
+      if (d < 10)
+        buf[p] = '0' + d;
+      else if (d < 35)
+        buf[p] = 'a' + d - 10;
+      else if (d < 60)
+        buf[p] = 'A' + d - 35;
+      else
+        buf[p] = '?';
+      n /= base;
+      p++;
+    }
   }
+  if (!unsign)
+    p++;
   if (!pad)
     reverse(buf, p);
   else

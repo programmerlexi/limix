@@ -74,10 +74,11 @@ void _smp_start(struct limine_smp_info *cpu_info) {
     while (cmd->cmd_type != SMP_ACTION_DATA) {
       asm volatile("nop");
     }
-    new_cmd |= (cmd->data & 0x0000ffff00000000) << 16;
+    new_cmd = new_cmd | (cmd->data & 0x0000ffff00000000) << 16;
 
     cmd->state = SMP_STATE_DONE;
-    // if (new_cmd != 0) cmd = (smp_cmd_t*) new_cmd;
+    /*if (new_cmd != 0)
+      cmd = (smp_cmd_t *)new_cmd;*/ // No idea why this won't work
   }
 
   cmd->cmd_type = SMP_ACTION_NONE;
@@ -168,7 +169,7 @@ void _start(void) {
     smp_cmd_t *cmd =
         (smp_cmd_t *)&(smp_request.response->cpus[i]->extra_argument);
 
-    int64_t max_cycles = 0xffffff;
+    int64_t max_cycles = 0x1ffffff;
 
     while (cmd->state != SMP_STATE_INIT_CMD) {
       asm volatile("nop");
@@ -182,7 +183,8 @@ void _start(void) {
     if (max_cycles <= 0)
       continue;
 
-    cmd->data = 0;
+    cmd->data = (cmd->data & 0xffff000000000000) |
+                (((uint64_t)cmd & 0x0000ffffffffffff));
     cmd->cmd_type = SMP_ACTION_DATA;
 
     while (cmd->state != SMP_STATE_INIT_CMD2) {
@@ -197,7 +199,8 @@ void _start(void) {
     if (max_cycles <= 0)
       continue;
 
-    cmd->data = 0;
+    cmd->data = (cmd->data & 0xffff0000ffffffff) |
+                (((uint64_t)cmd & 0xffff000000000000) >> 16);
     cmd->cmd_type = SMP_ACTION_DATA;
 
     while (cmd->state != SMP_STATE_INIT_LAPIC) {

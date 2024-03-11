@@ -1,11 +1,8 @@
 # Nuke built-in rules and variables.
 override MAKEFLAGS += -rR
  
-# This is the name that our final kernel executable will have.
-# Change as needed.
 override KERNEL := limix
  
-# Convenience macro to reliably declare user overridable variables.
 define DEFAULT_VAR =
     ifeq ($(origin $1),default)
         override $(1) := $(2)
@@ -15,36 +12,28 @@ define DEFAULT_VAR =
     endif
 endef
  
-# It is suggested to use a custom built cross toolchain to build a kernel.
-# We are using the standard "cc" here, it may work by using
-# the host system's toolchain, but this is not guaranteed.
 override DEFAULT_CC := x86_64-elf-gcc
 $(eval $(call DEFAULT_VAR,CC,$(DEFAULT_CC)))
  
-# Same thing for "ld" (the linker).
 override DEFAULT_LD := x86_64-elf-ld
 $(eval $(call DEFAULT_VAR,LD,$(DEFAULT_LD)))
  
-# User controllable C flags.
 override DEFAULT_CFLAGS := -g -O2 -pipe
 $(eval $(call DEFAULT_VAR,CFLAGS,$(DEFAULT_CFLAGS)))
  
-# User controllable C preprocessor flags. We set none by default.
 override DEFAULT_CPPFLAGS :=
 $(eval $(call DEFAULT_VAR,CPPFLAGS,$(DEFAULT_CPPFLAGS)))
  
-# User controllable nasm flags.
 override DEFAULT_NASMFLAGS := -F dwarf -g
 $(eval $(call DEFAULT_VAR,NASMFLAGS,$(DEFAULT_NASMFLAGS)))
  
-# User controllable linker flags. We set none by default.
 override DEFAULT_LDFLAGS :=
 $(eval $(call DEFAULT_VAR,LDFLAGS,$(DEFAULT_LDFLAGS)))
  
-# Internal C flags that should not be changed by the user.
 override CFLAGS += \
     -Wall \
     -Wextra \
+		-Werror \
     -std=gnu11 \
     -ffreestanding \
     -fno-stack-protector \
