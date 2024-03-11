@@ -1,5 +1,5 @@
 #pragma once
-#include <limine.h>
+#include <boot/limine.h>
 #include <stdbool.h>
 #include <stdint.h>
 

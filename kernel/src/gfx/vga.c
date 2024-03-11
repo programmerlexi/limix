@@ -1,7 +1,7 @@
-#include <framebuffer.h>
-#include <math.h>
+#include <gfx/framebuffer.h>
+#include <gfx/vga.h>
+#include <math/lib.h>
 #include <stdint.h>
-#include <vga.h>
 
 void fill_rect(uint64_t x0, uint64_t y0, uint64_t width, uint64_t height,
                uint32_t color) {

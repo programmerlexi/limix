@@ -1,6 +1,6 @@
-#include <memory.h>
 #include <stdbool.h>
-#include <strings.h>
+#include <utils/memory/memory.h>
+#include <utils/strings/strings.h>
 
 int ntos(char *buf, int i, int base, int length, bool unsign, bool pad) {
   if (!length || buf == NULL)

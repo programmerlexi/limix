@@ -1,7 +1,7 @@
 #pragma once
 
-#include <limine.h>
-#include <serial.h>
+#include <boot/limine.h>
+#include <io/serial/serial.h>
 
 /* This is the kernel config */
 

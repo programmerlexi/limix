@@ -1,7 +1,7 @@
-#include <framebuffer.h>
-#include <limine.h>
+#include <boot/limine.h>
+#include <gfx/framebuffer.h>
+#include <gfx/vga_font.h>
 #include <stdint.h>
-#include <vga_font.h>
 
 struct limine_framebuffer *g_fb;
 

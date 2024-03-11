@@ -1,15 +1,15 @@
+#include <boot/limine.h>
 #include <config.h>
-#include <framebuffer.h>
-#include <hhtp.h>
-#include <kipc.h>
-#include <limine.h>
-#include <mm.h>
-#include <serial.h>
+#include <gfx/framebuffer.h>
+#include <gfx/vga.h>
+#include <io/serial/serial.h>
+#include <kipc/semaphore.h>
+#include <mm/hhtp.h>
+#include <mm/mm.h>
 #include <smp.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <vga.h>
 
 static volatile LIMINE_BASE_REVISION(1);
 

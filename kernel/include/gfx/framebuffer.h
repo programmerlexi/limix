@@ -1,5 +1,5 @@
 #pragma once
-#include "limine.h"
+#include <boot/limine.h>
 #include <stdint.h>
 
 void putpixel(int x, int y, uint32_t c);
