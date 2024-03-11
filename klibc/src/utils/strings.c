@@ -1,9 +1,11 @@
 #include <stdbool.h>
 #include <stdint.h>
+#include <types.h>
 #include <utils/memory/memory.h>
 #include <utils/strings/strings.h>
 
-int ntos(char *buf, int i, int base, int length, bool unsign, bool pad) {
+int ntos(char *buf, ssize_t i, uint8_t base, size_t length, bool unsign,
+         bool pad) {
   if (!length || buf == NULL)
     return STR_NOBUF;
 
@@ -19,9 +21,9 @@ int ntos(char *buf, int i, int base, int length, bool unsign, bool pad) {
     return STR_OK;
   }
 
-  int p = 0;
+  size_t p = 0;
   if (!unsign) {
-    int n = i;
+    ssize_t n = i;
     while (n > 0 && p < length) {
       char d = (n % base);
       if (d < 10)
@@ -40,7 +42,7 @@ int ntos(char *buf, int i, int base, int length, bool unsign, bool pad) {
     else
       buf[p] = '+';
   } else {
-    uint64_t n = i;
+    size_t n = i;
     while (n > 0 && p < length) {
       char d = (n % base);
       if (d < 10)
@@ -67,10 +69,11 @@ int ntos(char *buf, int i, int base, int length, bool unsign, bool pad) {
     return STR_OK;
 }
 
-int reverse(char *s, int len) {
+int reverse(char *s, size_t len) {
   if (!len || !s)
     return STR_NOBUF;
-  int c, i, j;
+  char c;
+  size_t i, j;
   for (i = 0, j = len - 1; i < j; i++, j--) {
     c = s[i];
     s[i] = s[j];
