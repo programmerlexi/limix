@@ -1,7 +1,7 @@
 #pragma once
 #include <boot/limine.h>
 #include <stdbool.h>
-#include <stdint.h>
+#include <stddef.h>
 
 typedef struct memseg {
   struct memseg *prev;
@@ -14,4 +14,4 @@ void *request_page();
 void *request_page_block();
 
 void free_page(void *);
-void free_page_block(void *, uint64_t);
+void free_page_block(void *, size_t);

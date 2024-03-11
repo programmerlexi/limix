@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-extern uint64_t hhaddr;
+extern uintptr_t hhaddr;
 
-#define HHDM(addr) ((uint64_t)addr | hhaddr)
-#define PHY(addr) ((uint64_t)addr & (~hhaddr))
+#define HHDM(addr) ((uintptr_t)addr | hhaddr)
+#define PHY(addr) ((uintptr_t)addr & (~hhaddr))

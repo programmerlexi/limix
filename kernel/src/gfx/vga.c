@@ -3,19 +3,20 @@
 #include <math/lib.h>
 #include <stdint.h>
 
-void fill_rect(uint64_t x0, uint64_t y0, uint64_t width, uint64_t height,
+void fill_rect(size_t x0, size_t y0, size_t width, size_t height,
                uint32_t color) {
-  for (uint64_t x = x0; x < x0 + width; x++) {
-    for (uint64_t y = y0; y < y0 + height; y++) {
+  for (size_t x = x0; x < x0 + width; x++) {
+    for (size_t y = y0; y < y0 + height; y++) {
       putpixel(x, y, color);
     }
   }
 }
 
-void draw_ellipse(int xm, int ym, int a, int b, uint32_t color, uint8_t type) {
-  int dx = 0, dy = b;
-  long a2 = a * a, b2 = b * b;
-  long err = b2 - (2 * b - 1) * a2, e2;
+void draw_ellipse(size_t xm, size_t ym, intmax_t a, intmax_t b, uint32_t color,
+                  uint8_t type) {
+  intmax_t dx = 0, dy = b;
+  size_t a2 = a * a, b2 = b * b;
+  size_t err = b2 - (2 * b - 1) * a2, e2;
 
   do {
     if (E_3 & type)
@@ -43,7 +44,7 @@ void draw_ellipse(int xm, int ym, int a, int b, uint32_t color, uint8_t type) {
   }
 }
 
-void draw_rect(uint64_t x0, uint64_t y0, uint64_t width, uint64_t height,
+void draw_rect(size_t x0, size_t y0, size_t width, size_t height,
                uint32_t color) {
   draw_line(x0, y0, x0 + width, y0, color);
   draw_line(x0, y0, x0, y0 + height, color);
@@ -51,7 +52,8 @@ void draw_rect(uint64_t x0, uint64_t y0, uint64_t width, uint64_t height,
   draw_line(x0, y0 + height, x0 + width, y0 + height, color);
 }
 
-void draw_circle(int x0, int y0, int radius, uint32_t color, uint8_t width) {
+void draw_circle(size_t x0, size_t y0, size_t radius, uint32_t color,
+                 uint8_t width) {
   if (width == 0)
     return;
   int f = 1 - radius;
@@ -86,8 +88,7 @@ void draw_circle(int x0, int y0, int radius, uint32_t color, uint8_t width) {
   }
 }
 
-void draw_line(uint64_t x1, uint64_t y1, uint64_t x2, uint64_t y2,
-               uint32_t color) {
+void draw_line(size_t x1, size_t y1, size_t x2, size_t y2, uint32_t color) {
   int x, y, t, dx, dy, incx, incy, pdx, pdy, ddx, ddy, deltaslowdirection,
       deltafastdirection, err;
   dx = x2 - x1;

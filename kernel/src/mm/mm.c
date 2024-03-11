@@ -15,12 +15,12 @@ void insert_page(void *page) {
     seg->next = NULL;
     first = seg;
     last = seg;
-  } else if ((uint64_t)seg < (uint64_t)first) {
+  } else if ((uintptr_t)seg < (uintptr_t)first) {
     seg->next = first;
     first->prev = seg;
     seg->prev = NULL;
     first = seg;
-  } else if ((uint64_t)seg > (uint64_t)last) {
+  } else if ((uintptr_t)seg > (uintptr_t)last) {
     seg->next = NULL;
     seg->prev = last;
     last->next = seg;
@@ -29,10 +29,10 @@ void insert_page(void *page) {
     memseg_t *c = first->next;
     memseg_t *p = first;
     while (c != NULL) {
-      if ((uint64_t)p == (uint64_t)seg)
+      if ((uintptr_t)p == (uintptr_t)seg)
         return;
-      if ((uint64_t)p < (uint64_t)seg) {
-        if ((uint64_t)c > (uint64_t)seg) {
+      if ((uintptr_t)p < (uintptr_t)seg) {
+        if ((uintptr_t)c > (uintptr_t)seg) {
           p->next = seg;
           c->prev = seg;
           seg->prev = p;
@@ -69,15 +69,15 @@ void *request_page() {
   return memset(s, 0, 0x1000);
 }
 
-void *request_pages(uint64_t n) {
+void *request_pages(size_t n) {
   if (first == NULL)
     return NULL;
-  uint64_t cl = 0;
+  size_t cl = 0;
   memseg_t *c = first->next;
   memseg_t *p = first;
   memseg_t *s = p;
   while (cl != n && c != NULL) {
-    if (((uint64_t)p + 0x1000) != (uint64_t)c) {
+    if (((uintptr_t)p + 0x1000) != (uintptr_t)c) {
       cl = 0;
       s = c;
     }
@@ -97,8 +97,8 @@ void free_page(void *p) {
   insert_page(p);
 }
 
-void free_page_block(void *p, uint64_t n) {
-  for (uint64_t i = 0; i < n; i++) {
-    free_page((void *)((uint64_t)p + n * 0x1000));
+void free_page_block(void *p, size_t n) {
+  for (size_t i = 0; i < n; i++) {
+    free_page((void *)((uintptr_t)p + n * 0x1000));
   }
 }
