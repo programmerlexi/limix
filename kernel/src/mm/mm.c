@@ -63,9 +63,8 @@ void *request_page() {
   memseg_t *s = first;
   if (last == first) {
     last = NULL;
-  } else {
-    first = first->next;
   }
+  first = first->next;
   return memset(s, 0, 0x1000);
 }
 
