@@ -1,4 +1,3 @@
-#include "gfx/framebuffer.h"
 #include <boot/limine.h>
 #include <mm/hhtp.h>
 #include <mm/mm.h>
@@ -50,7 +49,6 @@ void insert_page(void *page) {
 bool mm_init(struct limine_memmap_response *mmap) {
   int usable = 0;
   for (uint64_t i = 0; i < mmap->entry_count; i++) {
-    putstr16(i, 20, ".", 0xff00ff);
     if (mmap->entries[i]->type == LIMINE_MEMMAP_USABLE) {
       usable++;
       for (uint64_t j = 0; j < mmap->entries[i]->length; j += 0x1000) {

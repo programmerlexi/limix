@@ -2,6 +2,7 @@
 #include <config.h>
 #include <gfx/framebuffer.h>
 #include <gfx/vga.h>
+#include <int/idt.h>
 #include <io/serial/serial.h>
 #include <kipc/semaphore.h>
 #include <mm/hhtp.h>
@@ -11,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <task/async.h>
+#include <utils/strings/strings.h>
 
 static volatile LIMINE_BASE_REVISION(1);
 
@@ -128,6 +130,8 @@ void _start(void) {
 
   init_fb(framebuffer_request.response->framebuffers[0]);
 
+  idt_init();
+
   if (paging_request.response->mode != USED_PAGING_MODE) {
     putstr16(0, 0, "Paging mode doesn't match! ABORTING!", 0xff0000);
     serial_writes("[!!] Paging mode isn't matching!\n\r");
@@ -136,11 +140,23 @@ void _start(void) {
 
   hhaddr = hhdm_request.response->offset;
 
+  {
+    char b[16];
+    ntos(b, hhaddr, 16, 16, true, true);
+    serial_writes("HH: ");
+    serial_writes(b);
+    serial_writes("\n\r");
+  }
+
+  serial_writes("Initialize MM...\n\r");
+
   if (!mm_init(mmap_request.response)) {
     putstr16(0, 0, "MM init failed! ABORTING!", 0xff0000);
     serial_writes("[!!] MM seems to have failed\n\r");
     hcf();
   }
+
+  serial_writes("Initializing async...\n\r");
 
   async_init();
 
