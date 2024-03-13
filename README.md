@@ -7,6 +7,7 @@ This will be done eventually
 - Graphics
 - An overcomplicated system for using multiple processors
 - A complex project structure
+- Cooperative multitasking disguised as 'async'
 
 ## Building
 
