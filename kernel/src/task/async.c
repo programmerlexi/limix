@@ -8,6 +8,7 @@
 #include <utils/variety.h>
 
 extern void exec_switch(thread_t *prev, thread_t *next);
+extern void exec_first_switch(thread_t *prev, thread_t *next);
 extern void hcf();
 
 thread_t *threads;
@@ -25,17 +26,31 @@ void async_init() {
   memset(threads, 0, 0x1000);
   threads[0].state = RUNNING;
   current = threads;
+  threads[0].next = NULL;
   count = 1;
   waiting = 0;
 }
 
-void _fire(thread_t *t) { exec_switch(current, t); }
+void _fire(thread_t *t) {
+  thread_t *p = current;
+  current = t;
+  if (t != NULL) {
+    if (t->state == INIT) {
+      exec_first_switch(p, current);
+    } else {
+      exec_switch(p, current);
+    }
+  }
+}
 
 void _async_wrapper(result_t (*func)(variety_t), variety_t arg) {
+  count++;
+  current->state = RUNNING;
   current->res = func(arg);
   current->state = DONE;
+  count--;
   while (true)
-    _fire(current->next);
+    _fire(threads); // Invoke first thread
 }
 
 future_t async(result_t (*func)(variety_t), variety_t arg) {
@@ -50,9 +65,15 @@ future_t async(result_t (*func)(variety_t), variety_t arg) {
     serial_writes("[!!] Failed to create thread: TOO_MANY_THREADS\n\r");
     hcf();
   }
-  t->state = RUNNING;
-  t->page = (void *)HHDM(request_page());
-  t->sp = (void *)((uintptr_t)t->page + 0x1000 - 80);
+  t->state = INIT;
+  t->page = (void *)request_page();
+
+  if (t->page == NULL) {
+    serial_writes("[!!] Failed to create thread: OUT_OF_MEMORY\n\r");
+    hcf();
+  }
+
+  t->sp = (void *)((uintptr_t)t->page + 0x1000 - 72);
   *(uint64_t *)(t->page + 0x1000 - 8) = (uintptr_t)_async_wrapper;
   *(uint64_t *)(t->page + 0x1000 - 16) = (uintptr_t)t->page + 0x1000;
   *(uint64_t *)(t->page + 0x1000 - 24) = (uintptr_t)func;
@@ -64,13 +85,17 @@ future_t async(result_t (*func)(variety_t), variety_t arg) {
 }
 
 result_t await(future_t *f) {
+  waiting++;
   f->own->state = WAIT;
+  f->run->next = f->own;
   while (f->run->state != DONE)
     fire(f);
+  f->own->state = RUNNING;
+  waiting--;
   result_t res = f->run->res;
   free_page(f->run->page);
   f->run->state = NONE;
   return res;
 }
 
-void fire(future_t *f) { exec_switch(f->own, f->run); }
+void fire(future_t *f) { _fire(f->run); }

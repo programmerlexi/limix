@@ -277,5 +277,7 @@ void _start(void) {
 
   putchar16(0, 0, 'P', 0x00ff00);
 
+  serial_writes("Startup done!\n\r");
+
   hcf();
 }

@@ -6,7 +6,7 @@
 
 #define THREAD_LIMIT 128
 
-enum thread_state { NONE, RUNNING, WAIT, DONE };
+enum thread_state { NONE, RUNNING, INIT, WAIT, DONE };
 
 typedef struct thread {
   void *sp;
