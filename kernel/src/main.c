@@ -10,40 +10,29 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <task/async.h>
 
 static volatile LIMINE_BASE_REVISION(1);
 
 static volatile struct limine_framebuffer_request framebuffer_request = {
-    .id = LIMINE_FRAMEBUFFER_REQUEST, .revision = 0};
+    .id = LIMINE_FRAMEBUFFER_REQUEST, .revision = 0, .response = NULL};
 
 static volatile struct limine_smp_request smp_request = {
-    .id = LIMINE_SMP_REQUEST, .revision = 0};
+    .id = LIMINE_SMP_REQUEST, .revision = 0, .response = NULL};
 
 static volatile struct limine_hhdm_request hhdm_request = {
-    .id = LIMINE_HHDM_REQUEST, .revision = 0};
+    .id = LIMINE_HHDM_REQUEST, .revision = 0, .response = NULL};
 
 static volatile struct limine_paging_mode_request paging_request = {
-    .id = LIMINE_PAGING_MODE_REQUEST, .revision = 0, .mode = USED_PAGING_MODE};
+    .id = LIMINE_PAGING_MODE_REQUEST,
+    .revision = 0,
+    .mode = USED_PAGING_MODE,
+    .response = NULL};
 
 static volatile struct limine_memmap_request mmap_request = {
-    .id = LIMINE_MEMMAP_REQUEST, .revision = 0};
+    .id = LIMINE_MEMMAP_REQUEST, .revision = 0, .response = NULL};
 
-static volatile struct limine_module_request mod_request = {
-    .id = LIMINE_MODULE_REQUEST, .revision = 0};
-
-static volatile struct limine_rsdp_request rsdp_request = {
-    .id = LIMINE_RSDP_REQUEST, .revision = 0};
-
-static volatile struct limine_boot_time_request boot_time_request = {
-    .id = LIMINE_BOOT_TIME_REQUEST, .revision = 0};
-
-static volatile struct limine_kernel_address_request kernel_addr_request = {
-    .id = LIMINE_KERNEL_ADDRESS_REQUEST, .revision = 0};
-
-static volatile struct limine_kernel_file_request kernel_file_request = {
-    .id = LIMINE_KERNEL_FILE_REQUEST, .revision = 0};
-
-static void hcf(void) {
+void hcf(void) {
   asm("cli");
   for (;;) {
     asm("hlt");
@@ -146,11 +135,14 @@ void _start(void) {
   }
 
   hhaddr = hhdm_request.response->offset;
-  if (!mm_init((struct limine_memmap_response *)&mmap_request.response)) {
+
+  if (!mm_init(mmap_request.response)) {
     putstr16(0, 0, "MM init failed! ABORTING!", 0xff0000);
     serial_writes("[!!] MM seems to have failed\n\r");
     hcf();
   }
+
+  async_init();
 
   serial_writes("Performing SMP initialization!\n\r");
 
