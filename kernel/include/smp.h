@@ -1,4 +1,5 @@
 #pragma once
+#include <boot/limine.h>
 #include <stdint.h>
 
 /* SMP actions (CMDs) */
@@ -29,3 +30,5 @@ typedef union {
   };
   uint64_t data;
 } smp_cmd_t;
+
+void _smp_start(struct limine_smp_info *);

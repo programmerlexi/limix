@@ -1,3 +1,4 @@
+#include "gfx/drm.h"
 #include "gfx/vt/vt.h"
 #include <boot/limine.h>
 #include <config.h>
@@ -280,9 +281,18 @@ void _start(void) {
 
   serial_writes("Startup done!\n\r");
 
+  drm_init();
+  serial_writes("DRM initialized\n\r");
+  drm_sync();
+  serial_writes("DRM synced\n\r");
+
   vt_init();
+  serial_writes("VT initialized\n\r");
   kprint("Welcome to " KERNEL_NAME " " KERNEL_MAJ "." KERNEL_MIN
          "." KERNEL_PATCH);
+  for (int i = 0; i < 10; i++) {
+    kprint("Test\n\r");
+  }
 
   hcf();
 }

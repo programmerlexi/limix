@@ -91,6 +91,10 @@ void *request_page_block(size_t n) {
     return NULL;
   s->prev->next = c;
   c->prev = s->prev;
+  if (s == first)
+    first = c;
+  if (s == last)
+    last = s->prev;
   memset(s, 0, 0x1000 * n);
   return s;
 }

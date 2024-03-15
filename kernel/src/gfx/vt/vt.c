@@ -1,8 +1,7 @@
-#include "io/serial/serial.h"
-#include <gfx/framebuffer.h>
-#include <gfx/vga.h>
+#include <gfx/drm.h>
 #include <gfx/vt/ansi.h>
 #include <gfx/vt/vt.h>
+#include <io/serial/serial.h>
 #include <mm/mm.h>
 #include <stdint.h>
 #include <utils/memory/memory.h>
@@ -21,8 +20,8 @@ bool full_redraw;
 ansi_state_t state;
 
 void vt_init() {
-  vt_width = g_fb->width / 8;
-  vt_height = (g_fb->height - 17) / 17;
+  vt_width = drm_width() / 8;
+  vt_height = drm_height() / 17;
   vt_buffer = (vt_char_t *)request_page_block(
       ((vt_width * vt_height * sizeof(vt_char_t)) + 4095) / 4096);
   if (vt_buffer == NULL) {
@@ -32,7 +31,7 @@ void vt_init() {
   state.gr.font_state = 0;
   state.gr.bg_index = 0;
   state.gr.fg_index = 6;
-  vt_clear();
+  // vt_clear();
 }
 void vt_clear() {
   vt_x = 0;
@@ -45,12 +44,12 @@ void vt_draw_char(uint64_t i) {
   vt_char_t c = vt_buffer[i];
   uint64_t cx = i % vt_width;
   uint64_t cy = i / vt_width;
-  fill_rect(cx * 8, cy * 17 + 17, 8, 17, c.bg.fb_color);
-  putchar16(cx * 8, cy * 17 + 17, c.unicode, c.fg.fb_color);
+  drm_fill_rel_rect(cx * 8, cy * 17, 8, 17, c.bg.fb_color);
+  drm_plot_char(cx * 8, cy * 17, c.unicode, c.fg.fb_color);
 }
 void vt_flush() {
   if (full_redraw) {
-    fill_rect(0, 17, vt_width * 8, vt_height * 17, 0x000000);
+    drm_clear();
     for (uint64_t i = 0; i < (vt_width * vt_height); i++) {
       vt_draw_char(i);
     }
@@ -58,11 +57,13 @@ void vt_flush() {
     dirty = false;
   }
   if (dirty) {
-    fill_rect(0, vt_y * 17 + 17, vt_width * 8, 34, 0x000000);
+    drm_fill_rel_rect(0, vt_y * 17, vt_width * 8, 34, 0x000000);
     for (uint64_t i = vt_y * vt_width; i < (vt_y + 2) * vt_width; i++) {
       vt_draw_char(i);
     }
+    dirty = false;
   }
+  drm_sync();
 }
 
 void vt_advance_y() {
