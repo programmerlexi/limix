@@ -71,7 +71,7 @@ void *request_page() {
   return s;
 }
 
-void *request_pages(size_t n) {
+void *request_page_block(size_t n) {
   if (first == NULL)
     return NULL;
   size_t cl = 0;
@@ -87,11 +87,12 @@ void *request_pages(size_t n) {
     c = c->next;
     cl++;
   }
-  if (cl != (n + 1))
+  if (cl != n)
     return NULL;
   s->prev->next = c;
   c->prev = s->prev;
-  return memset(s, 0, 0x1000 * n);
+  memset(s, 0, 0x1000 * n);
+  return s;
 }
 
 void free_page(void *p) {

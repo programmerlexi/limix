@@ -1,3 +1,4 @@
+#include "gfx/vt/vt.h"
 #include <boot/limine.h>
 #include <config.h>
 #include <gfx/framebuffer.h>
@@ -278,6 +279,10 @@ void _start(void) {
   putchar16(0, 0, 'P', 0x00ff00);
 
   serial_writes("Startup done!\n\r");
+
+  vt_init();
+  kprint("Welcome to " KERNEL_NAME " " KERNEL_MAJ "." KERNEL_MIN
+         "." KERNEL_PATCH);
 
   hcf();
 }
