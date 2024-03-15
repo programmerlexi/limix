@@ -2,11 +2,10 @@
 #include <gfx/vt/ansi.h>
 #include <gfx/vt/vt.h>
 #include <io/serial/serial.h>
+#include <kernel.h>
 #include <mm/mm.h>
 #include <stdint.h>
 #include <utils/memory/memory.h>
-
-extern void hcf();
 
 vt_char_t *vt_buffer;
 uint64_t vt_height;
@@ -45,7 +44,8 @@ void vt_draw_char(uint64_t i) {
   uint64_t cx = i % vt_width;
   uint64_t cy = i / vt_width;
   drm_fill_rel_rect(cx * 8, cy * 17, 8, 17, c.bg.fb_color);
-  drm_plot_char(cx * 8, cy * 17, c.unicode, c.fg.fb_color);
+  if (c.unicode)
+    drm_plot_char(cx * 8, cy * 17, c.unicode, c.fg.fb_color);
 }
 void vt_flush() {
   if (full_redraw) {
@@ -59,6 +59,8 @@ void vt_flush() {
   if (dirty) {
     drm_fill_rel_rect(0, vt_y * 17, vt_width * 8, 34, 0x000000);
     for (uint64_t i = vt_y * vt_width; i < (vt_y + 2) * vt_width; i++) {
+      if (i >= vt_width * vt_height)
+        break;
       vt_draw_char(i);
     }
     dirty = false;

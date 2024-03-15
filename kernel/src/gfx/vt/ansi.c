@@ -1,5 +1,5 @@
-#include "gfx/vt/vt.h"
 #include <gfx/vt/ansi.h>
+#include <gfx/vt/vt.h>
 #include <stdint.h>
 
 uint32_t normal_colors[] = {0x000000, 0xcd0000, 0x00cd00, 0xcdcd00,

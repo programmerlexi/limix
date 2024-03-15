@@ -5,7 +5,7 @@
 
 struct limine_framebuffer *g_fb;
 
-void init_fb(struct limine_framebuffer *fb) { g_fb = fb; }
+void fb_init(struct limine_framebuffer *fb) { g_fb = fb; }
 
 void putpixel(size_t x, size_t y, uint32_t c) {
   ((uint32_t *)g_fb->address)[y * g_fb->pitch / 4 + x] = c;

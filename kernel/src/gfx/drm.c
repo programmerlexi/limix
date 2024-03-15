@@ -1,14 +1,13 @@
-#include "io/serial/serial.h"
 #include <config.h>
 #include <gfx/drm.h>
 #include <gfx/framebuffer.h>
 #include <gfx/vga_font.h>
+#include <io/serial/serial.h>
+#include <kernel.h>
 #include <math/lib.h>
 #include <mm/mm.h>
 #include <stdint.h>
 #include <utils/memory/memory.h>
-
-extern void hcf();
 
 drm_t drms[MAX_DRMS];
 uint64_t active_drm;
@@ -31,6 +30,7 @@ void drm_switch(uint64_t drm) {
   if (drm >= MAX_DRMS)
     return;
   active_drm = drm;
+  drm_sync();
 }
 void drm_sync() {
   drm_t ad = drms[active_drm];
@@ -143,7 +143,10 @@ void drm_fill_rel_rect(uint64_t x0, uint64_t y0, uint64_t w, uint64_t h,
     }
   }
 }
-void drm_clear() { memset(&(drms[active_drm]), 0, g_fb->pitch * g_fb->height); }
+void drm_clear() {
+  memset(&(drms[active_drm].framebuffer), 0,
+         drms[active_drm].width * drms[active_drm].height * 4);
+}
 void drm_plot_char(uint64_t x, uint64_t y, uint32_t ch, uint32_t c) {
   for (uint8_t hi = 0; hi < 16; hi++) {
     uint8_t m = 0x80;
