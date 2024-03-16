@@ -1,0 +1,242 @@
+#pragma once
+
+#include <stdbool.h>
+#include <stdint.h>
+
+#define KB_HW_SET1_ESC 0x01
+#define KB_HW_SET1_1 0x02
+#define KB_HW_SET1_2 0x03
+#define KB_HW_SET1_3 0x04
+#define KB_HW_SET1_4 0x05
+#define KB_HW_SET1_5 0x06
+#define KB_HW_SET1_6 0x07
+#define KB_HW_SET1_7 0x08
+#define KB_HW_SET1_8 0x09
+#define KB_HW_SET1_9 0x0A
+#define KB_HW_SET1_0 0x0B
+#define KB_HW_SET1_MINUS 0x0C
+#define KB_HW_SET1_EQUALS 0x0D
+#define KB_HW_SET1_BACKSPACE 0x0E
+#define KB_HW_SET1_TAB 0x0F
+#define KB_HW_SET1_Q 0x10
+#define KB_HW_SET1_W 0x11
+#define KB_HW_SET1_E 0x12
+#define KB_HW_SET1_R 0x13
+#define KB_HW_SET1_T 0x14
+#define KB_HW_SET1_Y 0x15
+#define KB_HW_SET1_U 0x16
+#define KB_HW_SET1_I 0x17
+#define KB_HW_SET1_O 0x18
+#define KB_HW_SET1_P 0x19
+#define KB_HW_SET1_BRACKET_LEFT 0x1A
+#define KB_HW_SET1_BRACKET_RIGHT 0x1B
+#define KB_HW_SET1_RETURN 0x1C
+#define KB_HW_SET1_LEFT_CONTROL 0x1D
+#define KB_HW_SET1_A 0x1E
+#define KB_HW_SET1_S 0x1F
+#define KB_HW_SET1_D 0x20
+#define KB_HW_SET1_F 0x21
+#define KB_HW_SET1_G 0x22
+#define KB_HW_SET1_H 0x23
+#define KB_HW_SET1_J 0x24
+#define KB_HW_SET1_K 0x25
+#define KB_HW_SET1_L 0x26
+#define KB_HW_SET1_SEMICOLON 0x27
+#define KB_HW_SET1_SINGLE_QUOTE 0x28
+#define KB_HW_SET1_BACK_TICK 0x29
+#define KB_HW_SET1_LEFT_SHIFT 0x2A
+#define KB_HW_SET1_BACK_SLASH 0x2B
+#define KB_HW_SET1_Z 0x2C
+#define KB_HW_SET1_X 0x2D
+#define KB_HW_SET1_C 0x2E
+#define KB_HW_SET1_V 0x2F
+#define KB_HW_SET1_B 0x30
+#define KB_HW_SET1_N 0x31
+#define KB_HW_SET1_M 0x32
+#define KB_HW_SET1_COMMA 0x33
+#define KB_HW_SET1_DOT 0x34
+#define KB_HW_SET1_FORWARD_SLASH 0x35
+#define KB_HW_SET1_RIGHT_SHIFT 0x36
+#define KB_HW_SET1_KEYPAD_MULTIPLY 0x37
+#define KB_HW_SET1_LEFT_ALT 0x38
+#define KB_HW_SET1_SPACE 0x39
+#define KB_HW_SET1_CAPS_LOCK 0x3A
+#define KB_HW_SET1_F1 0x3B
+#define KB_HW_SET1_F2 0x3C
+#define KB_HW_SET1_F3 0x3D
+#define KB_HW_SET1_F4 0x3E
+#define KB_HW_SET1_F5 0x3F
+#define KB_HW_SET1_F6 0x40
+#define KB_HW_SET1_F7 0x41
+#define KB_HW_SET1_F8 0x42
+#define KB_HW_SET1_F9 0x43
+#define KB_HW_SET1_F10 0x44
+#define KB_HW_SET1_NUM_LOCK 0x45
+#define KB_HW_SET1_SCROLL_LOCK 0x46
+#define KB_HW_SET1_NUMPAD_7 0x47
+#define KB_HW_SET1_NUMPAD_8 0x48
+#define KB_HW_SET1_NUMPAD_9 0x49
+#define KB_HW_SET1_NUMPAD_MINUS 0x4A
+#define KB_HW_SET1_NUMPAD_4 0x4B
+#define KB_HW_SET1_NUMPAD_5 0x4C
+#define KB_HW_SET1_NUMPAD_6 0x4D
+#define KB_HW_SET1_NUMPAD_PLUS 0x4E
+#define KB_HW_SET1_NUMPAD_1 0x4F
+#define KB_HW_SET1_NUMPAD_2 0x50
+#define KB_HW_SET1_NUMPAD_3 0x51
+#define KB_HW_SET1_NUMPAD_0 0x52
+#define KB_HW_SET1_NUMPAD_DOT 0x53
+
+#define KB_HW_SET1_F11 0x57
+#define KB_HW_SET1_F12 0x58
+
+#define KB_HW_SET1_OVERLAY 0xE0
+
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_PREV_TRACK 0x10
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_NEXT_TRACK 0x19
+#define KB_HW_SET1_OVERLAY_KEYPAD_ENTER 0x1C
+#define KB_HW_SET1_OVERLAY_RIGHT_CONTROL 0x1D
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_MUTE 0x20
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_CALCULATOR 0x21
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_PLAY 0x22
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_STOP 0x24
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_VOL_DOWN 0x2E
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_VOL_UP 0x30
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_WWW 0x32
+#define KB_HW_SET1_OVERLAY_KEYPAD_SLASH 0x35
+#define KB_HW_SET1_OVERLAY_RIGHT_ALT 0x38
+#define KB_HW_SET1_OVERLAY_HOME 0x47
+#define KB_HW_SET1_OVERLAY_CURSOR_UP 0x48
+#define KB_HW_SET1_OVERLAY_PAGE_UP 0x49
+#define KB_HW_SET1_OVERLAY_CURSOR_LEFT 0x4B
+#define KB_HW_SET1_OVERLAY_CURSOR_RIGHT 0x4D
+#define KB_HW_SET1_OVERLAY_END 0x4F
+#define KB_HW_SET1_OVERLAY_CURSOR_DOWN 0x50
+#define KB_HW_SET1_OVERLAY_PAGE_DOWN 0x51
+#define KB_HW_SET1_OVERLAY_INSERT 0x52
+#define KB_HW_SET1_OVERLAY_DELETE 0x53
+#define KB_HW_SET1_OVERLAY_LEFT_GUI 0x5B
+#define KB_HW_SET1_OVERLAY_RIGHT_GUI 0x5C
+#define KB_HW_SET1_OVERLAY_APPS 0x5D
+#define KB_HW_SET1_OVERLAY_ACPI_POWER 0x5E
+#define KB_HW_SET1_OVERLAY_ACPI_SLEEP 0x5F
+#define KB_HW_SET1_OVERLAY_ACPI_WAKE 0x63
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_WWW_SEARCH 0x65
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_WWW_FAVORITES 0x66
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_WWW_REFRESH 0x67
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_WWW_STOP 0x68
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_WWW_FORWARD 0x69
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_WWW_BACK 0x6A
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_MY_COMPUTER 0x6B
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_EMAIL 0x6C
+#define KB_HW_SET1_OVERLAY_MULTIMEDIA_MEDIA_SELECT 0x6D
+
+#define KB_MOD_SHIFT 1 << 0
+#define KB_MOD_ALT 1 << 1
+#define KB_MOD_LEFT_SHIFT 1 << 2
+#define KB_MOD_LEFT_ALT 1 << 3
+#define KB_MOD_RIGHT_SHIFT 1 << 4
+#define KB_MOD_RIGHT_ALT 1 << 5
+#define KB_MOD_NUM 1 << 6
+#define KB_MOD_CAPS 1 << 7
+#define KB_MOD_CTRL 1 << 8
+#define KB_MOD_LEFT_CTRL 1 << 9
+#define KB_MOD_RIGHT_CTRL 1 << 10
+#define KB_MOD_SCROLL 1 << 11
+
+#define KB_POS(row, col) (col & 0b00011111 | ((row & 0b111) << 5))
+
+#define KB_KEY_ESC KB_POS(0, 0)
+#define KB_KEY_F1 KB_POS(0, 1)
+#define KB_KEY_F2 KB_POS(0, 2)
+#define KB_KEY_F3 KB_POS(0, 3)
+#define KB_KEY_F4 KB_POS(0, 4)
+#define KB_KEY_F5 KB_POS(0, 5)
+#define KB_KEY_F6 KB_POS(0, 6)
+#define KB_KEY_F7 KB_POS(0, 7)
+#define KB_KEY_F8 KB_POS(0, 8)
+#define KB_KEY_F9 KB_POS(0, 9)
+#define KB_KEY_F10 KB_POS(0, 10)
+#define KB_KEY_F11 KB_POS(0, 11)
+#define KB_KEY_F12 KB_POS(0, 12)
+#define KB_KEY_INSERT KB_POS(0, 13)
+#define KB_KEY_DELETE KB_POS(0, 14)
+
+#define KB_KEY_BACK_TICK KB_POS(1, 0)
+#define KB_KEY_1 KB_POS(1, 1)
+#define KB_KEY_2 KB_POS(1, 2)
+#define KB_KEY_3 KB_POS(1, 3)
+#define KB_KEY_4 KB_POS(1, 4)
+#define KB_KEY_5 KB_POS(1, 5)
+#define KB_KEY_6 KB_POS(1, 6)
+#define KB_KEY_7 KB_POS(1, 7)
+#define KB_KEY_8 KB_POS(1, 8)
+#define KB_KEY_9 KB_POS(1, 9)
+#define KB_KEY_0 KB_POS(1, 10)
+#define KB_KEY_MINUS KB_POS(1, 11)
+#define KB_KEY_EQUALS KB_POS(1, 12)
+#define KB_KEY_BACKSPACE KB_POS(1, 13)
+
+#define KB_KEY_TAB KB_POS(2, 0)
+#define KB_KEY_Q KB_POS(2, 1)
+#define KB_KEY_W KB_POS(2, 2)
+#define KB_KEY_E KB_POS(2, 3)
+#define KB_KEY_R KB_POS(2, 4)
+#define KB_KEY_T KB_POS(2, 5)
+#define KB_KEY_Y KB_POS(2, 6)
+#define KB_KEY_U KB_POS(2, 7)
+#define KB_KEY_I KB_POS(2, 8)
+#define KB_KEY_O KB_POS(2, 9)
+#define KB_KEY_P KB_POS(2, 10)
+#define KB_KEY_BRACKET_LEFT KB_POS(2, 11)
+#define KB_KEY_BRACKET_RIGHT KB_POS(2, 12)
+#define KB_KEY_BACKSLASH KB_POS(2, 13)
+
+#define KB_KEY_CAPS_LOCK KB_POS(3, 0)
+#define KB_KEY_A KB_POS(3, 1)
+#define KB_KEY_S KB_POS(3, 2)
+#define KB_KEY_D KB_POS(3, 3)
+#define KB_KEY_F KB_POS(3, 4)
+#define KB_KEY_G KB_POS(3, 5)
+#define KB_KEY_H KB_POS(3, 6)
+#define KB_KEY_J KB_POS(3, 7)
+#define KB_KEY_K KB_POS(3, 8)
+#define KB_KEY_L KB_POS(3, 9)
+#define KB_KEY_SEMICOLON KB_POS(3, 10)
+#define KB_KEY_SINGLE_QUOTE KB_POS(3, 11)
+#define KB_KEY_ENTER KB_POS(3, 12)
+
+#define KB_KEY_LSHIFT KB_POS(4, 0)
+#define KB_KEY_Z KB_POS(4, 1)
+#define KB_KEY_X KB_POS(4, 2)
+#define KB_KEY_C KB_POS(4, 3)
+#define KB_KEY_V KB_POS(4, 4)
+#define KB_KEY_B KB_POS(4, 5)
+#define KB_KEY_N KB_POS(4, 6)
+#define KB_KEY_M KB_POS(4, 7)
+#define KB_KEY_COMMA KB_POS(4, 8)
+#define KB_KEY_PERIOD KB_POS(4, 9)
+#define KB_KEY_SLASH KB_POS(4, 10)
+#define KB_KEY_RSHIFT KB_POS(4, 11)
+
+#define KB_KEY_LCTRL KB_POS(5, 0)
+#define KB_KEY_FUNCTION KB_POS(5, 1) /* This will never be pressed */
+#define KB_KEY_LOGO KB_POS(5, 2)
+#define KB_KEY_ALT KB_POS(5, 3)
+#define KB_KEY_SPACE KB_POS(5, 4)
+#define KB_KEY_ALTGR KB_POS(5, 5)
+#define KB_KEY_RCTRL KB_POS(5, 6)
+
+#define KB_KEY_PAGE_UP KB_POS(6, 0)
+#define KB_KEY_ARROW_UP KB_POS(6, 1)
+#define KB_KEY_PAGE_DOWN KB_POS(6, 2)
+#define KB_KEY_ARROW_LEFT KB_POS(6, 3)
+#define KB_KEY_ARROW_DOWN KB_POS(6, 4)
+#define KB_KEY_ARROW_RIGHT KB_POS(6, 5)
+
+void kb_init();
+bool kb_get_key(char);
+uint16_t kb_get_mods();
+void kb_update();
+
+void kb_internal_set_key(uint8_t, bool);
