@@ -1,6 +1,7 @@
 #include <gfx/framebuffer.h>
 #include <gfx/vga.h>
 #include <int/idt.h>
+#include <io/serial/serial.h>
 #include <mm/hhtp.h>
 #include <utils/memory/memory.h>
 #include <utils/strings/strings.h>
@@ -17,22 +18,21 @@ static inline void lidt(void *base, uint16_t size) {
 
 __attribute__((interrupt)) void gpf_handler(interrupt_frame_t *int_frame) {
   asm("cli");
-  fill_rect(0, 0, 128, 32, 0x000000);
-  putstr16(0, 0, "GPF 0x", 0xffffff);
+  serial_writes("Encountered GPF at 0x");
   char b[16];
   ntos(b, int_frame->rip, 16, 16, true, true);
-  putstr16(0, 16, b, 0xffffff);
+  serial_writes(b);
+  serial_writes("\n\r");
   for (;;)
     ;
 }
 __attribute__((interrupt)) void df_handler(interrupt_frame_t *int_frame) {
   asm("cli");
-  fill_rect(0, 0, 128, 32, 0);
-  putstr16(0, 0, "DF", 0xffffff);
+  serial_writes("DF 0x");
   char b[16];
   ntos(b, int_frame->rip, 16, 16, true, true);
-  putstr16(0, 16, b, 0xffffff);
-
+  serial_writes(b);
+  serial_writes("\n\r");
   for (;;)
     ;
 }
