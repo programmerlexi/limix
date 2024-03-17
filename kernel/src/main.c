@@ -1,3 +1,4 @@
+#include "kernel.h"
 #include <boot/limine.h>
 #include <boot/requests.h>
 #include <config.h>
@@ -22,6 +23,17 @@ void hcf(void) {
   for (;;) {
     asm("hlt");
   }
+}
+
+void kernel_panic_error(const char *s) {
+  serial_writes("ERROR: ");
+  serial_writes((char *)s);
+  serial_writes("\n\r");
+  kernel_panic();
+}
+void kernel_panic() {
+  serial_writes("An error has occured and the system will be halted.\n\r");
+  hcf();
 }
 
 uint64_t hhaddr;

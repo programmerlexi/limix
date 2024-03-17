@@ -34,6 +34,7 @@ override CFLAGS += \
     -Wall \
     -Wextra \
 		-Werror \
+		-Wno-unused-parameter \
     -std=gnu11 \
     -ffreestanding \
     -fno-stack-protector \
