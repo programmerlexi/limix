@@ -55,4 +55,9 @@ void ps2_send_data2(uint8_t);
 uint8_t ps2_read_data();
 bool ps2_data_available();
 
+void ps2_send_data(uint8_t);
+bool ps2_can_send();
+
+void ps2_reset_cpu();
+
 void ps2_init();
