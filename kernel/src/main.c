@@ -1,4 +1,3 @@
-#include "kernel.h"
 #include <boot/limine.h>
 #include <boot/requests.h>
 #include <config.h>
@@ -6,8 +5,10 @@
 #include <gfx/framebuffer.h>
 #include <gfx/vga.h>
 #include <gfx/vt/vt.h>
+#include <hw/ps2.h>
 #include <int/idt.h>
 #include <io/serial/serial.h>
+#include <kernel.h>
 #include <kipc/semaphore.h>
 #include <mm/hhtp.h>
 #include <mm/mm.h>
@@ -81,6 +82,8 @@ void _start(void) {
 
   kprint("Welcome to " KERNEL_NAME " " KERNEL_RELEASE " " KERNEL_MAJ
          "." KERNEL_MIN "." KERNEL_PATCH "-" KERNEL_TYPE "\n\r");
+
+  ps2_init();
 
   hcf();
 }

@@ -21,7 +21,7 @@
 #define PS2_COMMAND_TEST_PORT2 0xA9
 #define PS2_COMMAND_TEST_CONTROLLER 0xAA
 #define PS2_COMMAND_TEST_PORT1 0xAB
-#define PS2_COMMAND_DISBALE_PORT1 0xAD
+#define PS2_COMMAND_DISABLE_PORT1 0xAD
 #define PS2_COMMAND_ENABLE_PORT1 0xAE
 #define PS2_COMMAND_READ_CONTROLLER_OUTPUT_PORT 0xD0
 #define PS2_COMMAND_WRITE_CONTROLLER_OUTPUT_PORT 0xD1
@@ -54,6 +54,8 @@ void ps2_send_data2(uint8_t);
 
 uint8_t ps2_read_data();
 bool ps2_data_available();
+
+void ps2_send_command(uint8_t);
 
 void ps2_send_data(uint8_t);
 bool ps2_can_send();
