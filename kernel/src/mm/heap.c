@@ -1,6 +1,5 @@
-#include "gfx/vt/ansi.h"
-#include "gfx/vt/vt.h"
 #include <config.h>
+#include <gfx/vt/vt.h>
 #include <kernel.h>
 #include <mm/heap.h>
 #include <mm/mm.h>
