@@ -7,11 +7,26 @@ bool dual_channel = true;
 bool port1_available = false;
 bool port2_available = false;
 
-void ps2_send_command1(uint8_t);
-void ps2_send_data1(uint8_t);
+void ps2_send_command1(uint8_t cmd) { ps2_send_data1(cmd); }
+void ps2_send_data1(uint8_t data) {
+  if (!port1_available)
+    return;
+  if (!ps2_can_send())
+    return;
+  outb(PS2_PORT_DATA, data);
+}
 
-void ps2_send_command2(uint8_t);
-void ps2_send_data2(uint8_t);
+void ps2_send_command2(uint8_t cmd) { ps2_send_data2(cmd); }
+void ps2_send_data2(uint8_t data) {
+  if (!port2_available)
+    return;
+  if (!ps2_can_send())
+    return;
+  ps2_send_command(PS2_COMMAND_WRITE_PORT2_INPUT);
+  while (!ps2_can_send())
+    asm("nop");
+  outb(PS2_PORT_DATA, data);
+}
 
 uint8_t ps2_read_data() {
   if (ps2_data_available())
