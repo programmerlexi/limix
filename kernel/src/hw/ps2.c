@@ -28,6 +28,14 @@ void ps2_send_data2(uint8_t data) {
   outb(PS2_PORT_DATA, data);
 }
 
+uint8_t ps2_read_data2() {
+  if (!port2_available)
+    return 0;
+  if (!ps2_data_available())
+    return 0;
+  return ps2_read_data();
+}
+
 uint8_t ps2_read_data() {
   if (ps2_data_available())
     return inb(PS2_PORT_DATA);

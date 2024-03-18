@@ -51,6 +51,7 @@ void ps2_send_data1(uint8_t);
 
 void ps2_send_command2(uint8_t);
 void ps2_send_data2(uint8_t);
+uint8_t ps2_read_data2();
 
 uint8_t ps2_read_data();
 bool ps2_data_available();
