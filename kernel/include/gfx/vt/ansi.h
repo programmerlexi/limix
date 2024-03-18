@@ -3,7 +3,7 @@
 #include <gfx/vt/vt.h>
 #include <stdbool.h>
 
-enum ANSI_STATE { C1, CSI_CMD, ARG, SEMICOLON, CMD };
+enum ANSI_STATE { C1, CSI_CMD, ARG, SEMICOLON };
 
 typedef struct ansi_state {
   char args[8];
@@ -19,11 +19,12 @@ typedef struct ansi_state {
 #define LF '\xa'
 #define CR '\xd'
 #define ESC '\x1b'
+#define ESC_SEQ "\x1b"
 
 /* C1 Sequences */
-#define SS2 ESC "N"
-#define SS3 ESC "O"
-#define CSI ESC "["
+#define SS2 ESC_SEQ "N"
+#define SS3 ESC_SEQ "O"
+#define CSI ESC_SEQ "["
 
 /* CSI Command chars */
 #define CUU(n) CSI n "A"

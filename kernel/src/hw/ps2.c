@@ -76,7 +76,7 @@ void ps2_init() {
   while (!ps2_data_available())
     asm("nop");
   uint8_t result = ps2_read_data();
-  if (result != 0xAA)
+  if (result != 0x55)
     kernel_panic_error("PS/2 Controller failed self-test");
   ps2_send_command(PS2_COMMAND_WRITE_CCB);
   while (!ps2_can_send())

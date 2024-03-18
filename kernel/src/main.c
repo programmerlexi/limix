@@ -1,3 +1,4 @@
+#include "mm/heap.h"
 #include <boot/limine.h>
 #include <boot/requests.h>
 #include <config.h>
@@ -73,16 +74,18 @@ void _start(void) {
   }
 
   smp_init();
-  async_init();
 
   drm_init();
   drm_sync();
+
+  async_init();
 
   vt_init();
 
   kprint("Welcome to " KERNEL_NAME " " KERNEL_RELEASE " " KERNEL_MAJ
          "." KERNEL_MIN "." KERNEL_PATCH "-" KERNEL_TYPE "\n\r");
 
+  heap_init();
   ps2_init();
 
   hcf();

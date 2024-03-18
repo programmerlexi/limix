@@ -32,6 +32,30 @@ typedef struct vt_char {
 #define VT_DIM 2
 #define VT_REVERSE 4
 
+#define TERMCODE(c) "\x07" c
+#define TC_RESET "\x01"
+#define TC_DIM "\x02"
+#define TC_BOLD "\x03"
+#define TC_REVERSE "\x04"
+#define TC_NO_DIM "\x05"
+#define TC_NO_BOLD "\x06"
+#define TC_NO_REVERSE "\x07"
+#define TC_FG_BLACK "\x11"
+#define TC_FG_RED "\x12"
+#define TC_FG_GREEN "\x13"
+#define TC_FG_YELLOW "\x14"
+#define TC_FG_BLUE "\x15"
+#define TC_FG_PURPLE "\x16"
+#define TC_FG_CYAN "\x17"
+#define TC_FG_WHITE "\x18"
+#define TC_BG_BLACK "\x21"
+#define TC_BG_RED "\x22"
+#define TC_BG_GREEN "\x23"
+#define TC_BG_YELLOW "\x24"
+#define TC_BG_BLUE "\x25"
+#define TC_BG_PURPLE "\x26"
+#define TC_BG_CYAN "\x27"
+#define TC_BG_WHITE "\x28"
 void vt_init();
 void vt_clear();
 void vt_flush();

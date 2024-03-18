@@ -29,7 +29,7 @@ void vt_init() {
   }
   state.gr.font_state = 0;
   state.gr.bg_index = 0;
-  state.gr.fg_index = 6;
+  state.gr.fg_index = 7;
   // vt_clear();
 }
 void vt_clear() {
@@ -91,6 +91,8 @@ void vt_advance_x() {
   }
 }
 
+bool termcode = false;
+
 void kprint(char *s) {
   while (*s) {
     kprintc(*s);
@@ -101,6 +103,81 @@ void kprint(char *s) {
 void kprintc(char c) {
   if (state.working) {
     state = ansi_process(state, c);
+  } else if (termcode) {
+    switch (c) {
+    case 0x01:
+      state.gr.font_state = 0;
+      state.gr.bg_index = 0;
+      state.gr.fg_index = 7;
+      break;
+    case 0x02:
+      state.gr.font_state |= VT_DIM;
+      break;
+    case 0x03:
+      state.gr.font_state |= VT_BOLD;
+      break;
+    case 0x04:
+      state.gr.font_state |= VT_REVERSE;
+      break;
+    case 0x05:
+      state.gr.font_state &= ~VT_DIM;
+      break;
+    case 0x06:
+      state.gr.font_state &= ~VT_BOLD;
+      break;
+    case 0x07:
+      state.gr.font_state &= ~VT_REVERSE;
+      break;
+    case 0x11:
+      state.gr.fg_index = 0;
+      break;
+    case 0x12:
+      state.gr.fg_index = 1;
+      break;
+    case 0x13:
+      state.gr.fg_index = 2;
+      break;
+    case 0x14:
+      state.gr.fg_index = 3;
+      break;
+    case 0x15:
+      state.gr.fg_index = 4;
+      break;
+    case 0x16:
+      state.gr.fg_index = 5;
+      break;
+    case 0x17:
+      state.gr.fg_index = 6;
+      break;
+    case 0x18:
+      state.gr.fg_index = 7;
+      break;
+    case 0x21:
+      state.gr.bg_index = 0;
+      break;
+    case 0x22:
+      state.gr.bg_index = 1;
+      break;
+    case 0x23:
+      state.gr.bg_index = 2;
+      break;
+    case 0x24:
+      state.gr.bg_index = 3;
+      break;
+    case 0x25:
+      state.gr.bg_index = 4;
+      break;
+    case 0x26:
+      state.gr.bg_index = 5;
+      break;
+    case 0x27:
+      state.gr.bg_index = 6;
+      break;
+    case 0x28:
+      state.gr.bg_index = 7;
+      break;
+    }
+    termcode = false;
   } else {
     switch (c) {
     case LF:
@@ -116,6 +193,10 @@ void kprintc(char c) {
       break;
     case ESC:
       state.working = true;
+      state.as = C1;
+      break;
+    case BEL:
+      termcode = true;
       break;
     default:
       vt_buffer[vt_y * vt_width + vt_x].unicode = c;
