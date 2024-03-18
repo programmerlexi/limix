@@ -97,7 +97,8 @@ void ps2_init() {
     asm("nop");
   if (ps2_read_data()) {
     kprint(
-        "WARNING: First PS/2 port failed, keyboard may not be available.\n\r");
+        TERMCODE(TC_FG_YELLOW) "WARNING: First PS/2 port failed, keyboard may "
+                               "not be available.\n\r" TERMCODE(TC_RESET));
   } else {
     port1_available = true;
   }
@@ -107,14 +108,16 @@ void ps2_init() {
       asm("nop");
     if (ps2_read_data()) {
       kprint(
-          "WARNING: Second PS/2 port failed, mouse may not be available.\n\r");
+          TERMCODE(TC_FG_YELLOW) "WARNING: Second PS/2 port failed, mouse may "
+                                 "not be available.\n\r" TERMCODE(TC_RESET));
     } else {
       port2_available = true;
     }
   }
   if (!(port1_available || port2_available)) {
-    kprint("ERROR: All PS/2 ports failed, keyboard and mouse will not be "
-           "available using PS/2.\n\r");
+    kprint(TERMCODE(TC_FG_RED) TERMCODE(
+        TC_BOLD) "ERROR: All PS/2 ports failed, keyboard and mouse will not be "
+                 "available using PS/2.\n\r" TERMCODE(TC_RESET));
     return;
   }
 }
