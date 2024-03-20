@@ -1,4 +1,3 @@
-#include "mm/heap.h"
 #include <boot/limine.h>
 #include <boot/requests.h>
 #include <config.h>
@@ -11,6 +10,7 @@
 #include <io/serial/serial.h>
 #include <kernel.h>
 #include <kipc/semaphore.h>
+#include <mm/heap.h>
 #include <mm/hhtp.h>
 #include <mm/mm.h>
 #include <smp.h>
@@ -18,6 +18,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <task/async.h>
+#include <types.h>
 #include <utils/strings/strings.h>
 
 void hcf(void) {
@@ -73,19 +74,19 @@ void _start(void) {
     hcf();
   }
 
+  async_init();
+  heap_init();
+
   smp_init();
 
   drm_init();
   drm_sync();
-
-  async_init();
 
   vt_init();
 
   kprint("Welcome to " KERNEL_NAME " " KERNEL_RELEASE " " KERNEL_MAJ
          "." KERNEL_MIN "." KERNEL_PATCH "-" KERNEL_TYPE "\n\r");
 
-  heap_init();
   ps2_init();
 
   hcf();

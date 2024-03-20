@@ -23,7 +23,6 @@ void async_init() {
     serial_writes("[!!] Couldn't initialize threads!\n\r");
     hcf();
   }
-  memset(threads, 0, 0x1000);
   threads[0].state = RUNNING;
   current = threads;
   threads[0].next = NULL;
