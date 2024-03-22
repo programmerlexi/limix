@@ -67,7 +67,8 @@ heapseg_t *_heap_split(heapseg_t *seg, size_t size) {
     return NULL;
   heapseg_t *new_seg = (heapseg_t *)((size_t)seg + size + sizeof(heapseg_t));
 
-  seg->next->prev = new_seg;
+  if (seg->next)
+    seg->next->prev = new_seg;
   new_seg->next = seg->next;
   seg->next = new_seg;
   new_seg->prev = seg;
