@@ -82,7 +82,7 @@ void _start(void) {
   drm_init();
   drm_sync();
 
-  vt_init();
+  vt_init(0);
 
   kprint("Welcome to " KERNEL_NAME " " KERNEL_RELEASE " " KERNEL_MAJ
          "." KERNEL_MIN "." KERNEL_PATCH "-" KERNEL_TYPE "\n\r");
