@@ -37,6 +37,13 @@ typedef struct {
   uint64_t filesystem_handle;
 } vnode_t;
 
+typedef struct vtree_node {
+  char *name;
+  uint64_t child_count;
+  vnode_t *node;
+  struct vtree_node *children;
+} vtree_node_t;
+
 typedef struct {
   int (*mount)(vnode_t *);
   int (*populate_buffers)(vnode_t *);

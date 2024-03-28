@@ -1,3 +1,4 @@
+#include <math/lib.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <types.h>
@@ -80,4 +81,44 @@ int reverse(char *s, size_t len) {
     s[j] = c;
   }
   return STR_OK;
+}
+
+size_t strlen(char *s) {
+  size_t i = 0;
+  while (*s) {
+    i++;
+    s++;
+  }
+  return i;
+}
+
+size_t strnext(char *s, char c) {
+  size_t i = 0;
+  while (*s && *s != c) {
+    i++;
+    s++;
+  }
+  return i;
+}
+
+bool strncmp(char *a, char *b, size_t n) {
+  if (min(strlen(a), n) != min(strlen(b), n))
+    return false;
+  int l = min(min(strlen(a), strlen(b)), n);
+  for (int i = 0; i < l; i++) {
+    if (a[i] != b[i])
+      return false;
+  }
+  return true;
+}
+
+bool strnlcmp(char *a, char *b, size_t n, size_t l) {
+  if (min(strlen(a), l) != min(strlen(b), l))
+    return false;
+  int sl = min(min(strlen(a), strlen(b)), n);
+  for (int i = 0; i < sl; i++) {
+    if (a[i] != b[i])
+      return false;
+  }
+  return true;
 }
