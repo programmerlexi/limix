@@ -26,22 +26,35 @@ void drm_init() {
   }
   active_drm = 0;
 }
+void _drm_sync_real() {
+  drm_t ad = drms[active_drm];
+  memcpy(g_fb->address, ad.framebuffer, ad.width * ad.height * 4);
+}
 void drm_switch(uint64_t drm) {
   if (drm >= MAX_DRMS)
     return;
   active_drm = drm;
-  drm_sync();
+  _drm_sync_real();
 }
+
 void drm_sync() {
-  drm_t ad = drms[active_drm];
-  memcpy(g_fb->address, ad.framebuffer, ad.width * ad.height * 4);
+#ifndef DRM_WRITETHROUGH
+  _drm_sync_real();
+#endif
 }
 void drm_plot(uint64_t drm, uint64_t x, uint64_t y, uint32_t c) {
   if (x > drms[drm].width)
     return;
   if (y > drms[drm].height)
     return;
+#ifndef DRM_WRITETHROUGH
   drms[drm].framebuffer[drms[drm].width * y + x] = c;
+#else
+  if (active_drm != drm)
+    drms[drm].framebuffer[drms[drm].width * y + x] = c;
+  else
+    ((uint32_t *)g_fb->address)[drms[drm].width * y + x] = c;
+#endif
 }
 void drm_plot_line(uint64_t drm, uint64_t x0, uint64_t y0, uint64_t x1,
                    uint64_t y1, uint32_t c) {
