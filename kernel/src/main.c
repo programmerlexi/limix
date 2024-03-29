@@ -81,17 +81,12 @@ void _start(void) {
   smp_init();
 
   drm_init();
-  drm_sync();
+  drm_switch(0);
 
   vt_init(0);
 
   kprint("Welcome to " KERNEL_NAME " " KERNEL_RELEASE " " KERNEL_MAJ
          "." KERNEL_MIN "." KERNEL_PATCH "-" KERNEL_TYPE "\n\r");
-
-  debug("Debugging should work.");
-  info("Informing should work.");
-  warn("Warning should work.");
-  error("Erroring should work.");
 
   ps2_init();
 
