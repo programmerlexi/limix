@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define MAX_FILESYSTEMS 64
+
 #define VFS_TYPE_FILE 0
 #define VFS_TYPE_DIRECTORY 1
 #define VFS_TYPE_SYMBOLIC_LINK 2
@@ -41,11 +43,12 @@ typedef struct vtree_node {
   char *name;
   uint64_t child_count;
   vnode_t *node;
-  struct vtree_node *children;
+  struct vtree_node **children;
 } vtree_node_t;
 
 typedef struct {
-  int (*mount)(vnode_t *);
+  bool used;
+  int (*mount)(vtree_node_t *);
   int (*populate_buffers)(vnode_t *);
   int (*flush_buffers)(vnode_t *);
   int (*populate_info)(vnode_t *);
@@ -68,3 +71,6 @@ int chown(vhandle_t *, uint8_t, uint16_t);
 int chmod(vhandle_t *, uint8_t);
 int gmod(vhandle_t *, uint16_t *);
 int gown(vhandle_t *, uint8_t, uint16_t *);
+
+int vfs_mount(char *, vfilesystem_t);
+int vfs_create_node(char *, char *);

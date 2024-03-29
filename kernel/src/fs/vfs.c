@@ -1,9 +1,11 @@
 #include <config.h>
 #include <fs/vfs.h>
 #include <kernel.h>
+#include <mm/heap.h>
 #include <utils/strings/strings.h>
 
 vtree_node_t *root_node;
+vfilesystem_t filesystems[MAX_FILESYSTEMS];
 
 vtree_node_t *_vfs_tree_walk(char *path, vtree_node_t *start) {
   if (!strlen(path))
@@ -12,11 +14,11 @@ vtree_node_t *_vfs_tree_walk(char *path, vtree_node_t *start) {
     return _vfs_tree_walk(path + 1, start);
   size_t next_sep = strnext(path, PATHSEP);
   for (uint64_t i = 0; i < start->child_count; i++) {
-    if (strlen(start->children[i].name) != next_sep)
+    if (strlen(start->children[i]->name) != next_sep)
       continue;
-    if (!strncmp(path, start->children[i].name, next_sep))
+    if (!strncmp(path, start->children[i]->name, next_sep))
       continue;
-    return _vfs_tree_walk(path + next_sep, &start->children[i]);
+    return _vfs_tree_walk(path + next_sep, start->children[i]);
   }
   return NULL;
 }
@@ -62,4 +64,27 @@ int gmod(vhandle_t *handle, uint16_t *buffer) {
 int gown(vhandle_t *handle, uint8_t type, uint16_t *buffer) {
   kernel_panic_error("Call to unimplemented function 'gown'.");
   return -1;
+}
+
+int vfs_mount(char *path, vfilesystem_t fs) {
+  if (!_vfs_exists(path))
+    return -1;
+  for (int i = 0; i < MAX_FILESYSTEMS; i++) {
+    if (filesystems[i].used)
+      continue;
+    filesystems[i] = fs;
+    filesystems[i].used = true;
+    filesystems[i].mount(_vfs_find_in_tree(path));
+    return 0;
+  }
+  return -1;
+}
+
+int vfs_create_node(char *path, char *name) {
+  if (!_vfs_exists(path))
+    return -1;
+  vtree_node_t *tn = _vfs_find_in_tree(path);
+  tn->children[tn->child_count++] = malloc(sizeof(vtree_node_t));
+  tn->children[tn->child_count]->name = name;
+  return 0;
 }
