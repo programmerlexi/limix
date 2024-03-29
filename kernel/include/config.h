@@ -24,3 +24,5 @@
 #define CONFIG_HEAP_INITIAL_PAGES 16
 
 #define PATHSEP '/'
+
+#define LOGLEVEL 3
