@@ -77,7 +77,6 @@ void vt_advance_y() {
   vt_y++;
   dirty = true;
   if (vt_y >= vt_height) {
-    serial_writes("Scrooll\n\r");
     vt_y--;
     memmove(vt_buffer,
             (void *)((uintptr_t)vt_buffer + sizeof(vt_char_t) * vt_width),
@@ -86,7 +85,6 @@ void vt_advance_y() {
                     sizeof(vt_char_t) * (vt_width * (vt_height - 1))),
            0, vt_width * sizeof(vt_char_t));
     full_redraw = true;
-    serial_writes("Scroolled\n\r");
   }
   vt_flush();
 }
