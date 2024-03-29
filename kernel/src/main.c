@@ -1,3 +1,4 @@
+#include "debug.h"
 #include <boot/limine.h>
 #include <boot/requests.h>
 #include <config.h>
@@ -86,6 +87,11 @@ void _start(void) {
 
   kprint("Welcome to " KERNEL_NAME " " KERNEL_RELEASE " " KERNEL_MAJ
          "." KERNEL_MIN "." KERNEL_PATCH "-" KERNEL_TYPE "\n\r");
+
+  debug("Debugging should work.");
+  info("Informing should work.");
+  warn("Warning should work.");
+  error("Erroring should work.");
 
   ps2_init();
 
