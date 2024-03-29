@@ -25,4 +25,9 @@
 
 #define PATHSEP '/'
 
-#define LOGLEVEL 3
+#define LOGLEVEL_DEBUG 3
+#define LOGLEVEL_INFO 2
+#define LOGLEVEL_WARN 1
+#define LOGLEVEL_ERROR 0
+
+#define LOGLEVEL LOGLEVEL_DEBUG
