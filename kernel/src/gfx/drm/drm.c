@@ -158,7 +158,7 @@ void drm_fill_rel_rect(uint64_t drm, uint64_t x0, uint64_t y0, uint64_t w,
   }
 }
 void drm_clear(uint64_t drm) {
-  memset(&(drms[drm].framebuffer), 0, drms[drm].width * drms[drm].height * 4);
+  memset(drms[drm].framebuffer, 0, drms[drm].width * drms[drm].height * 4);
 }
 void drm_plot_char(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
                    uint32_t c) {
