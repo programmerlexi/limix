@@ -17,7 +17,7 @@ void heap_init() {
   memset(heap_first, 0, CONFIG_HEAP_INITIAL_PAGES * 0x1000);
   heap_first->next = NULL;
   heap_first->prev = NULL;
-  heap_first->size = CONFIG_HEAP_INITIAL_PAGES * 0x1000 - sizeof(heapseg_t);
+  heap_first->size = (CONFIG_HEAP_INITIAL_PAGES * 0x1000) - sizeof(heapseg_t);
   heap_first->used = false;
 }
 

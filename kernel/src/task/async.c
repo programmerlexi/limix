@@ -1,4 +1,7 @@
+#define DEBUG_MODULE "async"
+#include <debug.h>
 #include <io/serial/serial.h>
+#include <mm/heap.h>
 #include <mm/hhtp.h>
 #include <mm/mm.h>
 #include <stdint.h>
@@ -18,11 +21,13 @@ uint64_t count;
 uint64_t waiting;
 
 void async_init() {
+  debug("Allocating thread list for " xstr(THREAD_LIMIT) " threads");
   threads = request_page();
   if (threads == NULL) {
     serial_writes("[!!] Couldn't initialize threads!\n\r");
     hcf();
   }
+  debug("Setting up main task");
   threads[0].state = RUNNING;
   current = threads;
   threads[0].next = NULL;

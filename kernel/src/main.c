@@ -1,4 +1,3 @@
-#include "debug.h"
 #include <boot/limine.h>
 #include <boot/requests.h>
 #include <config.h>
@@ -75,7 +74,6 @@ void _start(void) {
     hcf();
   }
 
-  async_init();
   heap_init();
 
   smp_init();
@@ -87,6 +85,8 @@ void _start(void) {
 
   kprint("Welcome to " KERNEL_NAME " " KERNEL_RELEASE " " KERNEL_MAJ
          "." KERNEL_MIN "." KERNEL_PATCH "-" KERNEL_TYPE "\n\r");
+
+  async_init();
 
   ps2_init();
 

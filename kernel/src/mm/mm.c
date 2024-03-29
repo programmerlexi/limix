@@ -89,8 +89,10 @@ void *request_page_block(size_t n) {
   }
   if (cl != n)
     return NULL;
-  s->prev->next = c;
-  c->prev = s->prev;
+  if (s->prev)
+    s->prev->next = c;
+  if (c->prev)
+    c->prev = s->prev;
   if (s == first)
     first = c;
   if (s == last)

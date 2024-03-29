@@ -1,4 +1,4 @@
-#define DEBUG_MODULE "PS/2"
+#define DEBUG_MODULE "ps/2"
 #include <debug.h>
 #include <gfx/vt/vt.h>
 #include <hw/ps2.h>
