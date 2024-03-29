@@ -50,10 +50,10 @@ void drm_plot(uint64_t drm, uint64_t x, uint64_t y, uint32_t c) {
 #ifndef DRM_WRITETHROUGH
   drms[drm].framebuffer[drms[drm].width * y + x] = c;
 #else
-  if (active_drm != drm)
-    drms[drm].framebuffer[drms[drm].width * y + x] = c;
-  else
+  if (active_drm == drm)
     ((uint32_t *)g_fb->address)[drms[drm].width * y + x] = c;
+  else
+    drms[drm].framebuffer[drms[drm].width * y + x] = c;
 #endif
 }
 void drm_plot_line(uint64_t drm, uint64_t x0, uint64_t y0, uint64_t x1,
@@ -159,6 +159,7 @@ void drm_fill_rel_rect(uint64_t drm, uint64_t x0, uint64_t y0, uint64_t w,
 }
 void drm_clear(uint64_t drm) {
   memset(drms[drm].framebuffer, 0, drms[drm].width * drms[drm].height * 4);
+  drm_sync();
 }
 void drm_plot_char(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
                    uint32_t c) {
