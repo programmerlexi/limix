@@ -2,14 +2,14 @@
 #include <gfx/vt/vt.h>
 #include <stdint.h>
 
-uint32_t normal_colors[] = {0x000000, 0xcd0000, 0x00cd00, 0xcdcd00,
-                            0x0000ee, 0xcd00cd, 0x00cdcd, 0xcdcdcd};
+uint32_t normal_colors[] = {0x000000, 0xd32f2f, 0xafb42b, 0xfbc02d,
+                            0x512da8, 0x7b1fa2, 0xfbc02d, 0xeeeeee};
 
-uint32_t dim_colors[] = {0x000000, 0xaa0000, 0x00aa00, 0xaaaa00,
-                         0x0000aa, 0xaa00aa, 0x00aaaa, 0xaaaaaa};
+uint32_t dim_colors[] = {0x000000, 0xb71c1c, 0x827717, 0xf57f17,
+                         0x311b92, 0x4a148c, 0xf57f17, 0x9e9e9e};
 
-uint32_t bright_colors[] = {0x7f7f7f, 0xff0000, 0x00ff00, 0xffff00,
-                            0x5c5cff, 0xff00ff, 0x00ffff, 0xffffff};
+uint32_t bright_colors[] = {0x7f7f7f, 0xf44336, 0xcddc39, 0xffeb3b,
+                            0x673ab7, 0x8e24aa, 0xffeb3b, 0xffffff};
 
 uint32_t _ansi_convert_fg(vt_graphic_rendition_t gr) {
   if (gr.font_state & VT_BOLD)
