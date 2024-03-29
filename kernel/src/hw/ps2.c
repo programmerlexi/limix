@@ -133,5 +133,5 @@ void ps2_init() {
           "available using PS/2.");
     return;
   }
-  debug("Finished initialization");
+  info("Finished initialization");
 }

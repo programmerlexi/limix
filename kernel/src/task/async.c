@@ -33,6 +33,7 @@ void async_init() {
   threads[0].next = NULL;
   count = 1;
   waiting = 0;
+  info("Finished initialization");
 }
 
 void _fire(thread_t *t) {
