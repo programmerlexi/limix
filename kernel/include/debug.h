@@ -4,7 +4,11 @@
 
 #define str(n) #n
 #define xstr(n) str(n)
-#define debug_str "[" __FILE__ ":" xstr(__LINE__) "] "
+#ifndef DEBUG_MODULE
+#define DEBUG_MODULE "kernel"
+#endif
+#define debug_module "[" DEBUG_MODULE "] "
+#define debug_str debug_module "[" __FILE__ ":" xstr(__LINE__) "] "
 #define debug_end TERMCODE(TC_RESET) "\n\r"
 
 #define db_debug TERMCODE(TC_FG_WHITE) TERMCODE(TC_DIM)

@@ -1,4 +1,5 @@
-#include "debug.h"
+#define DEBUG_MODULE "PS/2"
+#include <debug.h>
 #include <gfx/vt/vt.h>
 #include <hw/ps2.h>
 #include <io/pio.h>
@@ -59,10 +60,17 @@ bool ps2_can_send() {
 void ps2_reset_cpu();
 
 void ps2_init() {
+  debug("Disabling port 1");
   ps2_send_command(PS2_COMMAND_DISABLE_PORT1);
+
+  debug("Disabling port 2");
   ps2_send_command(PS2_COMMAND_DISABLE_PORT2);
+
+  debug("Clearing controller data");
   while (!ps2_data_available())
     ps2_read_data();
+
+  debug("Getting CCB");
   ps2_send_command(PS2_COMMAND_READ_CCB);
   while (!ps2_data_available())
     asm("nop");
@@ -71,8 +79,12 @@ void ps2_init() {
   ps2_send_command(PS2_COMMAND_WRITE_CCB);
   while (!ps2_can_send())
     asm("nop");
+
+  debug("Disabling Interrupts + Scancode translation");
   ps2_send_data(ccb & ~(PS2_CCB_PORT1_INT | PS2_CCB_PORT2_INT |
                         PS2_CCB_PORT1_TRANSLATION));
+
+  debug("Performing controller self-test");
   ps2_send_command(PS2_COMMAND_TEST_CONTROLLER);
   while (!ps2_data_available())
     asm("nop");
@@ -85,6 +97,7 @@ void ps2_init() {
   ps2_send_data(ccb & ~(PS2_CCB_PORT1_INT | PS2_CCB_PORT2_INT |
                         PS2_CCB_PORT1_TRANSLATION));
   if (dual_channel) {
+    debug("Checking dual-channel");
     ps2_send_command(PS2_COMMAND_ENABLE_PORT2);
     while (!ps2_data_available())
       asm("nop");
@@ -93,6 +106,7 @@ void ps2_init() {
     if (dual_channel)
       ps2_send_command(PS2_COMMAND_DISABLE_PORT2);
   }
+  debug("Testing port 1");
   ps2_send_command(PS2_COMMAND_TEST_PORT1);
   while (!ps2_data_available())
     asm("nop");
@@ -103,6 +117,7 @@ void ps2_init() {
     port1_available = true;
   }
   if (dual_channel) {
+    debug("Testing port 2");
     ps2_send_command(PS2_COMMAND_TEST_PORT2);
     while (!ps2_data_available())
       asm("nop");
@@ -118,4 +133,5 @@ void ps2_init() {
           "available using PS/2.");
     return;
   }
+  debug("Finished initialization");
 }
