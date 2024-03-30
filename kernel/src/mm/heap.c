@@ -1,3 +1,4 @@
+#include "utils/memory/safety.h"
 #include <config.h>
 #include <io/serial/serial.h>
 #include <kernel.h>
@@ -22,8 +23,7 @@ void heap_init() {
 }
 
 void _heap_combine_forward(heapseg_t *seg) {
-  if (seg->next == NULL)
-    return;
+  nullsafe(seg->next);
   if (seg->next->used)
     return;
   if ((uintptr_t)(seg->next) !=
@@ -50,6 +50,7 @@ void expand_heap(size_t size) {
   }
   size_t pages = size / 0x1000;
   heapseg_t *new_seg = (heapseg_t *)request_page_block(pages);
+  nullsafe_with(new_seg, { kernel_panic_error("No more heap space"); });
   new_seg->used = false;
   new_seg->prev = heap_last;
   heap_last->next = new_seg;
@@ -81,6 +82,7 @@ heapseg_t *_heap_split(heapseg_t *seg, size_t size) {
 }
 
 void free(void *addr) {
+  nullsafe(addr);
   heapseg_t *seg = (heapseg_t *)addr - 1;
   seg->used = false;
   _heap_combine_forward(seg);

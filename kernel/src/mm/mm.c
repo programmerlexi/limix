@@ -1,3 +1,4 @@
+#include "utils/memory/safety.h"
 #include <boot/limine.h>
 #include <mm/hhtp.h>
 #include <mm/mm.h>
@@ -9,6 +10,7 @@ memseg_t *first = NULL;
 memseg_t *last = NULL;
 
 void insert_page(void *page) {
+  nullsafe(page);
   memseg_t *seg = (memseg_t *)HHDM(page);
   if (first == NULL) {
     seg->prev = NULL;
@@ -100,11 +102,13 @@ void *request_page_block(size_t n) {
 }
 
 void free_page(void *p) {
+  nullsafe(p);
   memset(p, 0, 0x1000);
   insert_page(p);
 }
 
 void free_page_block(void *p, size_t n) {
+  nullsafe(p);
   for (size_t i = 0; i < n; i++) {
     free_page((void *)((uintptr_t)p + n * 0x1000));
   }
