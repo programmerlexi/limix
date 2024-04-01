@@ -3,6 +3,7 @@
 #include <gfx/vt/vt.h>
 #include <io/serial/serial.h>
 #include <kernel.h>
+#include <kipc/spinlock.h>
 #include <mm/mm.h>
 #include <stdint.h>
 #include <utils/memory/memory.h>
@@ -16,9 +17,14 @@ uint64_t vt_y;
 bool dirty;
 bool full_redraw;
 
+uint32_t vt_lock;
+
 ansi_state_t state;
 
 uint64_t attached_drm;
+
+#define lock_vt spinlock(&vt_lock)
+#define unlock_vt spinunlock(&vt_lock)
 
 void vt_init(uint64_t attached_to_drm) {
   attached_drm = attached_to_drm;
@@ -36,10 +42,12 @@ void vt_init(uint64_t attached_to_drm) {
   // vt_clear();
 }
 void vt_clear() {
+  lock_vt;
   vt_x = 0;
   vt_y = 0;
   memset(vt_buffer, 0, vt_height * vt_width * sizeof(vt_char_t));
   full_redraw = true;
+  unlock_vt;
   vt_flush();
 }
 void vt_draw_char(uint64_t i) {
@@ -99,10 +107,12 @@ void vt_advance_x() {
 bool termcode = false;
 
 void kprint(char *s) {
+  lock_vt;
   while (*s) {
     kprintc(*s);
     s++;
   }
+  unlock_vt;
   vt_flush();
 }
 void kprintc(char c) {

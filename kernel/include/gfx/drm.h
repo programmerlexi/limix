@@ -13,6 +13,7 @@ typedef struct {
   uint64_t width;
   uint64_t height;
   uint8_t flags;
+  uint32_t lock;
 } drm_t;
 
 void drm_init();

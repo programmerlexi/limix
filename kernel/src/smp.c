@@ -1,15 +1,19 @@
+#define DEBUG_MODULE "smp"
+
 #include <boot/limine.h>
 #include <boot/requests.h>
+#include <debug.h>
 #include <gfx/framebuffer.h>
 #include <kernel.h>
 #include <kipc/semaphore.h>
 #include <smp.h>
 #include <stdbool.h>
+#include <task/sched/local.h>
 
 semaphore_t smp_cpu = 0;
 
 void _smp_start(struct limine_smp_info *cpu_info) {
-  putstr16((cpu_info->processor_id * 9), 0, "P", 0xff0000);
+  // putstr16((cpu_info->processor_id * 9), 0, "P", 0xff0000);
 
   smp_cmd_t *cmd = (smp_cmd_t *)&cpu_info->extra_argument;
   cmd->data = 0;
@@ -17,7 +21,7 @@ void _smp_start(struct limine_smp_info *cpu_info) {
 
   unblock(&smp_cpu);
 
-  putstr16((cpu_info->processor_id * 9), 0, "P", 0xffff00);
+  // putstr16((cpu_info->processor_id * 9), 0, "P", 0xffff00);
   {
     while (cmd->cmd_type != SMP_ACTION_DATA) {
       asm volatile("nop");
@@ -54,7 +58,7 @@ void _smp_start(struct limine_smp_info *cpu_info) {
   // Validate data
   if (cpu_info->lapic_id != lapic_id ||
       cpu_info->processor_id != processor_id) {
-    putstr16((cpu_info->processor_id * 9), 0, "P", 0x0000ff);
+    // putstr16((cpu_info->processor_id * 9), 0, "P", 0x0000ff);
     cmd->state = SMP_STATE_FROZEN;
     hcf();
   }
@@ -65,15 +69,14 @@ void _smp_start(struct limine_smp_info *cpu_info) {
   while (cmd->cmd_type != SMP_ACTION_ACK) {
     asm volatile("nop");
   }
-  putchar16((cpu_info->processor_id * 9), 0, 'P', 0x00ff00);
+  // putchar16((cpu_info->processor_id * 9), 0, 'P', 0x00ff00);
   cmd->cmd_type = SMP_ACTION_NONE;
   cmd->state = SMP_STATE_READY;
 
+  local_scheduler_t *ls = sched_local_init(processor_id);
+
   while (true) {
-    if (cmd->cmd_type == SMP_ACTION_NONE)
-      continue;
-    switch (cmd->cmd_type) {}
-    cmd->state = SMP_STATE_BUSY;
+    sched_local_tick(ls);
   }
 }
 
@@ -99,7 +102,7 @@ void smp_init() {
       asm volatile("nop");
       max_cycles--;
       if (max_cycles <= 0) {
-        putstr16(0, i * 17, "Timed out", 0xff0000);
+        // putstr16(0, i * 17, "Timed out", 0xff0000);
         break;
       }
     }
@@ -115,7 +118,7 @@ void smp_init() {
       asm volatile("nop");
       max_cycles--;
       if (max_cycles <= 0) {
-        putstr16(0, i * 17, "Timed out", 0xff0000);
+        // putstr16(0, i * 17, "Timed out", 0xff0000);
         break;
       }
     }
@@ -131,7 +134,7 @@ void smp_init() {
       asm volatile("nop");
       max_cycles--;
       if (max_cycles <= 0) {
-        putstr16(0, i * 17, "Timed out", 0xff0000);
+        // putstr16(0, i * 17, "Timed out", 0xff0000);
         break;
       }
     }
@@ -146,7 +149,7 @@ void smp_init() {
       asm volatile("nop");
       max_cycles--;
       if (max_cycles <= 0) {
-        putstr16(0, i * 17, "Timed out", 0xff0000);
+        // putstr16(0, i * 17, "Timed out", 0xff0000);
         break;
       }
     }
@@ -162,7 +165,7 @@ void smp_init() {
       asm volatile("nop");
       max_cycles--;
       if (max_cycles <= 0) {
-        putstr16(0, i * 17, "Timed out", 0xff0000);
+        // putstr16(0, i * 17, "Timed out", 0xff0000);
         break;
       }
     }
@@ -171,7 +174,7 @@ void smp_init() {
       continue;
 
     if (cmd->state == SMP_STATE_FROZEN) {
-      putstr16(0, i * 17, "Processor froze", 0xff0000);
+      // putstr16(0, i * 17, "Processor froze", 0xff0000);
       continue;
     } else if (cmd->state == SMP_STATE_INIT_WAIT_ACK) {
       cmd->cmd_type = SMP_ACTION_ACK;
@@ -185,11 +188,14 @@ void smp_init() {
       }
 
       if (max_cycles <= 0) continue;*/
-      putstr16(0, i * 17, "Processor done", 0xffffff);
+      // putstr16(0, i * 17, "Processor done", 0xffffff);
     } else {
-      putstr16(0, i * 17, "Processor produced garbage", 0xffff00);
+      // putstr16(0, i * 17, "Processor produced garbage", 0xffff00);
     }
+    debug("Processor up");
   }
 
-  putchar16(0, 0, 'P', 0x00ff00);
+  debug("All processors up");
+
+  // putchar16(0, 0, 'P', 0x00ff00);
 }

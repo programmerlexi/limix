@@ -1,3 +1,4 @@
+#include "kipc/spinlock.h"
 #include <config.h>
 #include <gfx/drm.h>
 #include <gfx/framebuffer.h>
@@ -11,6 +12,7 @@
 
 drm_t drms[MAX_DRMS];
 uint64_t active_drm;
+uint32_t drm_sys_lock;
 
 void drm_init() {
   for (int i = 0; i < MAX_DRMS; i++) {
@@ -33,28 +35,36 @@ void _drm_sync_real() {
 void drm_switch(uint64_t drm) {
   if (drm >= MAX_DRMS)
     return;
+  spinlock(&drm_sys_lock);
   active_drm = drm;
   _drm_sync_real();
+  spinunlock(&drm_sys_lock);
 }
 
 void drm_sync() {
+  spinlock(&drm_sys_lock);
 #ifndef DRM_WRITETHROUGH
   _drm_sync_real();
 #endif
+  spinunlock(&drm_sys_lock);
 }
 void drm_plot(uint64_t drm, uint64_t x, uint64_t y, uint32_t c) {
   if (x > drms[drm].width)
     return;
   if (y > drms[drm].height)
     return;
+  spinlock(&drms[drm].lock);
 #ifndef DRM_WRITETHROUGH
   drms[drm].framebuffer[drms[drm].width * y + x] = c;
 #else
-  if (active_drm == drm)
+  if (active_drm == drm) {
+    spinlock(&drm_sys_lock);
     ((uint32_t *)g_fb->address)[drms[drm].width * y + x] = c;
-  else
+    spinunlock(&drm_sys_lock);
+  } else
     drms[drm].framebuffer[drms[drm].width * y + x] = c;
 #endif
+  spinunlock(&drms[drm].lock);
 }
 void drm_plot_line(uint64_t drm, uint64_t x0, uint64_t y0, uint64_t x1,
                    uint64_t y1, uint32_t c) {
@@ -158,7 +168,9 @@ void drm_fill_rel_rect(uint64_t drm, uint64_t x0, uint64_t y0, uint64_t w,
   }
 }
 void drm_clear(uint64_t drm) {
+  spinlock(&drm_sys_lock);
   memset(drms[drm].framebuffer, 0, drms[drm].width * drms[drm].height * 4);
+  spinunlock(&drm_sys_lock);
   drm_sync();
 }
 void drm_plot_char(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,

@@ -1,7 +1,7 @@
-#include "utils/strings/xstr.h"
 #include <boot/limine.h>
 #include <boot/requests.h>
 #include <config.h>
+#include <debug.h>
 #include <gfx/drm.h>
 #include <gfx/framebuffer.h>
 #include <gfx/vga.h>
@@ -19,6 +19,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <task/async.h>
+#include <task/sched/global.h>
 #include <types.h>
 #include <utils/strings/strings.h>
 
@@ -77,8 +78,6 @@ void _start(void) {
 
   heap_init();
 
-  smp_init();
-
   drm_init();
   drm_switch(0);
 
@@ -89,6 +88,16 @@ void _start(void) {
 
   async_init();
   ps2_init();
+  sched_glob_init();
+  smp_init();
+
+  debug("Waiting");
+  for (int i = 0; i < 0xfffffff; i++) // Should be enough
+    asm("nop");
+  debug("Starting scheduler loop");
+
+  while (1)
+    sched_glob_tick();
 
   hcf();
 }

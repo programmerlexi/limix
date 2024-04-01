@@ -6,21 +6,27 @@
 
 #define THREAD_LIMIT 128
 
-enum thread_state { NONE, RUNNING, INIT, WAIT, DONE };
+enum async_state {
+  ASYNC_NONE,
+  ASYNC_RUNNING,
+  ASYNC_INIT,
+  ASYNC_WAIT,
+  ASYNC_DONE
+};
 
-typedef struct thread {
+typedef struct task {
   void *sp;
   void *page;
-  enum thread_state state;
+  enum async_state state;
   union {
-    struct thread *next;
+    struct task *next;
     result_t res;
   };
-} thread_t;
+} task_t;
 
 typedef struct {
-  thread_t *run;
-  thread_t *own;
+  task_t *run;
+  task_t *own;
 } future_t;
 
 void fire(future_t *);
