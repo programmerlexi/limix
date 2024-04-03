@@ -94,7 +94,7 @@ void _start(void) {
   debug("Waiting");
   for (int i = 0; i < 0xfffffff; i++) // Should be enough
     asm("nop");
-  debug("Starting scheduler loop");
+  debug("Starting kernel loop");
 
   while (1)
     sched_glob_tick();

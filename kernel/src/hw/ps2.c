@@ -67,7 +67,7 @@ void ps2_init() {
   ps2_send_command(PS2_COMMAND_DISABLE_PORT2);
 
   debug("Clearing controller data");
-  while (!ps2_data_available())
+  while (ps2_data_available())
     ps2_read_data();
 
   debug("Getting CCB");
@@ -99,8 +99,7 @@ void ps2_init() {
   if (dual_channel) {
     debug("Checking dual-channel");
     ps2_send_command(PS2_COMMAND_ENABLE_PORT2);
-    while (!ps2_data_available())
-      asm("nop");
+    io_wait();
     uint8_t ccb = ps2_read_data();
     dual_channel = !(ccb & PS2_CCB_PORT2_CLOCK);
     if (dual_channel)
