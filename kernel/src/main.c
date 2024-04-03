@@ -1,3 +1,4 @@
+#include "mm/vmm.h"
 #include <boot/limine.h>
 #include <boot/requests.h>
 #include <config.h>
@@ -75,6 +76,8 @@ void _start(void) {
     serial_writes("[!!] MM seems to have failed\n\r");
     hcf();
   }
+
+  init_kernel_vas();
 
   heap_init();
 

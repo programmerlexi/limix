@@ -1,0 +1,51 @@
+#pragma once
+
+#include <stdbool.h>
+#include <stdint.h>
+
+typedef uint64_t pml4e_t;
+typedef uint64_t pdpe_t;
+typedef uint64_t pde_t;
+typedef uint64_t pte_t;
+
+typedef uint64_t *pml4_t;
+typedef uint64_t *pdp_t;
+typedef uint64_t *pd_t;
+typedef uint64_t *pt_t;
+
+typedef void *vaddr_t;
+typedef void *paddr_t;
+
+#define PTE_PRESENT 1 << 0
+#define PTE_WRITABLE 1 << 1
+#define PTE_SUPERVISOR 1 << 2
+#define PTE_WRITE_THROUGH 1 << 3
+#define PTE_CACHE_DISABLE 1 << 4
+#define PTE_ACCESSED 1 << 5
+#define PTE_AVL0 1 << 6
+#define PTE_PAGE_SIZE 1 << 7
+#define PTE_AVL1 1 << 8
+#define PTE_AVL2 1 << 9
+#define PTE_AVL3 1 << 10
+#define PTE_ADDR(x) (0xfffffffff000 & x)
+#define PTE_NX 1 << 63
+
+typedef struct virtual_address_space {
+  bool allow_kas_changes;
+  bool exists;
+  pml4_t pml4;
+} virtual_address_space_t;
+
+void init_kernel_vas();
+virtual_address_space_t init_new_vas();
+virtual_address_space_t clone_vas(virtual_address_space_t);
+
+bool kmmap(vaddr_t, paddr_t);
+bool is_kmapped(vaddr_t);
+bool kunmap(vaddr_t);
+paddr_t kmapping(vaddr_t);
+
+bool mmap(virtual_address_space_t, vaddr_t, paddr_t);
+bool is_mapped(virtual_address_space_t, vaddr_t);
+bool munmap(virtual_address_space_t, vaddr_t);
+paddr_t mapping(virtual_address_space_t, vaddr_t);
