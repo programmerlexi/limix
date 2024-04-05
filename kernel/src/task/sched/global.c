@@ -18,7 +18,7 @@ uint32_t glob_sched_lock;
 sched_frame_t *frames;
 
 void sched_glob_init() {
-  debug("Creaitng 'main_kernel' task");
+  debug("Creating 'main_kernel' task");
   procs = proc_create();
   procs->pid = 0;
   procs->uid = -1;

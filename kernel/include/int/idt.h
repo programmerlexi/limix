@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+
 #define IDT_FLAGS_GATE_TYPE_INT 0xe
 #define IDT_FLAGS_GATE_TYPE_TRAP 0xf
 #define IDT_FLAGS_DPL0 0x00
@@ -37,6 +38,7 @@ typedef struct {
   uint64_t rsp;
   uint32_t ss;
 } __attribute__((packed)) interrupt_frame_noerr_t;
+
 void idt_init();
 void idt_add_handler(uint8_t id, void *handler, uint8_t flags, uint8_t ist);
 extern idt_gate_t idt[256];

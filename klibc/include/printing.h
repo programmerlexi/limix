@@ -5,7 +5,5 @@
 void kprint(char *);
 void kprintc(char);
 
-#define print kprint
-
-void printf(char *, ...);
-void vprintf(char *, va_list);
+void kprintf(char *, ...);
+void kvprintf(char *, va_list);

@@ -1,3 +1,5 @@
+#include "hw/hid/kb/kb.h"
+#include "hw/hid/kb/poll.h"
 #include "mm/vmm.h"
 #include <boot/limine.h>
 #include <boot/requests.h>
@@ -91,6 +93,8 @@ void _start(void) {
 
   async_init();
   ps2_init();
+  kb_init();
+  kb_init_polling();
   sched_glob_init();
   smp_init();
 

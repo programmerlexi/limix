@@ -2,14 +2,14 @@
 #include <stdarg.h>
 #include <utils/strings/strings.h>
 
-void printf(char *s, ...) {
+void kprintf(char *s, ...) {
   va_list args;
   va_start(args, s);
-  vprintf(s, args);
+  kvprintf(s, args);
   va_end(args);
 }
 
-void vprintf(char *s, va_list args) {
+void kvprintf(char *s, va_list args) {
   bool format = false;
   int base = 0;
   bool sign = true;
