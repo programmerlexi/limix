@@ -1,5 +1,6 @@
 #include "hw/hid/kb/kb.h"
 #include "hw/hid/kb/poll.h"
+#include "hw/sound/pcspk.h"
 #include "mm/vmm.h"
 #include <boot/limine.h>
 #include <boot/requests.h>
