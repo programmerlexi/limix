@@ -1,7 +1,3 @@
-#include "hw/hid/kb/kb.h"
-#include "hw/hid/kb/poll.h"
-#include "hw/sound/pcspk.h"
-#include "mm/vmm.h"
 #include <boot/limine.h>
 #include <boot/requests.h>
 #include <config.h>
@@ -10,6 +6,8 @@
 #include <gfx/framebuffer.h>
 #include <gfx/vga.h>
 #include <gfx/vt/vt.h>
+#include <hw/hid/kb/kb.h>
+#include <hw/hid/kb/poll.h>
 #include <hw/ps2.h>
 #include <int/idt.h>
 #include <io/serial/serial.h>
@@ -18,6 +16,7 @@
 #include <mm/heap.h>
 #include <mm/hhtp.h>
 #include <mm/mm.h>
+#include <mm/vmm.h>
 #include <smp.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -93,10 +92,12 @@ void _start(void) {
          "." KERNEL_MIN "." KERNEL_PATCH "-" KERNEL_TYPE "\n\r");
 
   async_init();
+
   ps2_init();
   kb_init();
   kb_init_polling();
   sched_glob_init();
+
   smp_init();
 
   debug("Waiting");

@@ -1,10 +1,10 @@
-#include "utils/memory/safety.h"
 #include <boot/limine.h>
 #include <mm/hhtp.h>
 #include <mm/mm.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <utils/memory/memory.h>
+#include <utils/memory/safety.h>
 
 memseg_t *first = NULL;
 memseg_t *last = NULL;

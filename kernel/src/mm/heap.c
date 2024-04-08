@@ -1,4 +1,3 @@
-#include "utils/memory/safety.h"
 #include <config.h>
 #include <io/serial/serial.h>
 #include <kernel.h>
@@ -6,6 +5,7 @@
 #include <mm/mm.h>
 #include <stdint.h>
 #include <utils/memory/memory.h>
+#include <utils/memory/safety.h>
 
 heapseg_t *heap_first;
 heapseg_t *heap_last;

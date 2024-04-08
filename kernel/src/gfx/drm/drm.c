@@ -1,10 +1,10 @@
-#include "kipc/spinlock.h"
 #include <config.h>
 #include <gfx/drm.h>
 #include <gfx/framebuffer.h>
 #include <gfx/vga_font.h>
 #include <io/serial/serial.h>
 #include <kernel.h>
+#include <kipc/spinlock.h>
 #include <math/lib.h>
 #include <mm/mm.h>
 #include <stdint.h>
