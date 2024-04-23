@@ -1,9 +1,11 @@
+#include "config.h"
 #include <gfx/drm.h>
 #include <gfx/vt/ansi.h>
 #include <gfx/vt/vt.h>
 #include <io/serial/serial.h>
 #include <kernel.h>
 #include <kipc/spinlock.h>
+#include <math/lib.h>
 #include <mm/mm.h>
 #include <stdint.h>
 #include <utils/memory/memory.h>
@@ -14,6 +16,8 @@ uint64_t vt_width;
 uint64_t vt_x;
 uint64_t vt_y;
 
+uint64_t dirty_start;
+uint64_t dirty_end;
 bool dirty;
 bool full_redraw;
 
@@ -70,14 +74,19 @@ void vt_flush() {
     dirty = false;
   }
   if (dirty) {
-    drm_fill_rel_rect(attached_drm, 0, vt_y * 17, vt_width * 8, 34, 0x000000);
-    for (uint64_t i = vt_y * vt_width; i < (vt_y + 2) * vt_width; i++) {
+    // drm_fill_rel_rect(attached_drm, 0, vt_y * 17, vt_width * 8, 34,
+    // 0x000000);
+    for (uint64_t i = dirty_start; i <= dirty_end; i++) {
       if (i >= vt_width * vt_height)
         break;
+      drm_fill_rel_rect(attached_drm, (i % vt_width) * 8, (i / vt_width) * 17,
+                        8, 17, 0x000000);
       vt_draw_char(i);
     }
     dirty = false;
   }
+  dirty_start = vt_width * vt_height;
+  dirty_end = 1;
   drm_sync();
 }
 
@@ -85,13 +94,15 @@ void vt_advance_y() {
   vt_y++;
   dirty = true;
   if (vt_y >= vt_height) {
-    vt_y--;
+    vt_y -= CONFIG_SCROLL_STEP;
     memmove(vt_buffer,
-            (void *)((uintptr_t)vt_buffer + sizeof(vt_char_t) * vt_width),
-            vt_width * (vt_height - 1) * sizeof(vt_char_t));
+            (void *)((uintptr_t)vt_buffer +
+                     sizeof(vt_char_t) * vt_width * CONFIG_SCROLL_STEP),
+            vt_width * (vt_height - CONFIG_SCROLL_STEP) * sizeof(vt_char_t));
     memset((void *)((uintptr_t)vt_buffer +
-                    sizeof(vt_char_t) * (vt_width * (vt_height - 1))),
-           0, vt_width * sizeof(vt_char_t));
+                    sizeof(vt_char_t) *
+                        (vt_width * (vt_height - CONFIG_SCROLL_STEP))),
+           0, vt_width * sizeof(vt_char_t) * CONFIG_SCROLL_STEP);
     full_redraw = true;
   }
   vt_flush();
@@ -197,6 +208,8 @@ void kprintc(char c) {
     switch (c) {
     case LF:
       dirty = true;
+      dirty_start = min(vt_y * vt_width + vt_x, dirty_start);
+      dirty_end = max(vt_y * vt_width + vt_x, dirty_end);
       vt_flush();
       vt_advance_y();
       break;
@@ -214,10 +227,14 @@ void kprintc(char c) {
       termcode = true;
       break;
     default:
+      dirty_start = min(vt_y * vt_width + vt_x, dirty_start);
+      dirty_end = max(vt_y * vt_width + vt_x, dirty_end);
       vt_buffer[vt_y * vt_width + vt_x].unicode = c;
       vt_buffer[vt_y * vt_width + vt_x].fg.fb_color = ansi_convert_fg(state.gr);
       vt_buffer[vt_y * vt_width + vt_x].bg.fb_color = ansi_convert_bg(state.gr);
       dirty = true;
+      dirty_start = min(vt_y * vt_width + vt_x, dirty_start);
+      dirty_end = max(vt_y * vt_width + vt_x, dirty_end);
       vt_advance_x();
       break;
     }

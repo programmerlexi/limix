@@ -23,6 +23,8 @@
 
 #define CONFIG_HEAP_INITIAL_PAGES 16
 
+#define CONFIG_SCROLL_STEP 16
+
 #define PATHSEP '/'
 
 #define LOGLEVEL_DEBUG 3

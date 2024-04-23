@@ -105,6 +105,9 @@ void _start(void) {
     asm("nop");
   debug("Starting kernel loop");
 
+  for (int i = 0; i < 100; i++)
+    debug("Test line");
+
   while (1)
     sched_glob_tick();
 
