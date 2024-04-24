@@ -56,8 +56,8 @@ typedef struct vt_char {
 #define TC_BG_PURPLE "\x26"
 #define TC_BG_CYAN "\x27"
 #define TC_BG_WHITE "\x28"
-void vt_init(uint64_t);
+void vt_init(uint64_t drm_number);
 void vt_clear();
 void vt_flush();
-void kprintc(char);
-void kprint(char *);
+void kprintc(char c);
+void kprint(char *str);

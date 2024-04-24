@@ -24,6 +24,6 @@ typedef struct process {
 } process_t;
 
 process_t *proc_create();
-void proc_destroy(process_t *);
+void proc_destroy(process_t *process);
 
-void proc_switch(process_t *, process_t *);
+void proc_switch(process_t *prev, process_t *next);

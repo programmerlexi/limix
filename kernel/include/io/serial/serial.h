@@ -86,5 +86,5 @@ void serial_early_init();
 bool serial_received();
 char serial_read();
 bool serial_can_send();
-void serial_write(char);
-void serial_writes(char *);
+void serial_write(char c);
+void serial_writes(char *str);

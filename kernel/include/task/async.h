@@ -29,8 +29,8 @@ typedef struct {
   task_t *own;
 } future_t;
 
-void fire(future_t *);
-result_t await(future_t *);
+void fire(future_t *future);
+result_t await(future_t *future);
 future_t async(result_t (*func)(variety_t), variety_t arg);
 
 void async_init();

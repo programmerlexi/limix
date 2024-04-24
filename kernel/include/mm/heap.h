@@ -12,5 +12,5 @@ typedef struct heapseg {
 
 void heap_init();
 
-void *malloc(size_t);
-void free(void *);
+void *malloc(size_t count);
+void free(void *pointer);

@@ -31,5 +31,5 @@ typedef union {
   uint64_t data;
 } smp_cmd_t;
 
-void _smp_start(struct limine_smp_info *);
+void _smp_start(struct limine_smp_info *info_structure);
 void smp_init();

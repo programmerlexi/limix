@@ -62,15 +62,15 @@ typedef struct {
   uint64_t cursor;
 } vhandle_t;
 
-int open(vhandle_t *, char *);
-int write(vhandle_t *, char *, uint64_t);
-int read(vhandle_t *, char *, uint64_t);
-int close(vhandle_t *);
-int flush(vhandle_t *);
-int chown(vhandle_t *, uint8_t, uint16_t);
-int chmod(vhandle_t *, uint8_t);
-int gmod(vhandle_t *, uint16_t *);
-int gown(vhandle_t *, uint8_t, uint16_t *);
+int open(vhandle_t *file_handle, char *path);
+int write(vhandle_t *file_handle, char *buffer, uint64_t count);
+int read(vhandle_t *file_handle, char *buffer, uint64_t count);
+int close(vhandle_t *file_handle);
+int flush(vhandle_t *file_handle);
+int chown(vhandle_t *file_handle, uint8_t type, uint16_t uid);
+int chmod(vhandle_t *file_handle, uint8_t new_permission);
+int gmod(vhandle_t *file_handle, uint16_t *buffer);
+int gown(vhandle_t *file_handle, uint8_t type, uint16_t *buffer);
 
-int vfs_mount(char *, vfilesystem_t);
-int vfs_create_node(char *, char *);
+int vfs_mount(char *path, vfilesystem_t fs);
+int vfs_create_node(char *path, char *name);

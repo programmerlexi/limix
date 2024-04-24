@@ -109,8 +109,8 @@
 #define KB_KEY_ARROW_RIGHT KB_POS(6, 5)
 
 void kb_init();
-bool kb_get_key(uint8_t);
+bool kb_get_key(uint8_t keycode);
 uint16_t kb_get_mods();
 void kb_update();
 
-void kb_internal_set_key(uint8_t, bool);
+void kb_internal_set_key(uint8_t keycode, bool pressed);

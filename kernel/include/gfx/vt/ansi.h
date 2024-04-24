@@ -91,6 +91,6 @@ typedef struct ansi_state {
 
 #define SGR_DEFAULT_UNDERLINE_COLOR "59"
 
-ansi_state_t ansi_process(ansi_state_t, char);
-uint32_t ansi_convert_fg(vt_graphic_rendition_t);
-uint32_t ansi_convert_bg(vt_graphic_rendition_t);
+ansi_state_t ansi_process(ansi_state_t input_state, char next_character);
+uint32_t ansi_convert_fg(vt_graphic_rendition_t rendition);
+uint32_t ansi_convert_bg(vt_graphic_rendition_t rendition);

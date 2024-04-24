@@ -38,14 +38,14 @@ typedef struct virtual_address_space {
 
 void init_kernel_vas();
 virtual_address_space_t init_new_vas();
-virtual_address_space_t clone_vas(virtual_address_space_t);
+virtual_address_space_t clone_vas(virtual_address_space_t vas);
 
-bool kmmap(vaddr_t, paddr_t);
-bool is_kmapped(vaddr_t);
-bool kunmap(vaddr_t);
-paddr_t kmapping(vaddr_t);
+bool kmmap(vaddr_t virt, paddr_t phys);
+bool is_kmapped(vaddr_t virt);
+bool kunmap(vaddr_t virt);
+paddr_t kmapping(vaddr_t virt);
 
-bool mmap(virtual_address_space_t, vaddr_t, paddr_t);
-bool is_mapped(virtual_address_space_t, vaddr_t);
-bool munmap(virtual_address_space_t, vaddr_t);
-paddr_t mapping(virtual_address_space_t, vaddr_t);
+bool mmap(virtual_address_space_t vas, vaddr_t virt, paddr_t phys);
+bool is_mapped(virtual_address_space_t vas, vaddr_t virt);
+bool munmap(virtual_address_space_t vas, vaddr_t virt);
+paddr_t mapping(virtual_address_space_t vas, vaddr_t virt);

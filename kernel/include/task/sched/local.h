@@ -16,5 +16,5 @@ typedef struct local_scheduler {
   struct local_scheduler *next;
 } local_scheduler_t;
 
-local_scheduler_t *sched_local_init(uint64_t);
-void sched_local_tick(local_scheduler_t *);
+local_scheduler_t *sched_local_init(uint64_t cpu_id);
+void sched_local_tick(local_scheduler_t *shed);

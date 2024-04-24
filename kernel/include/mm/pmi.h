@@ -9,4 +9,4 @@ typedef struct {
   uint64_t p_i;
 } pmi_t;
 
-pmi_t get_pmi(uint64_t);
+pmi_t get_pmi(uint64_t addr);
