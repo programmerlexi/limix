@@ -2,7 +2,7 @@
 
 #include <stddef.h>
 
-void *malloc(size_t);
-void free(void *);
-void *realloc(void *, size_t, size_t);
-void *clone(void *, size_t);
+void *malloc(size_t count);
+void free(void *pointer);
+void *realloc(void *pointer, size_t old, size_t new);
+void *clone(void *pointer, size_t size);

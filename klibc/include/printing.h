@@ -2,8 +2,8 @@
 
 #include <stdarg.h>
 
-void kprint(char *);
-void kprintc(char);
+void kprint(char *str);
+void kprintc(char c);
 
-void kprintf(char *, ...);
-void kvprintf(char *, va_list);
+void kprintf(char *fmt, ...);
+void kvprintf(char *fmt, va_list values);

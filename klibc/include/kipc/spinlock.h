@@ -2,5 +2,5 @@
 
 #include <stdint.h>
 
-void spinlock(uint32_t *);
-void spinunlock(uint32_t *);
+void spinlock(uint32_t *spinlock);
+void spinunlock(uint32_t *spinlock);
