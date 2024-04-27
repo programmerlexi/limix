@@ -184,6 +184,19 @@ void drm_plot_char(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
     }
   }
 }
+void drm_plot_char_solid(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
+                         uint32_t c, uint32_t b) {
+  for (uint8_t hi = 0; hi < 16; hi++) {
+    uint8_t m = 0x80;
+    for (uint8_t i = 0; i < 8; i++) {
+      if (g_8x16_font[16 * ch + hi] & m)
+        drm_plot(drm, x + i, y + hi, c);
+      else
+        drm_plot(drm, x + i, y + hi, b);
+      m >>= 1;
+    }
+  }
+}
 
 uint64_t drm_width(uint64_t drm) { return drms[drm].width; }
 uint64_t drm_height(uint64_t drm) { return drms[drm].height; }

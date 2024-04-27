@@ -58,9 +58,11 @@ void vt_draw_char(uint64_t i) {
   vt_char_t c = vt_buffer[i];
   uint64_t cx = i % vt_width;
   uint64_t cy = i / vt_width;
-  drm_fill_rel_rect(attached_drm, cx * 8, cy * 17, 8, 17, c.bg.fb_color);
   if (c.unicode)
-    drm_plot_char(attached_drm, cx * 8, cy * 17, c.unicode, c.fg.fb_color);
+    drm_plot_char_solid(attached_drm, cx * 8, cy * 17, c.unicode, c.fg.fb_color,
+                        c.bg.fb_color);
+  else
+    drm_fill_rel_rect(attached_drm, cx * 8, cy * 17, 8, 17, c.bg.fb_color);
 }
 void vt_flush() {
   if (drm_is_attached_to_process(attached_drm))
