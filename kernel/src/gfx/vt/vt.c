@@ -79,8 +79,6 @@ void vt_flush() {
     for (uint64_t i = dirty_start; i <= dirty_end; i++) {
       if (i >= vt_width * vt_height)
         break;
-      drm_fill_rel_rect(attached_drm, (i % vt_width) * 8, (i / vt_width) * 17,
-                        8, 17, 0x000000);
       vt_draw_char(i);
     }
     dirty = false;
