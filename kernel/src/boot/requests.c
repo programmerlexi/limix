@@ -21,3 +21,6 @@ volatile struct limine_paging_mode_request paging_request = {
 
 volatile struct limine_memmap_request mmap_request = {
     .id = LIMINE_MEMMAP_REQUEST, .revision = 0, .response = NULL};
+
+volatile struct limine_module_request module_request = {
+    .id = LIMINE_MODULE_REQUEST, .revision = 0, .response = NULL};

@@ -3,6 +3,7 @@
 #include <config.h>
 #include <debug.h>
 #include <gfx/drm.h>
+#include <gfx/font/font.h>
 #include <gfx/framebuffer.h>
 #include <gfx/vga.h>
 #include <gfx/vt/vt.h>
@@ -66,7 +67,6 @@ void _start(void) {
   idt_init();
 
   if (paging_request.response->mode != USED_PAGING_MODE) {
-    putstr16(0, 0, "Paging mode doesn't match! ABORTING!", 0xff0000);
     serial_writes("[!!] Paging mode isn't matching!\n\r");
     hcf();
   }
@@ -74,7 +74,6 @@ void _start(void) {
   hhaddr = hhdm_request.response->offset;
 
   if (!mm_init(mmap_request.response)) {
-    putstr16(0, 0, "MM init failed! ABORTING!", 0xff0000);
     serial_writes("[!!] MM seems to have failed\n\r");
     hcf();
   }
@@ -85,6 +84,8 @@ void _start(void) {
 
   drm_init();
   drm_switch(0);
+
+  font_parse();
 
   vt_init(0);
 

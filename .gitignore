@@ -5,6 +5,7 @@ kernel/obj/
 kernel/bin/
 klibc/obj/
 klibc/bin/
+util/bin/
 image.*
 compile_commands.json
 .cache/

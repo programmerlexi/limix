@@ -7,6 +7,7 @@ all: hdd iso
 base:
 	make -j$(JOBS) -C klibc
 	make -j$(JOBS) -C kernel
+	make -C util bin/font.lime
 
 hdd: image.hdd
 iso: image.iso
@@ -19,7 +20,7 @@ image.hdd: base limine
 	./limine/limine bios-install image.hdd
 	mformat -i image.hdd@@1M
 	mmd -i image.hdd@@1M ::/boot
-	mcopy -i image.hdd@@1M kernel/bin/limix ::/boot
+	mcopy -i image.hdd@@1M kernel/bin/limix util/bin/font.lime ::/boot
 	mmd -i image.hdd@@1M ::/boot/limine
 	mcopy -i image.hdd@@1M boot/limine.cfg limine/limine-bios.sys ::/boot/limine
 	mmd -i image.hdd@@1M ::/EFI
@@ -30,7 +31,7 @@ image.hdd: base limine
 image.iso: base limine
 	mkdir -p iso_root
 	mkdir -p iso_root/boot
-	cp -v kernel/bin/limix iso_root/boot/
+	cp -v kernel/bin/limix util/bin/font.lime iso_root/boot/
 	mkdir -p iso_root/boot/limine
 	cp -v boot/limine.cfg limine/limine-bios.sys limine/limine-bios-cd.bin \
 		limine/limine-uefi-cd.bin iso_root/boot/limine/
@@ -63,6 +64,7 @@ run-hdd-uefi: image.hdd
 clean:
 	make -C kernel clean
 	make -C klibc clean
+	make -C util clean
 	rm -rf image.* iso_root
 
 cleanAll: clean

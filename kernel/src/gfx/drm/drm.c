@@ -1,7 +1,7 @@
 #include <config.h>
 #include <gfx/drm.h>
+#include <gfx/font/font.h>
 #include <gfx/framebuffer.h>
-#include <gfx/vga_font.h>
 #include <io/serial/serial.h>
 #include <kernel.h>
 #include <kipc/spinlock.h>

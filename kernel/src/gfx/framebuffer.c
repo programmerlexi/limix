@@ -1,6 +1,6 @@
 #include <boot/limine.h>
+#include <gfx/font/font.h>
 #include <gfx/framebuffer.h>
-#include <gfx/vga_font.h>
 #include <stdint.h>
 
 struct limine_framebuffer *g_fb;
