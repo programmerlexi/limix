@@ -14,6 +14,16 @@ drm_t drms[MAX_DRMS];
 uint64_t active_drm;
 uint32_t drm_sys_lock;
 
+uint32_t fallback_font[] = {
+    0x6999f999, 0xe99e99e0, 0x78888870, 0xe99999e0, 0xf88f88f0, 0xf88f8880,
+    0x788b9960, 0x999f9990, 0x44444440, 0x11199960, 0x9ac8ca90, 0x888888f0,
+    0x9ff99990, 0x9ddbb990, 0x69999960, 0xe99e8880, 0x6999db70, 0xe99eca90,
+    0x788611e0, 0xff666660, 0x99999960, 0x99999f60, 0x9999ff90, 0x99669990,
+    0x99966660, 0x0f1248f0, 0x64444460, 0x62222260, 0x22244440, 0x66000660,
+    0x00000660, 0x00f00f00, 0x000000f0, 0x69909960, 0x22202220, 0x61168860,
+    0x69121960, 0x99961110, 0x68861160, 0x68869960, 0x69901110, 0x69969960,
+    0x69961170, 0x00060000};
+
 void drm_init() {
   for (int i = 0; i < MAX_DRMS; i++) {
     drms[i].width = g_fb->width;
@@ -173,8 +183,8 @@ void drm_clear(uint64_t drm) {
   spinunlock(&drm_sys_lock);
   drm_sync();
 }
-void drm_plot_char(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
-                   uint32_t c) {
+void _drm_plot_char(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
+                    uint32_t c) {
   for (uint8_t hi = 0; hi < 16; hi++) {
     uint8_t m = 0x80;
     for (uint8_t i = 0; i < 8; i++) {
@@ -184,8 +194,8 @@ void drm_plot_char(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
     }
   }
 }
-void drm_plot_char_solid(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
-                         uint32_t c, uint32_t b) {
+void _drm_plot_char_solid(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
+                          uint32_t c, uint32_t b) {
   for (uint8_t hi = 0; hi < 16; hi++) {
     uint8_t m = 0x80;
     for (uint8_t i = 0; i < 8; i++) {
@@ -196,6 +206,74 @@ void drm_plot_char_solid(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
       m >>= 1;
     }
   }
+}
+
+uint32_t _drm_get_fallback(uint32_t c) {
+  if (c >= 'A' && c <= 'Z')
+    return fallback_font[c - 'A'];
+  if (c >= 'a' && c <= 'z')
+    return fallback_font[c - 'a'];
+  if (c == '[')
+    return fallback_font['Z' - 'A' + 1];
+  if (c == ']')
+    return fallback_font['Z' - 'A' + 2];
+  if (c == '/')
+    return fallback_font['Z' - 'A' + 3];
+  if (c == ':')
+    return fallback_font['Z' - 'A' + 4];
+  if (c == '.')
+    return fallback_font['Z' - 'A' + 5];
+  if (c == '=')
+    return fallback_font['Z' - 'A' + 6];
+  if (c == '_')
+    return fallback_font['Z' - 'A' + 7];
+  if (c >= '0' && c <= '9')
+    return fallback_font['Z' - 'A' + 8 + c - '0'];
+  if (c == '-')
+    return fallback_font['Z' - 'A' + 18];
+  if (c == ' ')
+    return 0;
+  return c;
+}
+
+void _drm_plot_char_fallback(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
+                             uint32_t c) {
+  for (uint8_t hi = 0; hi < 8; hi++) {
+    uint8_t m = 0x80;
+    for (uint8_t i = 0; i < 4; i++) {
+      if ((_drm_get_fallback(ch) >> ((7 - hi) * 4)) & m)
+        drm_fill_rel_rect(drm, x + i * 2, y + hi * 2, 2, 2, c);
+      m >>= 1;
+    }
+  }
+}
+void _drm_plot_char_solid_fallback(uint64_t drm, uint64_t x, uint64_t y,
+                                   uint32_t ch, uint32_t c, uint32_t b) {
+  for (uint8_t hi = 0; hi < 8; hi++) {
+    uint8_t m = 0x80;
+    for (uint8_t i = 0; i < 4; i++) {
+      if ((_drm_get_fallback(ch) >> ((7 - hi) * 4)) & m)
+        drm_fill_rel_rect(drm, x + (i * 2), y + (hi * 2), 2, 2, c);
+      else
+        drm_fill_rel_rect(drm, x + (i * 2), y + (hi * 2), 2, 2, b);
+      m >>= 1;
+    }
+  }
+}
+
+void drm_plot_char(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
+                   uint32_t c) {
+  if (g_8x16_font)
+    _drm_plot_char(drm, x, y, ch, c);
+  else
+    _drm_plot_char_fallback(drm, x, y, ch, c);
+}
+void drm_plot_char_solid(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
+                         uint32_t c, uint32_t b) {
+  if (g_8x16_font)
+    _drm_plot_char_solid(drm, x, y, ch, c, b);
+  else
+    _drm_plot_char_solid_fallback(drm, x, y, ch, c, b);
 }
 
 uint64_t drm_width(uint64_t drm) { return drms[drm].width; }

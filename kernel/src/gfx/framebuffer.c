@@ -24,7 +24,7 @@ void _internal_putchar(size_t x, size_t y, uint8_t ch, uint32_t color,
 }
 
 void putchar16(size_t x, size_t y, char ch, uint32_t color) {
-  _internal_putchar(x, y, (uint8_t)ch, color, 16, g_8x16_font);
+  //_internal_putchar(x, y, (uint8_t)ch, color, 16, g_8x16_font);
 }
 
 void putstr16(size_t x, size_t y, char *s, uint32_t color) {
