@@ -85,9 +85,11 @@ void _start(void) {
   drm_init();
   drm_switch(0);
 
+  vt_init(0);
+
   font_parse();
 
-  vt_init(0);
+  vt_clear();
 
   kprint("Welcome to " KERNEL_NAME " " KERNEL_RELEASE " " KERNEL_MAJ
          "." KERNEL_MIN "." KERNEL_PATCH "-" KERNEL_TYPE "\n\r");
@@ -104,7 +106,7 @@ void _start(void) {
   debug("Waiting");
   for (int i = 0; i < 0xfffffff; i++) // Should be enough
     asm("nop");
-  debug("Starting kernel loop");
+  info("Starting kernel loop");
 
   while (1)
     sched_glob_tick();

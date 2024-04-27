@@ -90,6 +90,11 @@ void vt_flush() {
   drm_sync();
 }
 
+void vt_redraw() {
+  full_redraw = true;
+  vt_flush();
+}
+
 void vt_advance_y() {
   vt_y++;
   dirty = true;

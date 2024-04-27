@@ -59,5 +59,6 @@ typedef struct vt_char {
 void vt_init(uint64_t drm_number);
 void vt_clear();
 void vt_flush();
+void vt_redraw();
 void kprintc(char c);
 void kprint(char *str);

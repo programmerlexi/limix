@@ -1,5 +1,8 @@
 #include <boot/requests.h>
+#include <debug.h>
 #include <gfx/font/font.h>
+#include <gfx/font/parsers/limefont.h>
+#include <gfx/vt/vt.h>
 #include <io/serial/serial.h>
 #include <kernel.h>
 #include <mm/heap.h>
@@ -7,31 +10,26 @@
 #include <utils/memory/memory.h>
 #include <utils/strings/strings.h>
 
+#undef DEBUG_MODULE
+#define DEBUG_MODULE "font"
+
 uint8_t *g_8x16_font;
 
 void font_parse() {
-  if (!module_request.response)
-    return;
-  for (uint64_t i = 0; i < module_request.response->module_count; i++) {
-    if (!strncmp(module_request.response->modules[i]->cmdline, "font", 4))
-      continue;
-    lime_font_header_t *head =
-        (lime_font_header_t *)module_request.response->modules[i]->address;
-    if (!strncmp(head->magic, LIMEFONT_MAGIC, 8)) {
-      serial_writes("Font not loadable: Invalid magic");
-      continue;
+  if (module_request.response)
+    for (uint64_t i = 0; i < module_request.response->module_count; i++) {
+      if (!strncmp(module_request.response->modules[i]->cmdline, "font", 4))
+        continue;
+      debug("Found font module");
+      debug("Attempting limefont parser...");
+      if (limefont_parse(module_request.response->modules[i]->address))
+        break;
+      debug("Limefont failed.");
     }
-    g_8x16_font = (uint8_t *)((uint64_t)head +
-                              sizeof(lime_font_header_t)); // malloc(head->width
-                                                           // * head->height *
-                                                           // head->glyphs / 8);
-    if (!g_8x16_font)
-      serial_writes("Font not loadable: Not enough memory");
-    // kernel_panic_error("Font not loadable: Not enough memory");
-    /*memcpy(g_8x16_font, (void *)((uint64_t)head + sizeof(lime_font_header_t)),
-           head->width * head->height * head->glyphs / 8);*/
-    break;
-  }
   if (!g_8x16_font)
-    serial_writes("No font loaded using fallback\n\r");
+    warn("No font loaded using fallback");
+  else {
+    debug("Font loaded. redrawing!");
+    vt_redraw();
+  }
 }

@@ -33,7 +33,7 @@ void sched_glob_init() {
   debug("Filling task state");
   thread_switch(procs->threads, procs->threads);
   glob_sched_lock = 0;
-  debug("Global scheduler initialized");
+  info("Global scheduler initialized");
 }
 
 void sched_glob_aquire() { spinlock(&glob_sched_lock); }

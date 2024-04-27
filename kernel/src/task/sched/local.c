@@ -12,7 +12,7 @@ local_scheduler_t *sched_local_init(uint64_t cpu) {
   local_scheduler_t *s = malloc(sizeof(local_scheduler_t));
   s->cpu = cpu;
   sched_register_cpu(s);
-  debug("Local scheduler initialized");
+  info("Local scheduler initialized");
   return s;
 }
 
