@@ -65,10 +65,10 @@ clean:
 	make -C kernel clean
 	make -C klibc clean
 	make -C util clean
-	rm -rf image.* iso_root
+	rm -rf image.* iso_root build
 
 cleanAll: clean
-	rm -rf limine
+	rm -rf limine compile_commands.json
 
 genComp:
 	mkdir -p build

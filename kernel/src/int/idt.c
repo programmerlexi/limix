@@ -1,3 +1,4 @@
+#include "int/syscall.h"
 #include <gfx/framebuffer.h>
 #include <gfx/vga.h>
 #include <int/idt.h>
@@ -45,6 +46,10 @@ void idt_init() {
                   0);
   idt_add_handler(0x08, (void *)df_handler,
                   IDT_FLAGS_DPL0 | IDT_FLAGS_PRESENT | IDT_FLAGS_GATE_TYPE_TRAP,
+                  0);
+
+  idt_add_handler(0x80, (void *)_syscall,
+                  IDT_FLAGS_DPL3 | IDT_FLAGS_PRESENT | IDT_FLAGS_GATE_TYPE_INT,
                   0);
 
   lidt((void *)PHY(idt), sizeof(idt) - 1);
