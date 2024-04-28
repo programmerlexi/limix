@@ -38,7 +38,7 @@ void drm_init() {
   }
   active_drm = 0;
 }
-void _drm_sync_real() {
+static void _drm_sync_real() {
   drm_t ad = drms[active_drm];
   memcpy(g_fb->address, ad.framebuffer, ad.width * ad.height * 4);
 }
@@ -183,8 +183,8 @@ void drm_clear(uint64_t drm) {
   spinunlock(&drm_sys_lock);
   drm_sync();
 }
-void _drm_plot_char(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
-                    uint32_t c) {
+static void _drm_plot_char(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
+                           uint32_t c) {
   for (uint8_t hi = 0; hi < 16; hi++) {
     uint8_t m = 0x80;
     for (uint8_t i = 0; i < 8; i++) {
@@ -194,8 +194,8 @@ void _drm_plot_char(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
     }
   }
 }
-void _drm_plot_char_solid(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
-                          uint32_t c, uint32_t b) {
+static void _drm_plot_char_solid(uint64_t drm, uint64_t x, uint64_t y,
+                                 uint32_t ch, uint32_t c, uint32_t b) {
   for (uint8_t hi = 0; hi < 16; hi++) {
     uint8_t m = 0x80;
     for (uint8_t i = 0; i < 8; i++) {
@@ -208,7 +208,7 @@ void _drm_plot_char_solid(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
   }
 }
 
-uint32_t _drm_get_fallback(uint32_t c) {
+static uint32_t _drm_get_fallback(uint32_t c) {
   if (c >= 'A' && c <= 'Z')
     return fallback_font[c - 'A'];
   if (c >= 'a' && c <= 'z')
@@ -236,8 +236,8 @@ uint32_t _drm_get_fallback(uint32_t c) {
   return c;
 }
 
-void _drm_plot_char_fallback(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
-                             uint32_t c) {
+static void _drm_plot_char_fallback(uint64_t drm, uint64_t x, uint64_t y,
+                                    uint32_t ch, uint32_t c) {
   for (uint8_t hi = 0; hi < 8; hi++) {
     uint8_t m = 0x80;
     for (uint8_t i = 0; i < 4; i++) {
@@ -247,8 +247,8 @@ void _drm_plot_char_fallback(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
     }
   }
 }
-void _drm_plot_char_solid_fallback(uint64_t drm, uint64_t x, uint64_t y,
-                                   uint32_t ch, uint32_t c, uint32_t b) {
+static void _drm_plot_char_solid_fallback(uint64_t drm, uint64_t x, uint64_t y,
+                                          uint32_t ch, uint32_t c, uint32_t b) {
   for (uint8_t hi = 0; hi < 8; hi++) {
     uint8_t m = 0x80;
     for (uint8_t i = 0; i < 4; i++) {
