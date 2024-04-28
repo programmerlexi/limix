@@ -7,9 +7,16 @@
 
 typedef struct {
   char magic[8];
-  uint64_t glyphs;
-  uint64_t relocs;
-  uint32_t width;
-  uint32_t height;
+  uint32_t glyphs;
+  uint32_t relocs;
+  uint16_t width;
+  uint16_t height;
 } limefont_header_t;
+
+typedef struct {
+  uint32_t source;
+  uint32_t target;
+  uint32_t count;
+} limefont_relocation_t;
+
 bool limefont_parse(void *font);
