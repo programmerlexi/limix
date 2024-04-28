@@ -8,10 +8,10 @@
 #include <stdint.h>
 #include <utils/memory/memory.h>
 
-bool key_state[256];
-bool caps_lock;
-bool num_lock;
-bool scroll_lock;
+static bool key_state[256];
+static bool caps_lock;
+static bool num_lock;
+static bool scroll_lock;
 
 void kb_init() {
   debug("Zeroing keyboard state");

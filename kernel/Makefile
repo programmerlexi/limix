@@ -67,7 +67,7 @@ override LDFLAGS += \
     --no-dynamic-linker \
     -z text \
     -z max-page-size=0x1000 \
-    -T linker.ld
+    -T linker.ld -Map linker.map
  
 # Internal nasm flags that should not be changed by the user.
 override NASMFLAGS += \

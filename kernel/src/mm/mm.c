@@ -6,10 +6,10 @@
 #include <utils/memory/memory.h>
 #include <utils/memory/safety.h>
 
-memseg_t *first = NULL;
-memseg_t *last = NULL;
+static memseg_t *first = NULL;
+static memseg_t *last = NULL;
 
-void insert_page(void *page) {
+static void insert_page(void *page) {
   nullsafe(page);
   memseg_t *seg = (memseg_t *)HHDM(page);
   if (first == NULL) {

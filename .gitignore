@@ -3,6 +3,7 @@ iso_root/
 limine/
 kernel/obj/
 kernel/bin/
+kernel/linker.map
 klibc/obj/
 klibc/bin/
 util/bin/

@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <utils/memory/memory.h>
 
-virtual_address_space_t kas;
+static virtual_address_space_t kas;
 
 void init_kernel_vas() {
   kas.pml4 = (pml4_t)read_cr4();

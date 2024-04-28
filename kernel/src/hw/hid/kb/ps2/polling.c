@@ -7,7 +7,7 @@
 #include <io/pio.h>
 #include <printing.h>
 
-uint8_t kb_set = 0;
+static uint8_t kb_set = 0;
 
 void kb_init_polling() {
   bool success = false;

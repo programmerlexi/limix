@@ -3,7 +3,7 @@
 #include <io/serial/serial.h>
 #include <stddef.h>
 
-bool serial_available = false;
+static bool serial_available = false;
 
 void serial_early_init() {
   /* Turn off interrupts */

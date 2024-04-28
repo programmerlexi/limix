@@ -12,10 +12,10 @@
 #include <task/thread/thread.h>
 #include <utils/strings/xstr.h>
 
-process_t *procs;
-local_scheduler_t *scheds;
-uint32_t glob_sched_lock;
-sched_frame_t *frames;
+static process_t *procs;
+static local_scheduler_t *scheds;
+static uint32_t glob_sched_lock;
+static sched_frame_t *frames;
 
 void sched_glob_init() {
   debug("Creating 'main_kernel' task");

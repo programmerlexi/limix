@@ -17,11 +17,11 @@ extern void exec_switch(task_t *prev, task_t *next);
 extern void exec_first_switch(task_t *prev, task_t *next);
 extern void hcf();
 
-task_t *threads;
-task_t *current;
+static task_t *threads;
+static task_t *current;
 
-uint64_t count;
-uint64_t waiting;
+static uint64_t count;
+static uint64_t waiting;
 
 void async_init() {
   debug("Allocating thread list for " xstr(THREAD_LIMIT) " threads");
@@ -36,7 +36,7 @@ void async_init() {
   info("Finished initialization");
 }
 
-void _fire(task_t *t) {
+static void _fire(task_t *t) {
   task_t *p = current;
   current = t;
   if (t != NULL) {
@@ -48,7 +48,7 @@ void _fire(task_t *t) {
   }
 }
 
-void _async_wrapper(result_t (*func)(variety_t), variety_t arg) {
+static void _async_wrapper(result_t (*func)(variety_t), variety_t arg) {
   count++;
   current->state = ASYNC_RUNNING;
   current->res = func(arg);

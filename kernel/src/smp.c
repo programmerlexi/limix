@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include <task/sched/local.h>
 
-semaphore_t smp_cpu = 0;
+static semaphore_t smp_cpu = 0;
 
 void _smp_start(struct limine_smp_info *cpu_info) {
   // putstr16((cpu_info->processor_id * 9), 0, "P", 0xff0000);

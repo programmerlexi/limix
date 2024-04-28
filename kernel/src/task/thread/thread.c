@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <task/thread/thread.h>
 
-uint64_t latest_tid = 0;
+static uint64_t latest_tid = 0;
 
 thread_t *thread_create() {
   thread_t *t = (thread_t *)malloc(sizeof(thread_t));

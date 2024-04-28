@@ -10,11 +10,11 @@
 #include <stdint.h>
 #include <utils/memory/memory.h>
 
-drm_t drms[MAX_DRMS];
-uint64_t active_drm;
-uint32_t drm_sys_lock;
+static drm_t drms[MAX_DRMS];
+static uint64_t active_drm;
+static uint32_t drm_sys_lock;
 
-uint32_t fallback_font[] = {
+static uint32_t fallback_font[] = {
     0x6999f999, 0xe99e99e0, 0x78888870, 0xe99999e0, 0xf88f88f0, 0xf88f8880,
     0x788b9960, 0x999f9990, 0x44444440, 0x11199960, 0x9ac8ca90, 0x888888f0,
     0x9ff99990, 0x9ddbb990, 0x69999960, 0xe99e8880, 0x6999db70, 0xe99eca90,

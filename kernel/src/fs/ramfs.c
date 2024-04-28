@@ -11,11 +11,14 @@ error_t ramfs_new(ramfs_t *ramfs) {
   return E_SUCCESS;
 }
 
-error_t _ramfs_dirent(struct vnode *node, struct tnode *res, uint64_t index) {
+static error_t _ramfs_dirent(struct vnode *node, struct tnode *res,
+                             uint64_t index) {
   return 0;
 }
-error_t _ramfs_dirents(struct vnode *node, uint64_t *count) { return 0; }
-error_t _ramfs_newent(struct vnode *node, struct tnode *new) { return 0; }
+static error_t _ramfs_dirents(struct vnode *node, uint64_t *count) { return 0; }
+static error_t _ramfs_newent(struct vnode *node, struct tnode *new) {
+  return 0;
+}
 
 error_t ramfs_mount(ramfs_t *ramfs, vnode_t **node_ref) {
   *node_ref = (vnode_t *)malloc(sizeof(vnode_t));

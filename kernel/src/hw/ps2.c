@@ -5,9 +5,9 @@
 #include <io/pio.h>
 #include <kernel.h>
 
-bool dual_channel = true;
-bool port1_available = false;
-bool port2_available = false;
+static bool dual_channel = true;
+static bool port1_available = false;
+static bool port2_available = false;
 
 void ps2_send_command1(uint8_t cmd) { ps2_send_data1(cmd); }
 void ps2_send_data1(uint8_t data) {

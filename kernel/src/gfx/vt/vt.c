@@ -1,4 +1,4 @@
-#include "config.h"
+#include <config.h>
 #include <gfx/drm.h>
 #include <gfx/vt/ansi.h>
 #include <gfx/vt/vt.h>
@@ -10,22 +10,22 @@
 #include <stdint.h>
 #include <utils/memory/memory.h>
 
-vt_char_t *vt_buffer;
-uint64_t vt_height;
-uint64_t vt_width;
-uint64_t vt_x;
-uint64_t vt_y;
+static vt_char_t *vt_buffer;
+static uint64_t vt_height;
+static uint64_t vt_width;
+static uint64_t vt_x;
+static uint64_t vt_y;
 
-uint64_t dirty_start;
-uint64_t dirty_end;
-bool dirty;
-bool full_redraw;
+static uint64_t dirty_start;
+static uint64_t dirty_end;
+static bool dirty;
+static bool full_redraw;
 
-uint32_t vt_lock;
+static uint32_t vt_lock;
 
-ansi_state_t state;
+static ansi_state_t state;
 
-uint64_t attached_drm;
+static uint64_t attached_drm;
 
 #define lock_vt spinlock(&vt_lock)
 #define unlock_vt spinunlock(&vt_lock)

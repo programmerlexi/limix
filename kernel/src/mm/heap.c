@@ -7,8 +7,8 @@
 #include <utils/memory/memory.h>
 #include <utils/memory/safety.h>
 
-heapseg_t *heap_first;
-heapseg_t *heap_last;
+static heapseg_t *heap_first;
+static heapseg_t *heap_last;
 
 void heap_init() {
   heap_first = request_page_block(CONFIG_HEAP_INITIAL_PAGES);
@@ -22,7 +22,7 @@ void heap_init() {
   heap_first->used = false;
 }
 
-void _heap_combine_forward(heapseg_t *seg) {
+static void _heap_combine_forward(heapseg_t *seg) {
   nullsafe(seg->next);
   if (seg->next->used)
     return;
@@ -37,7 +37,7 @@ void _heap_combine_forward(heapseg_t *seg) {
   seg->next = seg->next->next;
 }
 
-void _heap_combine_backward(heapseg_t *seg) {
+static void _heap_combine_backward(heapseg_t *seg) {
   if (seg->prev != NULL)
     if (!seg->prev->used)
       _heap_combine_forward(seg->prev);
@@ -60,7 +60,7 @@ void expand_heap(size_t size) {
   _heap_combine_backward(new_seg);
 }
 
-heapseg_t *_heap_split(heapseg_t *seg, size_t size) {
+static heapseg_t *_heap_split(heapseg_t *seg, size_t size) {
   if (size < 0x10)
     return NULL;
   size_t splitSize = seg->size - size - sizeof(heapseg_t);
