@@ -1,5 +1,6 @@
 #include <printing.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <utils/strings/strings.h>
 
 void kprintf(char *s, ...) {
@@ -31,6 +32,10 @@ void kvprintf(char *s, va_list args) {
         char numbuf[256];
         ntos(numbuf, va_arg(args, int), base, 256, !sign, false);
         kprint(numbuf);
+        format = false;
+        break;
+      case 's':
+        kprint(va_arg(args, char *));
         format = false;
         break;
       }

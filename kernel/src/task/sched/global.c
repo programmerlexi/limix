@@ -4,6 +4,7 @@
 #include <debug.h>
 #include <kipc/spinlock.h>
 #include <mm/heap.h>
+#include <printing.h>
 #include <stdint.h>
 #include <task/proc/proc.h>
 #include <task/sched/common.h>
@@ -18,7 +19,7 @@ static uint32_t glob_sched_lock;
 static sched_frame_t *frames;
 
 void sched_glob_init() {
-  debug("Creating 'main_kernel' task");
+  debug("Creating main process");
   procs = proc_create();
   procs->pid = 0;
   procs->uid = -1;
@@ -28,7 +29,7 @@ void sched_glob_init() {
   procs->cr4 = read_cr4();
   procs->thread_count = 1;
   procs->threads = thread_create();
-  procs->name = to_xstr("main_kernel");
+  procs->name = to_xstr("kernel");
   procs->cpu = 0;
   debug("Filling task state");
   thread_switch(procs->threads, procs->threads);
@@ -76,4 +77,13 @@ void sched_register_cpu(local_scheduler_t *ls) {
   debug("Registered scheduler");
 
   sched_glob_release();
+}
+
+void sched_glob_list_processes() {
+  process_t *p = procs;
+  while (p) {
+    kprintf("Process '%s' (PID %u) Threads: %u\n\r", p->name.cstr, (int)p->pid,
+            (int)p->thread_count);
+    p = p->next;
+  }
 }

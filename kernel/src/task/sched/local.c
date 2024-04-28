@@ -6,6 +6,7 @@
 #include <task/sched/common.h>
 #include <task/sched/global.h>
 #include <task/sched/local.h>
+#include <task/thread/thread.h>
 
 local_scheduler_t *sched_local_init(uint64_t cpu) {
   debug("Creating local scheduler");
@@ -18,6 +19,16 @@ local_scheduler_t *sched_local_init(uint64_t cpu) {
 
 void sched_local_tick(local_scheduler_t *ls) {
   spinlock(&ls->shed_lock);
-  // debug("Local scheduler tick");
+  if (!ls->frames) {
+    spinunlock(&ls->shed_lock);
+    return;
+  }
+  proc_switch(ls->frames->frame->proc, ls->frames->next->frame->proc);
+  thread_t *org = ls->frames->frame->thread;
+  thread_t *next = ls->frames->next->frame->thread;
+  ls->frames->frame->assigned = false;
+  ls->frames = ls->frames->next;
   spinunlock(&ls->shed_lock);
+
+  thread_switch(org, next);
 }
