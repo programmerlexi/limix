@@ -10,6 +10,7 @@
 #include <gfx/vt/vt.h>
 #include <hw/hid/kb/kb.h>
 #include <hw/hid/kb/poll.h>
+#include <hw/pci/pci.h>
 #include <hw/ps2.h>
 #include <int/idt.h>
 #include <io/serial/serial.h>
@@ -98,6 +99,7 @@ void _start(void) {
 
   async_init();
 
+  pci_init();
   ps2_init();
   kb_init();
   kb_init_polling();

@@ -70,6 +70,7 @@ typedef struct {
   uint8_t bist;
 } pci_header_t;
 
+void pci_init();
 uint16_t pci_config_read_word(uint8_t bus, uint8_t slot, uint8_t func,
                               uint8_t offset);
 uint8_t pci_config_read_byte(uint8_t bus, uint8_t slot, uint8_t func,
