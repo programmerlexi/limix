@@ -2,6 +2,7 @@
 #include <boot/requests.h>
 #include <config.h>
 #include <debug.h>
+#include <gdt/gdt.h>
 #include <gfx/drm.h>
 #include <gfx/font/font.h>
 #include <gfx/framebuffer.h>
@@ -64,6 +65,7 @@ void _start(void) {
 
   fb_init(framebuffer_request.response->framebuffers[0]);
 
+  gdt_init();
   idt_init();
 
   if (paging_request.response->mode != USED_PAGING_MODE) {
@@ -102,11 +104,6 @@ void _start(void) {
   sched_glob_init();
 
   smp_init();
-
-  debug("Waiting");
-  for (int i = 0; i < 0xfffffff; i++) // Should be enough
-    asm("nop");
-  info("Starting kernel loop");
 
   while (1)
     sched_glob_tick();

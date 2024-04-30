@@ -1,3 +1,4 @@
+#include "kernel.h"
 #include <debug.h>
 #include <int/syscall.h>
 #include <stdint.h>

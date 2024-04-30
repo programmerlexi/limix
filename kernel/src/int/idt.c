@@ -52,7 +52,7 @@ void idt_init() {
                   IDT_FLAGS_DPL3 | IDT_FLAGS_PRESENT | IDT_FLAGS_GATE_TYPE_INT,
                   0);
 
-  lidt((void *)PHY(idt), sizeof(idt) - 1);
+  lidt((void *)idt, sizeof(idt) - 1);
   asm volatile("sti" ::: "memory");
 }
 void idt_add_handler(uint8_t id, void *handler, uint8_t flags, uint8_t ist) {
