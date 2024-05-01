@@ -1,13 +1,6 @@
-# limix (Limine + UNIX)
+# limix
 
 This will be done eventually
-
-## Features
-
-- Graphics
-- An overcomplicated system for using multiple processors
-- A complex project structure
-- Cooperative multitasking disguised as 'async'
 
 ## Building
 
@@ -31,4 +24,4 @@ make genComp
 
 Just do `make run-iso` or `make run-hdd`.
 
-The first usally boots faster.
+The first usually boots faster.
