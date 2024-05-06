@@ -1,3 +1,4 @@
+#include "fs/vfs.h"
 #include <boot/limine.h>
 #include <boot/requests.h>
 #include <config.h>
@@ -98,6 +99,8 @@ void _start(void) {
          "." KERNEL_MIN "." KERNEL_PATCH "-" KERNEL_TYPE "\n\r");
 
   async_init();
+
+  vfs_init();
 
   pci_init();
   ps2_init();
