@@ -92,7 +92,7 @@ all: bin/$(KERNEL).gz
 .PHONY: bin/$(KERNEL).a
 bin/$(KERNEL).a: Makefile $(OBJ)
 	mkdir -p "$$(dirname $@)"
-	$(AR) $(ARFLAGS) $@.a $(OBJ)
+	$(AR) $(ARFLAGS) $@ $(OBJ)
 
 # Link rules for the final kernel executable.
 bin/$(KERNEL): Makefile linker.ld bin/$(KERNEL).a
@@ -100,6 +100,7 @@ bin/$(KERNEL): Makefile linker.ld bin/$(KERNEL).a
 	$(LD) obj/main.c.o $@.a ../klibc/bin/klibc.a $(LDFLAGS) -o $@
 
 bin/$(KERNEL).gz: bin/$(KERNEL)
+	rm -f $@
 	gzip $<
 
 # Include header dependencies.
