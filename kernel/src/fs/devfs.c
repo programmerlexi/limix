@@ -60,6 +60,7 @@ void devfs_reload() {
     devfs->root->files[i]->read = c->read;
     devfs->root->files[i]->write = c->write;
     devfs->root->files[i]->size = 0;
+    c = c->next;
   }
 }
 void devfs_bind(vfs_t *fs) { devfs = fs; }

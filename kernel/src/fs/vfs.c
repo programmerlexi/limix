@@ -1,3 +1,4 @@
+#include "debug.h"
 #include <config.h>
 #include <fs/devfs.h>
 #include <fs/vfs.h>
@@ -25,8 +26,9 @@ void vfs_init() {
 vfs_t *vfs_fs(char *name) {
   vfs_t *c = filesystems;
   while (c) {
-    if (strncmp(c->name.cstr, name, min(c->name.length, strlen(name))))
-      return c;
+    if (strlen(name) == c->name.length)
+      if (strncmp(c->name.cstr, name, min(strlen(c->name.cstr), strlen(name))))
+        return c;
     c = c->next;
   }
   return c;
@@ -35,7 +37,7 @@ vfs_t *vfs_fs(char *name) {
 int vfs_type(char *path, uint64_t *type) {
   if (!strlen(path))
     return E_INVOPT;
-  char *fs_name = clone(path, strnext(path, PATHSEP) - 1);
+  char *fs_name = clone(path, strnext(path, PATHSEP));
   vfs_t *fs = vfs_fs(fs_name);
   free(fs_name);
   if (!fs)
@@ -46,11 +48,12 @@ int vfs_type(char *path, uint64_t *type) {
     if (it)
       return E_NOENT;
     path += strnext(path, PATHSEP) + 1;
-    char *name = clone(path, min(strnext(path, PATHSEP) - 1, strlen(path)));
+    char *name = clone(path, min(strnext(path, PATHSEP), strlen(path)));
     bool found = false;
     for (uint64_t i = 0; i < d->directory_count; i++) {
-      if (strncmp(d->directories[i]->name.cstr, name,
-                  d->directories[i]->name.length)) {
+      if (strlen(d->directories[i]->name.cstr) != strlen(name))
+        continue;
+      if (strncmp(d->directories[i]->name.cstr, name, strlen(name))) {
         d = d->directories[i];
         free(name);
         found = true;
@@ -60,8 +63,11 @@ int vfs_type(char *path, uint64_t *type) {
     if (found)
       continue;
     for (uint64_t i = 0; i < d->file_count; i++) {
-      if (strncmp(d->files[i]->name.cstr, name,
-                  min(d->files[i]->name.length, strlen(name)))) {
+      debugf("%s", d->files[i]->name.cstr);
+      debugf("%s", name);
+      if (strlen(d->files[i]->name.cstr) != strlen(name))
+        continue;
+      if (strncmp(d->files[i]->name.cstr, name, strlen(name))) {
         free(name);
         found = true;
         it = 1;
