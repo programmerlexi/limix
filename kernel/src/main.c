@@ -93,8 +93,6 @@ void _start(void) {
 
   font_parse();
 
-  vt_clear();
-
   kprint("Welcome to " KERNEL_NAME " " KERNEL_RELEASE " " KERNEL_MAJ
          "." KERNEL_MIN "." KERNEL_PATCH "-" KERNEL_TYPE "\n\r");
 

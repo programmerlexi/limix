@@ -1,4 +1,5 @@
 #include <hash/crc32.h>
+#include <stdbool.h>
 #include <stdint.h>
 
 static uint32_t crc32_poly(uint8_t i) {
