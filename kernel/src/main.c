@@ -86,12 +86,12 @@ void _start(void) {
   ps2_init();
   kb_init();
   kb_init_polling();
-  /*sched_glob_init();
+  sched_glob_init();
 
   smp_init();
 
   while (1)
-    sched_glob_tick();*/
+    sched_glob_tick();
 
   hcf();
 }

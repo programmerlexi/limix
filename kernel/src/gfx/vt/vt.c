@@ -217,15 +217,21 @@ void kprintc(char c) {
       dirty_end = max(vt_y * vt_width + vt_x, dirty_end);
       vt_flush();
       vt_advance_y();
+#ifdef LOG_SERIAL
       serial_write(c);
+#endif
       break;
     case CR:
       vt_x = 0;
+#ifdef LOG_SERIAL
       serial_write(c);
+#endif
       break;
     case BS:
       vt_x--;
+#ifdef LOG_SERIAL
       serial_write(c);
+#endif
       break;
     case ESC:
       state.working = true;
@@ -244,7 +250,9 @@ void kprintc(char c) {
       dirty_start = min(vt_y * vt_width + vt_x, dirty_start);
       dirty_end = max(vt_y * vt_width + vt_x, dirty_end);
       vt_advance_x();
+#ifdef LOG_SERIAL
       serial_write(c);
+#endif
       break;
     }
   }

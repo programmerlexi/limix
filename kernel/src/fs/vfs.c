@@ -1,4 +1,3 @@
-#include "kernel.h"
 #include <config.h>
 #include <fs/devfs.h>
 #include <fs/vfs.h>

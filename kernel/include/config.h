@@ -34,4 +34,6 @@
 
 #define LOGLEVEL LOGLEVEL_DEBUG
 
+// #define LOG_SERIAL
+
 #define DRM_WRITETHROUGH
