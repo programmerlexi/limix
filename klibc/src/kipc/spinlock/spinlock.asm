@@ -9,9 +9,4 @@ spinlock:
   jnz .spin_with_pause
   jmp spinlock
 
-spinunlock:
-  mov dword [rdi], 0
-  ret
-
 [global spinlock]
-[global spinunlock]

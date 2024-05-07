@@ -3,13 +3,6 @@
 #include <stdint.h>
 #include <utils/strings/strings.h>
 
-void kprintf(char *s, ...) {
-  va_list args;
-  va_start(args, s);
-  kvprintf(s, args);
-  va_end(args);
-}
-
 void kvprintf(char *s, va_list args) {
   bool format = false;
   int base = 0;

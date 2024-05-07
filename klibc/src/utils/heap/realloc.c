@@ -9,4 +9,3 @@ void *realloc(void *p, size_t s, size_t o) {
   free(p);
   return n;
 }
-void *clone(void *p, size_t n) { return memcpy(malloc(n), p, n); }
