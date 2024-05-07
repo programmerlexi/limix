@@ -88,11 +88,15 @@ override HEADER_DEPS := $(addprefix obj/,$(CFILES:.c=.c.d) $(ASFILES:.S=.S.d))
 # Default target.
 .PHONY: all
 all: bin/$(KERNEL)
- 
-# Link rules for the final kernel executable.
-bin/$(KERNEL): Makefile linker.ld $(OBJ)
+
+.PHONY: bin/$(KERNEL).a
+bin/$(KERNEL).a: Makefile $(OBJ)
 	mkdir -p "$$(dirname $@)"
 	$(AR) $(ARFLAGS) $@.a $(OBJ)
+
+# Link rules for the final kernel executable.
+bin/$(KERNEL): Makefile linker.ld bin/$(KERNEL).a
+	mkdir -p "$$(dirname $@)"
 	$(LD) obj/main.c.o $@.a ../klibc/bin/klibc.a $(LDFLAGS) -o $@
  
 # Include header dependencies.
