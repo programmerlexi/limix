@@ -25,3 +25,7 @@ typedef struct vfs {
 } vfs_t;
 
 void vfs_init();
+vfs_t *vfs_fs(char *name);
+int vfs_find_directory(directory_t **result, char *path);
+int vfs_find_file(file_t **result, char *path);
+int vfs_type(char *path, uint64_t *type);

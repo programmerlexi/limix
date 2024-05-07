@@ -93,6 +93,7 @@ all: bin/$(KERNEL).gz
 bin/$(KERNEL).a: Makefile $(OBJ)
 	@echo "[AR] Packing kernel"
 	@mkdir -p "$$(dirname $@)"
+	@rm $@
 	@$(AR) $(ARFLAGS) $@ $(OBJ)
 
 # Link rules for the final kernel executable.

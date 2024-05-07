@@ -1,3 +1,4 @@
+#include "kernel.h"
 #define DEBUG_MODULE "sched_global"
 
 #include <asm_inline.h>
@@ -21,6 +22,8 @@ static sched_frame_t *frames;
 void sched_glob_init() {
   debug("Creating main process");
   procs = proc_create();
+  if (!procs)
+    kernel_panic_error("Out of memory");
   procs->pid = 0;
   procs->uid = -1;
   procs->gid = -1;
@@ -29,6 +32,8 @@ void sched_glob_init() {
   procs->cr4 = read_cr4();
   procs->thread_count = 1;
   procs->threads = thread_create();
+  if (!procs->threads)
+    kernel_panic_error("Out of memory");
   procs->name = to_xstr("kernel");
   procs->cpu = 0;
   debug("Filling task state");
