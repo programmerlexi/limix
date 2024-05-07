@@ -79,27 +79,31 @@ all: bin/klibc.a
  
 # Link rules for the final kernel executable.
 bin/klibc.a: Makefile $(OBJ)
-	mkdir -p "$$(dirname $@)"
-	rm -f $@
-	$(AR) $(ARFLAGS) $@ $(OBJ)
+	@echo "[AR] Packing klibc"
+	@mkdir -p "$$(dirname $@)"
+	@rm -f $@
+	@$(AR) $(ARFLAGS) $@ $(OBJ)
  
 # Include header dependencies.
 -include $(HEADER_DEPS)
  
 # Compilation rules for *.c files.
 obj/%.c.o: src/%.c Makefile
-	mkdir -p "$$(dirname $@)"
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	@echo "[CC] Building klibc component $@"
+	@mkdir -p "$$(dirname $@)"
+	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
  
 # Compilation rules for *.S files.
 obj/%.S.o: src/%.S Makefile
-	mkdir -p "$$(dirname $@)"
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	@echo "[CC] Building klibc component $@"
+	@mkdir -p "$$(dirname $@)"
+	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
  
 # Compilation rules for *.asm (nasm) files.
 obj/%.asm.o: src/%.asm Makefile
-	mkdir -p "$$(dirname $@)"
-	nasm $(NASMFLAGS) $< -o $@
+	@echo "[CC] Building klibc component $@"
+	@mkdir -p "$$(dirname $@)"
+	@nasm $(NASMFLAGS) $< -o $@
  
 # Remove object files and the final executable.
 .PHONY: clean

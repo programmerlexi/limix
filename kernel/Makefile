@@ -91,35 +91,41 @@ all: bin/$(KERNEL).gz
 
 .PHONY: bin/$(KERNEL).a
 bin/$(KERNEL).a: Makefile $(OBJ)
-	mkdir -p "$$(dirname $@)"
-	$(AR) $(ARFLAGS) $@ $(OBJ)
+	@echo "[AR] Packing kernel"
+	@mkdir -p "$$(dirname $@)"
+	@$(AR) $(ARFLAGS) $@ $(OBJ)
 
 # Link rules for the final kernel executable.
 bin/$(KERNEL): Makefile linker.ld bin/$(KERNEL).a
-	mkdir -p "$$(dirname $@)"
-	$(LD) obj/main.c.o $@.a ../klibc/bin/klibc.a $(LDFLAGS) -o $@
+	@echo "[LD] Linking kernel"
+	@mkdir -p "$$(dirname $@)"
+	@$(LD) obj/main.c.o $@.a ../klibc/bin/klibc.a $(LDFLAGS) -o $@
 
 bin/$(KERNEL).gz: bin/$(KERNEL)
-	rm -f $@
-	gzip $<
+	@echo "[GZIP] Compressing kernel"
+	@rm -f $@
+	@gzip $<
 
 # Include header dependencies.
 -include $(HEADER_DEPS)
  
 # Compilation rules for *.c files.
 obj/%.c.o: src/%.c Makefile
-	mkdir -p "$$(dirname $@)"
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	@echo "[CC] Building kernel component $@"
+	@mkdir -p "$$(dirname $@)"
+	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
  
 # Compilation rules for *.S files.
 obj/%.S.o: src/%.S Makefile
-	mkdir -p "$$(dirname $@)"
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
+	@echo "[CC] Building kernel component $@"
+	@mkdir -p "$$(dirname $@)"
+	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
  
 # Compilation rules for *.asm (nasm) files.
 obj/%.asm.o: src/%.asm Makefile
-	mkdir -p "$$(dirname $@)"
-	nasm $(NASMFLAGS) $< -o $@
+	@echo "[CC] Building kernel component $@"
+	@mkdir -p "$$(dirname $@)"
+	@nasm $(NASMFLAGS) $< -o $@
  
 # Remove object files and the final executable.
 .PHONY: clean
