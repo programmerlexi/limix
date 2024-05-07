@@ -60,7 +60,8 @@ int vfs_type(char *path, uint64_t *type) {
     if (found)
       continue;
     for (uint64_t i = 0; i < d->file_count; i++) {
-      if (strncmp(d->files[i]->name.cstr, name, d->files[i]->name.length)) {
+      if (strncmp(d->files[i]->name.cstr, name,
+                  min(d->files[i]->name.length, strlen(name)))) {
         free(name);
         found = true;
         it = 1;
