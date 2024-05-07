@@ -30,24 +30,6 @@
 #include <types.h>
 #include <utils/strings/strings.h>
 
-void hcf(void) {
-  asm("cli");
-  for (;;) {
-    asm("hlt");
-  }
-}
-
-void kernel_panic_error(const char *s) {
-  serial_writes("ERROR: ");
-  serial_writes((char *)s);
-  serial_writes("\n\r");
-  kernel_panic();
-}
-void kernel_panic() {
-  serial_writes("An error has occured and the system will be halted.\n\r");
-  hcf();
-}
-
 uint64_t hhaddr;
 
 void _start(void) {

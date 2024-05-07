@@ -73,6 +73,9 @@ override LDFLAGS += \
 override NASMFLAGS += \
     -Wall \
     -f elf64
+
+override ARFLAGS = qc
+override AR = x86_64-elf-ar
  
 # Use "find" to glob all *.c, *.S, and *.asm files in the tree and obtain the
 # object and header dependency file names.
@@ -89,7 +92,8 @@ all: bin/$(KERNEL)
 # Link rules for the final kernel executable.
 bin/$(KERNEL): Makefile linker.ld $(OBJ)
 	mkdir -p "$$(dirname $@)"
-	$(LD) $(OBJ) ../klibc/bin/klibc.a $(LDFLAGS) -o $@
+	$(AR) $(ARFLAGS) $@.a $(OBJ)
+	$(LD) obj/main.c.o $@.a ../klibc/bin/klibc.a $(LDFLAGS) -o $@
  
 # Include header dependencies.
 -include $(HEADER_DEPS)
