@@ -63,8 +63,6 @@ int vfs_type(char *path, uint64_t *type) {
     if (found)
       continue;
     for (uint64_t i = 0; i < d->file_count; i++) {
-      debugf("%s", d->files[i]->name.cstr);
-      debugf("%s", name);
       if (strlen(d->files[i]->name.cstr) != strlen(name))
         continue;
       if (strncmp(d->files[i]->name.cstr, name, strlen(name))) {
