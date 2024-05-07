@@ -11,3 +11,4 @@ image.*
 compile_commands.json
 .cache/
 .clangd
+kernel/include/boot/limine.h

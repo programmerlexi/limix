@@ -4,7 +4,8 @@ COMMON_QEMU_FLAGS=-m 4G -smp 4 -serial stdio
 
 all: hdd iso
 
-base:
+base: limine
+	@ln -sf $(shell pwd)/limine/limine.h kernel/include/boot
 	@make -j$(JOBS) -C klibc
 	@make -j$(JOBS) -C kernel
 	@make -C util bin/font.lime
