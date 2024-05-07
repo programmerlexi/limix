@@ -1,3 +1,5 @@
+section text
+[bits 64]
 _syscall:
   push rbp
   mov rbp, rsp

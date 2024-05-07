@@ -1,3 +1,5 @@
+section text
+[bits 64]
 exec_first_switch:
   push rbp
   mov rbp, rsp
