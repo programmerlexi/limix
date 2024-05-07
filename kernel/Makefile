@@ -87,7 +87,7 @@ override HEADER_DEPS := $(addprefix obj/,$(CFILES:.c=.c.d) $(ASFILES:.S=.S.d))
  
 # Default target.
 .PHONY: all
-all: bin/$(KERNEL)
+all: bin/$(KERNEL).gz
 
 .PHONY: bin/$(KERNEL).a
 bin/$(KERNEL).a: Makefile $(OBJ)
@@ -98,7 +98,10 @@ bin/$(KERNEL).a: Makefile $(OBJ)
 bin/$(KERNEL): Makefile linker.ld bin/$(KERNEL).a
 	mkdir -p "$$(dirname $@)"
 	$(LD) obj/main.c.o $@.a ../klibc/bin/klibc.a $(LDFLAGS) -o $@
- 
+
+bin/$(KERNEL).gz: bin/$(KERNEL)
+	gzip $<
+
 # Include header dependencies.
 -include $(HEADER_DEPS)
  
