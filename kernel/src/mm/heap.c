@@ -2,7 +2,9 @@
 #include <io/serial/serial.h>
 #include <kernel.h>
 #include <mm/heap.h>
+#include <mm/hhtp.h>
 #include <mm/mm.h>
+#include <mm/vmm.h>
 #include <stdint.h>
 #include <utils/memory/memory.h>
 #include <utils/memory/safety.h>

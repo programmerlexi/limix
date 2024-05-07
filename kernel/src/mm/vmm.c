@@ -105,7 +105,7 @@ bool mmap(virtual_address_space_t as, vaddr_t v, paddr_t p) {
   }
 
   pte_t pte = pt[idx.p_i];
-  pte = PTE_ADDR((uintptr_t)p) | PTE_PRESENT | PTE_WRITABLE;
+  pte = PTE_ADDR((uintptr_t)PHY(p)) | PTE_PRESENT | PTE_WRITABLE;
   pt[idx.p_i] = pte;
 
   return true;
@@ -151,6 +151,7 @@ bool munmap(virtual_address_space_t as, vaddr_t v) {
 paddr_t mapping(virtual_address_space_t as, vaddr_t v) {
   if (!as.exists)
     return NULL;
+  uintptr_t o = (uintptr_t)v % 0x1000;
   pmi_t idx = get_pmi((uintptr_t)v);
 
   pml4e_t pml4e = as.pml4[idx.pdp_i];
@@ -158,7 +159,7 @@ paddr_t mapping(virtual_address_space_t as, vaddr_t v) {
   if (!(pml4e & PTE_PRESENT)) {
     return NULL;
   } else {
-    pdp = (pdp_t)PTE_ADDR(pml4e);
+    pdp = (pdp_t)HHDM(PTE_ADDR(pml4e));
   }
 
   pdpe_t pdpe = pdp[idx.pd_i];
@@ -166,7 +167,7 @@ paddr_t mapping(virtual_address_space_t as, vaddr_t v) {
   if (!(pdpe & PTE_PRESENT)) {
     return NULL;
   } else {
-    pd = (pdp_t)PTE_ADDR(pdpe);
+    pd = (pdp_t)HHDM(PTE_ADDR(pdpe));
   }
 
   pde_t pde = pd[idx.pt_i];
@@ -174,9 +175,11 @@ paddr_t mapping(virtual_address_space_t as, vaddr_t v) {
   if (!(pde & PTE_PRESENT)) {
     return NULL;
   } else {
-    pt = (pdp_t)PTE_ADDR(pde);
+    pt = (pdp_t)HHDM(PTE_ADDR(pde));
   }
 
   pte_t pte = pt[idx.p_i];
-  return (paddr_t)PTE_ADDR(pte);
+  if (!(pte & PTE_PRESENT))
+    return NULL;
+  return (paddr_t)(PTE_ADDR(pte) + o);
 }
