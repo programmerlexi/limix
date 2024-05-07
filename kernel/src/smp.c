@@ -11,6 +11,7 @@
 #include <task/sched/local.h>
 
 static semaphore_t smp_cpu = 0;
+void unlock_lschedi();
 
 void _smp_start(struct limine_smp_info *cpu_info) {
   // putstr16((cpu_info->processor_id * 9), 0, "P", 0xff0000);
@@ -196,6 +197,7 @@ void smp_init() {
   }
 
   debug("All processors up");
+  unlock_lschedi();
 
   // putchar16(0, 0, 'P', 0x00ff00);
 }
