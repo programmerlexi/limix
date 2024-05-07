@@ -1,3 +1,4 @@
+#include "fs/devfs.h"
 #include <boot/limine.h>
 #include <boot/requests.h>
 #include <config.h>
@@ -81,6 +82,9 @@ void _start(void) {
   async_init();
 
   vfs_init();
+  devfs_init();
+  devfs_bind(vfs_make("dev"));
+  devfs_reload();
 
   pci_init();
   ps2_init();

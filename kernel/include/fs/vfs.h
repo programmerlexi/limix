@@ -29,3 +29,4 @@ vfs_t *vfs_fs(char *name);
 int vfs_find_directory(directory_t **result, char *path);
 int vfs_find_file(file_t **result, char *path);
 int vfs_type(char *path, uint64_t *type);
+vfs_t *vfs_make(char *name);
