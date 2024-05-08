@@ -86,6 +86,8 @@ void _start(void) {
   devfs_bind(vfs_make("dev"));
   devfs_reload();
 
+  drm_register_vfs();
+
   pci_init();
   ps2_init();
   kb_init();

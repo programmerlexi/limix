@@ -1,4 +1,5 @@
 #include <config.h>
+#include <fs/devfs.h>
 #include <gfx/drm.h>
 #include <gfx/font/font.h>
 #include <gfx/framebuffer.h>
@@ -6,8 +7,10 @@
 #include <kernel.h>
 #include <kipc/spinlock.h>
 #include <math/lib.h>
+#include <mm/heap.h>
 #include <mm/mm.h>
 #include <stdint.h>
+#include <utils/errors.h>
 #include <utils/memory/memory.h>
 
 static drm_t drms[MAX_DRMS];
@@ -45,6 +48,8 @@ static void _drm_sync_real() {
 void drm_switch(uint64_t drm) {
   if (drm >= MAX_DRMS)
     return;
+  memcpy(drms[active_drm].framebuffer, g_fb->address,
+         drms[active_drm].width * drms[active_drm].height * 4);
   spinlock(&drm_sys_lock);
   active_drm = drm;
   _drm_sync_real();
@@ -281,4 +286,44 @@ uint64_t drm_height(uint64_t drm) { return drms[drm].height; }
 
 bool drm_is_attached_to_process(uint64_t drm) {
   return drms[drm].flags & DRM_ATTACHED_TO_PROCESS;
+}
+
+static int _drm_write(void *d, uint64_t o, uint64_t s, char *b) {
+  drm_number_t *dn = d;
+  if (o > drm_width(*dn) * drm_height(*dn))
+    return E_OUTOFBOUNDS;
+  if (o + s > drm_width(*dn) * drm_height(*dn))
+    return E_OUTOFBOUNDS;
+  for (uint64_t i = 0; i < s; i++) {
+    drm_plot(*dn, (o + i) % drm_width(*dn), (o + i) / drm_width(*dn),
+             ((uint32_t *)b)[i]);
+  }
+  return E_SUCCESS;
+}
+
+static int _drm_read(void *d, uint64_t o, uint64_t s, char *b) {
+  drm_number_t *dn = d;
+  if (o > drm_width(*dn) * drm_height(*dn))
+    return E_OUTOFBOUNDS;
+  if (o + s > drm_width(*dn) * drm_height(*dn))
+    return E_OUTOFBOUNDS;
+  for (uint64_t i = 0; i < s; i++) {
+    if (active_drm == *dn)
+      ((uint32_t *)b)[i] = ((uint32_t *)g_fb->address)[o * i];
+    else
+      ((uint32_t *)b)[i] = drms[*dn].framebuffer[o + i];
+  }
+  return E_SUCCESS;
+}
+
+void drm_register_vfs() {
+  for (uint64_t i = 0; i < MAX_DRMS; i++) {
+    drm_number_t *dn = malloc(sizeof(drm_number_t));
+    char *devname = malloc(4);
+    memcpy(devname, "drm", 3);
+    devname[3] = 'a' + i;
+    *dn = i;
+    devfs_create(devname, _drm_read, _drm_write, dn);
+    free(devname);
+  }
 }

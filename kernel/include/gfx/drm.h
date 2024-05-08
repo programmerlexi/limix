@@ -43,3 +43,4 @@ void drm_fill_rel_rect(drm_number_t drm_number, absolute64_t x, absolute64_t y,
 absolute64_t drm_width(drm_number_t drm_number);
 absolute64_t drm_height(drm_number_t drm_number);
 bool drm_is_attached_to_process(drm_number_t drm_number);
+void drm_register_vfs();

@@ -51,13 +51,13 @@ void devfs_create(char *name, int (*read)(void *, uint64_t, uint64_t, char *),
   dev_count++;
 }
 
-static int _devfs_read(uint64_t s, uint64_t o, char *b, file_t *f) {
+static int _devfs_read(uint64_t o, uint64_t s, char *b, file_t *f) {
   device_t *d = f->data;
-  return d->read(d->data, s, o, b);
+  return d->read(d->data, o, s, b);
 }
-static int _devfs_write(uint64_t s, uint64_t o, char *b, file_t *f) {
+static int _devfs_write(uint64_t o, uint64_t s, char *b, file_t *f) {
   device_t *d = f->data;
-  return d->write(d->data, s, o, b);
+  return d->write(d->data, o, s, b);
 }
 
 void devfs_reload() {
