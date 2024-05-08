@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boot/limine.h>
+#include <debug.h>
 #include <io/serial/serial.h>
 
 /* This is the kernel config */
@@ -26,11 +27,6 @@
 #define CONFIG_SCROLL_STEP 16
 
 #define PATHSEP '/'
-
-#define LOGLEVEL_DEBUG 3
-#define LOGLEVEL_INFO 2
-#define LOGLEVEL_WARN 1
-#define LOGLEVEL_ERROR 0
 
 #define LOGLEVEL LOGLEVEL_DEBUG
 
