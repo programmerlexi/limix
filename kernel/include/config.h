@@ -25,7 +25,7 @@
 
 #define CONFIG_SCROLL_STEP 16
 
-#define PATHSEP '>'
+#define PATHSEP '/'
 
 #define LOGLEVEL_DEBUG 3
 #define LOGLEVEL_INFO 2
