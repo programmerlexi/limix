@@ -1,8 +1,8 @@
-#include "kernel.h"
 #define DEBUG_MODULE "sched_global"
 
 #include <asm_inline.h>
 #include <debug.h>
+#include <kernel.h>
 #include <kipc/spinlock.h>
 #include <mm/heap.h>
 #include <printing.h>
@@ -20,7 +20,7 @@ static uint32_t glob_sched_lock;
 static sched_frame_t *frames;
 
 void sched_glob_init() {
-  debug("Creating main process");
+  log(LOGLEVEL_DEBUG, "Creating main process");
   procs = proc_create();
   if (!procs)
     kernel_panic_error("Out of memory");
@@ -36,10 +36,10 @@ void sched_glob_init() {
     kernel_panic_error("Out of memory");
   procs->name = to_xstr("kernel");
   procs->cpu = 0;
-  debug("Filling task state");
+  log(LOGLEVEL_ANALYZE, "Filling task state");
   thread_switch(procs->threads, procs->threads);
   glob_sched_lock = 0;
-  info("Global scheduler initialized");
+  log(LOGLEVEL_INFO, "Global scheduler initialized");
 }
 
 void sched_glob_aquire() { spinlock(&glob_sched_lock); }
@@ -76,10 +76,10 @@ void sched_glob_tick() {
 void sched_register_cpu(local_scheduler_t *ls) {
   sched_glob_aquire();
 
-  debug("Registering scheduler");
+  log(LOGLEVEL_ANALYZE, "Registering scheduler");
   ls->next = scheds;
   scheds = ls;
-  debug("Registered scheduler");
+  log(LOGLEVEL_DEBUG, "Registered scheduler");
 
   sched_glob_release();
 }

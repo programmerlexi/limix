@@ -24,16 +24,17 @@ static uint64_t count;
 static uint64_t waiting;
 
 void async_init() {
-  debug("Allocating thread list for " xstr(THREAD_LIMIT) " threads");
+  log(LOGLEVEL_ANALYZE,
+      "Allocating thread list for " xstr(THREAD_LIMIT) " threads");
   threads = request_page();
   nullsafe_error(threads, "Thread init failed");
-  debug("Setting up main task");
+  log(LOGLEVEL_DEBUG, "Setting up main task");
   threads[0].state = ASYNC_RUNNING;
   current = threads;
   threads[0].next = NULL;
   count = 1;
   waiting = 0;
-  info("Finished initialization");
+  log(LOGLEVEL_INFO, "Finished initialization");
 }
 
 static void _fire(task_t *t) {

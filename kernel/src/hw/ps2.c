@@ -60,17 +60,17 @@ bool ps2_can_send() {
 void ps2_reset_cpu();
 
 void ps2_init() {
-  debug("Disabling port 1");
+  log(LOGLEVEL_ANALYZE, "Disabling port 1");
   ps2_send_command(PS2_COMMAND_DISABLE_PORT1);
 
-  debug("Disabling port 2");
+  log(LOGLEVEL_ANALYZE, "Disabling port 2");
   ps2_send_command(PS2_COMMAND_DISABLE_PORT2);
 
-  debug("Clearing controller data");
+  log(LOGLEVEL_ANALYZE, "Clearing controller data");
   while (ps2_data_available())
     ps2_read_data();
 
-  debug("Getting CCB");
+  log(LOGLEVEL_ANALYZE, "Getting CCB");
   ps2_send_command(PS2_COMMAND_READ_CCB);
   while (!ps2_data_available())
     asm("nop");
@@ -80,24 +80,26 @@ void ps2_init() {
   while (!ps2_can_send())
     asm("nop");
 
-  debug("Disabling Interrupts + Scancode translation");
+  log(LOGLEVEL_ANALYZE, "Disabling Interrupts + Scancode translation");
   ps2_send_data(ccb & ~(PS2_CCB_PORT1_INT | PS2_CCB_PORT2_INT |
                         PS2_CCB_PORT1_TRANSLATION));
 
-  debug("Performing controller self-test");
+  log(LOGLEVEL_ANALYZE, "Performing controller self-test");
   ps2_send_command(PS2_COMMAND_TEST_CONTROLLER);
   while (!ps2_data_available())
     asm("nop");
   uint8_t result = ps2_read_data();
-  if (result != 0x55)
-    kernel_panic_error("PS/2 Controller failed self-test");
+  if (result != 0x55) {
+    log(LOGLEVEL_CRITICAL, "PS/2 Controller failed self-test");
+    return;
+  }
   ps2_send_command(PS2_COMMAND_WRITE_CCB);
   while (!ps2_can_send())
     asm("nop");
   ps2_send_data(ccb & ~(PS2_CCB_PORT1_INT | PS2_CCB_PORT2_INT |
                         PS2_CCB_PORT1_TRANSLATION));
   if (dual_channel) {
-    debug("Checking dual-channel");
+    log(LOGLEVEL_ANALYZE, "Checking dual-channel");
     ps2_send_command(PS2_COMMAND_ENABLE_PORT2);
     io_wait();
     uint8_t ccb = ps2_read_data();
@@ -105,32 +107,33 @@ void ps2_init() {
     if (dual_channel)
       ps2_send_command(PS2_COMMAND_DISABLE_PORT2);
   }
-  debug("Testing port 1");
+  log(LOGLEVEL_ANALYZE, "Testing port 1");
   ps2_send_command(PS2_COMMAND_TEST_PORT1);
   while (!ps2_data_available())
     asm("nop");
   if (ps2_read_data()) {
-    warn("WARNING: First PS/2 port failed, keyboard may "
-         "not be available.");
+    log(LOGLEVEL_WARN1, "WARNING: First PS/2 port failed, keyboard may "
+                        "not be available.");
   } else {
     port1_available = true;
   }
   if (dual_channel) {
-    debug("Testing port 2");
+    log(LOGLEVEL_ANALYZE, "Testing port 2");
     ps2_send_command(PS2_COMMAND_TEST_PORT2);
     while (!ps2_data_available())
       asm("nop");
     if (ps2_read_data()) {
-      warn("WARNING: Second PS/2 port failed, mouse may "
-           "not be available.");
+      log(LOGLEVEL_WARN1, "WARNING: Second PS/2 port failed, mouse may "
+                          "not be available.");
     } else {
       port2_available = true;
     }
   }
   if (!(port1_available || port2_available)) {
-    error("ERROR: All PS/2 ports failed, keyboard and mouse will not be "
-          "available using PS/2.");
+    log(LOGLEVEL_CRITICAL,
+        "ERROR: All PS/2 ports failed, keyboard and mouse will not be "
+        "available using PS/2.");
     return;
   }
-  info("Finished initialization");
+  log(LOGLEVEL_INFO, "Finished initialization");
 }

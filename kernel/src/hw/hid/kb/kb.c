@@ -14,7 +14,7 @@ static bool num_lock;
 static bool scroll_lock;
 
 void kb_init() {
-  debug("Zeroing keyboard state");
+  log(LOGLEVEL_ANALYZE, "Zeroing keyboard state");
   memset(key_state, 0, 256);
 }
 bool kb_get_key(uint8_t k) { return key_state[k]; }

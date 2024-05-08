@@ -7,6 +7,7 @@
 #include <kipc/spinlock.h>
 #include <math/lib.h>
 #include <mm/mm.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <utils/memory/memory.h>
 
@@ -26,9 +27,12 @@ static uint32_t vt_lock;
 static ansi_state_t state;
 
 static uint64_t attached_drm;
+static bool avail;
 
 #define lock_vt spinlock(&vt_lock)
 #define unlock_vt spinunlock(&vt_lock)
+
+bool vt_is_available() { return avail; }
 
 void vt_init(uint64_t attached_to_drm) {
   attached_drm = attached_to_drm;
@@ -37,12 +41,12 @@ void vt_init(uint64_t attached_to_drm) {
   vt_buffer = (vt_char_t *)request_page_block(
       ((vt_width * vt_height * sizeof(vt_char_t)) + 4095) / 4096);
   if (vt_buffer == NULL) {
-    serial_writes("[!!] Couldn't initialize VT!\n\r");
-    hcf();
+    kernel_panic_error("Couldn't initialize VT!");
   }
   state.gr.font_state = 0;
   state.gr.bg_index = 0;
   state.gr.fg_index = 7;
+  avail = true;
   // vt_clear();
 }
 void vt_clear() {

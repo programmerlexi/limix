@@ -12,7 +12,7 @@ static uint8_t kb_set = 0;
 void kb_init_polling() {
   bool success = false;
   while (!success) {
-    debug("Resetting keyboard");
+    log(LOGLEVEL_ANALYZE, "Resetting keyboard");
     ps2_send_command1(0xff);
     io_wait();
     if (ps2_read_data() != 0xFA)
@@ -22,8 +22,8 @@ void kb_init_polling() {
       continue;
     success = true;
   }
-  debug("Reset keyboard");
-  debug("Turning off LEDs");
+  log(LOGLEVEL_ANALYZE, "Reset keyboard");
+  log(LOGLEVEL_ANALYZE, "Turning off LEDs");
 set_leds:
   ps2_send_command1(0xED);
   io_wait();
@@ -31,7 +31,7 @@ set_leds:
   io_wait();
   if (ps2_read_data() == 0xFE)
     goto set_leds;
-  debug("Reading scancode set");
+  log(LOGLEVEL_ANALYZE, "Reading scancode set");
   ps2_send_command1(0xF0);
   io_wait();
   ps2_send_data1(0);
@@ -50,18 +50,18 @@ set_leds:
       kb_set = 3;
       break;
     default:
-      kprintf(debug_str "Unrecognized set: %x\n\r", (uint32_t)scancode_set);
+      logf(LOGLEVEL_ERROR, "Unrecognized set: %x", (uint32_t)scancode_set);
     }
   } else
     kb_set = ps2_read_data();
   if (kb_set == 2) {
-    warn("Scancode set 2 has missing features");
+    log(LOGLEVEL_WARN1, "Scancode set 2 has missing features");
   }
   if (kb_set == 1) {
-    warn("Scancode set 1 is not fully implemented");
+    log(LOGLEVEL_WARN1, "Scancode set 1 is not fully implemented");
   }
   if (kb_set == 3) {
-    error("Scancode set 3 is not supported");
+    log(LOGLEVEL_CRITICAL, "Scancode set 3 is not supported");
   }
-  info("Keyboard done.");
+  log(LOGLEVEL_INFO, "Keyboard done.");
 }

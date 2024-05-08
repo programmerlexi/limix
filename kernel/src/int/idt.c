@@ -1,8 +1,9 @@
-#include "int/syscall.h"
 #include <gfx/framebuffer.h>
 #include <gfx/vga.h>
 #include <int/idt.h>
+#include <int/syscall.h>
 #include <io/serial/serial.h>
+#include <kernel.h>
 #include <mm/hhtp.h>
 #include <utils/memory/memory.h>
 #include <utils/strings/strings.h>
@@ -24,8 +25,7 @@ __attribute__((interrupt)) void gpf_handler(interrupt_frame_t *int_frame) {
   ntos(b, int_frame->rip, 16, 16, true, true);
   serial_writes(b);
   serial_writes("\n\r");
-  for (;;)
-    ;
+  kernel_panic_error("General Protection Fault (Check serial)");
 }
 __attribute__((interrupt)) void df_handler(interrupt_frame_t *int_frame) {
   asm("cli");
@@ -34,8 +34,7 @@ __attribute__((interrupt)) void df_handler(interrupt_frame_t *int_frame) {
   ntos(b, int_frame->rip, 16, 16, true, true);
   serial_writes(b);
   serial_writes("\n\r");
-  for (;;)
-    ;
+  kernel_panic_error("Double Fault (Check serial)");
 }
 
 void idt_init() {

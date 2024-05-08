@@ -15,11 +15,11 @@ void unlock_lschedi() { spinunlock(&sched_initialize); }
 
 local_scheduler_t *sched_local_init(uint64_t cpu) {
   spinlock(&sched_initialize);
-  debug("Creating local scheduler");
+  log(LOGLEVEL_ANALYZE, "Creating local scheduler");
   local_scheduler_t *s = malloc(sizeof(local_scheduler_t));
   s->cpu = cpu;
   sched_register_cpu(s);
-  info("Local scheduler initialized");
+  log(LOGLEVEL_INFO, "Local scheduler initialized");
   spinunlock(&sched_initialize);
   return s;
 }
