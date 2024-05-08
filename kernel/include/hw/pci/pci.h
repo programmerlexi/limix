@@ -81,3 +81,5 @@ uint8_t pci_config_read_byte(uint8_t bus, uint8_t slot, uint8_t func,
 uint16_t pci_check_vendor(uint8_t bus, uint8_t slot);
 char *pci_get_classname(uint8_t bus, uint8_t slot, uint8_t func);
 char *pci_get_subclassname(uint8_t bus, uint8_t slot, uint8_t func);
+char *pci_get_device_name(uint8_t bus, uint8_t slot, uint8_t func);
+char *pci_get_vendor_name(uint8_t bus, uint8_t slot, uint8_t func);

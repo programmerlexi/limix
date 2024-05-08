@@ -6,8 +6,9 @@
 typedef struct file {
   xstr_t name;
   uint64_t size;
-  int (*read)(uint64_t, uint64_t, char *);
-  int (*write)(uint64_t, uint64_t, char *);
+  int (*read)(uint64_t, uint64_t, char *, struct file *);
+  int (*write)(uint64_t, uint64_t, char *, struct file *);
+  void *data;
 } file_t;
 
 typedef struct directory {
