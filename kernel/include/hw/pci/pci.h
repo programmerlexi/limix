@@ -10,18 +10,21 @@
 #define PCI_HEADER_TYPE_PCI_TO_PCI 1
 #define PCI_HEADER_TYPE_PCI_TO_CARDBUS 2
 
-#define PCI_OFFSET_ALL_VENDOR 0
-#define PCI_OFFSET_ALL_DEVICE 2
-#define PCI_OFFSET_ALL_COMMAND 4
-#define PCI_OFFSET_ALL_STATUS 6
-#define PCI_OFFSET_ALL_REVISION 8
-#define PCI_OFFSET_ALL_PROG_IF 9
-#define PCI_OFFSET_ALL_SUBCLASS 10
-#define PCI_OFFSET_ALL_CLASS 11
-#define PCI_OFFSET_ALL_CACHE_LINE_SIZE 12
-#define PCI_OFFSET_ALL_LATENCY_TIMER 13
-#define PCI_OFFSET_ALL_HEADER_TYPE 14
-#define PCI_OFFSET_ALL_BIST 15
+#define PCI_OFFSET_ALL_DEVICE 0
+#define PCI_OFFSET_ALL_VENDOR 2
+
+#define PCI_OFFSET_ALL_STATUS 4
+#define PCI_OFFSET_ALL_COMMAND 6
+
+#define PCI_OFFSET_ALL_CLASS 9
+#define PCI_OFFSET_ALL_SUBCLASS 8
+#define PCI_OFFSET_ALL_PROG_IF 11
+#define PCI_OFFSET_ALL_REVISION 10
+
+#define PCI_OFFSET_ALL_BIST 13
+#define PCI_OFFSET_ALL_HEADER_TYPE 12
+#define PCI_OFFSET_ALL_LATENCY_TIMER 15
+#define PCI_OFFSET_ALL_CACHE_LINE_SIZE 14
 
 #define PCI_COMMAND_IO_SPACE_ENABLE 1
 #define PCI_COMMAND_MEMORY_SPACE_ENABLE 2
@@ -76,3 +79,5 @@ uint16_t pci_config_read_word(uint8_t bus, uint8_t slot, uint8_t func,
 uint8_t pci_config_read_byte(uint8_t bus, uint8_t slot, uint8_t func,
                              uint8_t offset);
 uint16_t pci_check_vendor(uint8_t bus, uint8_t slot);
+char *pci_get_classname(uint8_t bus, uint8_t slot, uint8_t func);
+char *pci_get_subclassname(uint8_t bus, uint8_t slot, uint8_t func);

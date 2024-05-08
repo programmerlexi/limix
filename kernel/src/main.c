@@ -87,7 +87,7 @@ void _start(void) {
   devfs_reload();
 
   pci_init();
-  ps2_init();
+  /*ps2_init();
   kb_init();
   kb_init_polling();
   sched_glob_init();
@@ -95,7 +95,7 @@ void _start(void) {
   smp_init();
 
   while (1)
-    sched_glob_tick();
+    sched_glob_tick();*/
 
   hcf();
 }

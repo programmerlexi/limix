@@ -1,6 +1,6 @@
 JOBS=8
 
-COMMON_QEMU_FLAGS=-m 4G -smp 4 -serial stdio
+COMMON_QEMU_FLAGS=-m 4G -smp 4 -serial stdio -usb -device qemu-xhci
 
 all: hdd iso
 
