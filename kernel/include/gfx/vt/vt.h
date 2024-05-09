@@ -2,29 +2,30 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <types.h>
 
 typedef union vt_color {
   struct {
-    uint8_t reserved;
-    uint8_t red;
-    uint8_t green;
-    uint8_t blue;
+    u8 reserved;
+    u8 red;
+    u8 green;
+    u8 blue;
   } ccolor;
-  uint32_t fb_color;
+  u32 fb_color;
 } vt_color_t;
 
 typedef struct vt_graphic_rendition {
   vt_color_t fg_rgb; /* Incompatible with bold/dim */
-  uint8_t fg_index;
+  u8 fg_index;
 
   vt_color_t bg_rgb;
-  uint8_t bg_index;
+  u8 bg_index;
 
-  uint8_t font_state;
+  u8 font_state;
 } vt_graphic_rendition_t;
 
 typedef struct vt_char {
-  uint32_t unicode;
+  u32 unicode;
   vt_color_t fg;
   vt_color_t bg;
 } vt_char_t;
@@ -57,7 +58,7 @@ typedef struct vt_char {
 #define TC_BG_PURPLE "\x26"
 #define TC_BG_CYAN "\x27"
 #define TC_BG_WHITE "\x28"
-void vt_init(uint64_t drm_number);
+void vt_init(u64 drm_number);
 void vt_clear();
 void vt_flush();
 void vt_redraw();

@@ -3,7 +3,7 @@
 #include <printing.h>
 #include <stdint.h>
 
-typedef uint8_t loglevel_t;
+typedef u8 loglevel_t;
 
 #define LOGLEVEL_ANALYZE 0
 #define LOGLEVEL_DEBUG 1

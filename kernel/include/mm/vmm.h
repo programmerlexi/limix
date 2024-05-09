@@ -2,16 +2,17 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <types.h>
 
-typedef uint64_t pml4e_t;
-typedef uint64_t pdpe_t;
-typedef uint64_t pde_t;
-typedef uint64_t pte_t;
+typedef u64 pml4e_t;
+typedef u64 pdpe_t;
+typedef u64 pde_t;
+typedef u64 pte_t;
 
-typedef uint64_t *pml4_t;
-typedef uint64_t *pdp_t;
-typedef uint64_t *pd_t;
-typedef uint64_t *pt_t;
+typedef u64 *pml4_t;
+typedef u64 *pdp_t;
+typedef u64 *pd_t;
+typedef u64 *pt_t;
 
 typedef void *vaddr_t;
 typedef void *paddr_t;

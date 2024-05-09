@@ -2,12 +2,13 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <types.h>
 
 typedef struct heapseg {
   size_t size;
   struct heapseg *prev;
   struct heapseg *next;
-  uint64_t used;
+  u64 used;
 } heapseg_t;
 
 void heap_init();

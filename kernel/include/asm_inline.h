@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <types.h>
 
 static inline bool are_interrupts_enabled() {
   unsigned long flags;
@@ -21,14 +22,14 @@ static inline void irqrestore(unsigned long flags) {
   asm("push %0\n\tpopf" : : "rm"(flags) : "memory", "cc");
 }
 
-static inline void cpuid(int code, uint32_t *a, uint32_t *d) {
+static inline void cpuid(int code, u32 *a, u32 *d) {
   asm volatile("cpuid" : "=a"(*a), "=d"(*d) : "0"(code) : "ebx", "ecx");
 }
 
-static inline uint64_t rdtsc(void) {
-  uint32_t low, high;
+static inline u64 rdtsc(void) {
+  u32 low, high;
   asm volatile("rdtsc" : "=a"(low), "=d"(high));
-  return ((uint64_t)high << 32) | low;
+  return ((u64)high << 32) | low;
 }
 
 static inline unsigned long read_cr0(void) {
@@ -57,7 +58,7 @@ static inline unsigned long read_cr4(void) {
   return val;
 }
 
-static inline void write_cr4(uint64_t cr4) {
+static inline void write_cr4(u64 cr4) {
   asm volatile("mov %0, %%cr4" ::"r"(cr4));
 }
 
@@ -67,16 +68,16 @@ static inline void invlpg(void *m) {
   asm volatile("invlpg (%0)" : : "b"(m) : "memory");
 }
 
-static inline void wrmsr(uint64_t msr, uint64_t value) {
-  uint32_t low = value & 0xFFFFFFFF;
-  uint32_t high = value >> 32;
+static inline void wrmsr(u64 msr, u64 value) {
+  u32 low = value & 0xFFFFFFFF;
+  u32 high = value >> 32;
   asm volatile("wrmsr" : : "c"(msr), "a"(low), "d"(high));
 }
 
-static inline uint64_t rdmsr(uint64_t msr) {
-  uint32_t low, high;
+static inline u64 rdmsr(u64 msr) {
+  u32 low, high;
   asm volatile("rdmsr" : "=a"(low), "=d"(high) : "c"(msr));
-  return ((uint64_t)high << 32) | low;
+  return ((u64)high << 32) | low;
 }
 
 #define fence() __asm__ volatile("" ::: "memory")

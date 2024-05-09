@@ -10,11 +10,11 @@ typedef struct frame_container {
 typedef struct local_scheduler {
   frame_container_t *frames;
 
-  uint64_t cpu;
+  u64 cpu;
   uint32_t shed_lock;
 
   struct local_scheduler *next;
 } local_scheduler_t;
 
-local_scheduler_t *sched_local_init(uint64_t cpu_id);
+local_scheduler_t *sched_local_init(u64 cpu_id);
 void sched_local_tick(local_scheduler_t *shed);

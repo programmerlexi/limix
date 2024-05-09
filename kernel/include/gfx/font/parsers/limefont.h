@@ -2,21 +2,22 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <types.h>
 
 #define LIMEFONT_MAGIC "LIMEFONT"
 
 typedef struct {
   char magic[8];
-  uint32_t glyphs;
-  uint32_t relocs;
-  uint16_t width;
-  uint16_t height;
+  u32 glyphs;
+  u32 relocs;
+  u16 width;
+  u16 height;
 } limefont_header_t;
 
 typedef struct {
-  uint32_t source;
-  uint32_t target;
-  uint32_t count;
+  u32 source;
+  u32 target;
+  u32 count;
 } limefont_relocation_t;
 
 bool limefont_parse(void *font);

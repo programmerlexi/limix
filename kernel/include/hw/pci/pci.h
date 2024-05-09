@@ -2,6 +2,7 @@
 
 #include <hw/pci/codes.h>
 #include <stdint.h>
+#include <types.h>
 
 #define PCI_CONFIG_ADDRESS 0xCF8
 #define PCI_CONFIG_DATA 0xCFC
@@ -59,27 +60,25 @@
 #define PCI_BAR_IO_BASE_ADDR ~3
 
 typedef struct {
-  uint16_t vendor_id;
-  uint16_t device_id;
-  uint16_t command;
-  uint16_t status;
-  uint8_t revision;
-  uint8_t prog_if;
-  uint8_t subclass;
-  uint8_t class_code;
-  uint8_t cache_line_size;
-  uint8_t latency_timer;
-  uint8_t header_type;
-  uint8_t bist;
+  u16 vendor_id;
+  u16 device_id;
+  u16 command;
+  u16 status;
+  u8 revision;
+  u8 prog_if;
+  u8 subclass;
+  u8 class_code;
+  u8 cache_line_size;
+  u8 latency_timer;
+  u8 header_type;
+  u8 bist;
 } pci_header_t;
 
 void pci_init();
-uint16_t pci_config_read_word(uint8_t bus, uint8_t slot, uint8_t func,
-                              uint8_t offset);
-uint8_t pci_config_read_byte(uint8_t bus, uint8_t slot, uint8_t func,
-                             uint8_t offset);
-uint16_t pci_check_vendor(uint8_t bus, uint8_t slot);
-char *pci_get_classname(uint8_t bus, uint8_t slot, uint8_t func);
-char *pci_get_subclassname(uint8_t bus, uint8_t slot, uint8_t func);
-char *pci_get_device_name(uint8_t bus, uint8_t slot, uint8_t func);
-char *pci_get_vendor_name(uint8_t bus, uint8_t slot, uint8_t func);
+u16 pci_config_read_word(u8 bus, u8 slot, u8 func, u8 offset);
+u8 pci_config_read_byte(u8 bus, u8 slot, u8 func, u8 offset);
+u16 pci_check_vendor(u8 bus, u8 slot);
+char *pci_get_classname(u8 bus, u8 slot, u8 func);
+char *pci_get_subclassname(u8 bus, u8 slot, u8 func);
+char *pci_get_device_name(u8 bus, u8 slot, u8 func);
+char *pci_get_vendor_name(u8 bus, u8 slot, u8 func);

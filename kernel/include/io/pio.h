@@ -1,12 +1,13 @@
 #pragma once
 #include <stdint.h>
+#include <types.h>
 
-void outb(uint16_t port, uint8_t val);
-void outw(uint16_t port, uint16_t val);
-void outd(uint16_t port, uint32_t val);
+void outb(u16 port, u8 val);
+void outw(u16 port, u16 val);
+void outd(u16 port, u32 val);
 
-uint8_t inb(uint16_t port);
-uint16_t inw(uint16_t port);
-uint32_t ind(uint16_t port);
+u8 inb(u16 port);
+u16 inw(u16 port);
+u32 ind(u16 port);
 
 static inline void io_wait(void) { inb(0x80); }

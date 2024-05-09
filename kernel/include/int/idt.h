@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <types.h>
 
 #define IDT_FLAGS_GATE_TYPE_INT 0xe
 #define IDT_FLAGS_GATE_TYPE_TRAP 0xf
@@ -11,34 +12,34 @@
 #define IDT_FLAGS_PRESENT 0x80
 
 typedef struct {
-  uint16_t offset_low;
-  uint16_t segment_selector;
-  uint8_t ist;
-  uint8_t flags;
-  uint16_t offset_mid;
-  uint32_t offset_high;
-  uint32_t reserved;
+  u16 offset_low;
+  u16 segment_selector;
+  u8 ist;
+  u8 flags;
+  u16 offset_mid;
+  u32 offset_high;
+  u32 reserved;
 } __attribute__((packed)) idt_gate_t;
 typedef struct {
-  uint16_t size;
-  uint64_t addr;
+  u16 size;
+  u64 addr;
 } __attribute__((packed)) idt_desc_t;
 typedef struct {
-  uint64_t err_code;
-  uint64_t rip;
-  uint32_t cs;
-  uint64_t rflags;
-  uint64_t rsp;
-  uint32_t ss;
+  u64 err_code;
+  u64 rip;
+  u32 cs;
+  u64 rflags;
+  u64 rsp;
+  u32 ss;
 } __attribute__((packed)) interrupt_frame_t;
 typedef struct {
-  uint64_t rip;
-  uint32_t cs;
-  uint64_t rflags;
-  uint64_t rsp;
-  uint32_t ss;
+  u64 rip;
+  u32 cs;
+  u64 rflags;
+  u64 rsp;
+  u32 ss;
 } __attribute__((packed)) interrupt_frame_noerr_t;
 
 void idt_init();
-void idt_add_handler(uint8_t id, void *handler, uint8_t flags, uint8_t ist);
+void idt_add_handler(u8 id, void *handler, u8 flags, u8 ist);
 extern idt_gate_t idt[256];

@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <types.h>
 
 #define PS2_PORT_DATA 0x60
 #define PS2_PORT_STATUS 0x64
@@ -46,19 +47,19 @@
 #define PS2_COP_PORT1_CLOCK 1 << 6
 #define PS2_COP_PORT1_DATA 1 << 7
 
-void ps2_send_command1(uint8_t cmd);
-void ps2_send_data1(uint8_t data);
+void ps2_send_command1(u8 cmd);
+void ps2_send_data1(u8 data);
 
-void ps2_send_command2(uint8_t cmd);
-void ps2_send_data2(uint8_t data);
-uint8_t ps2_read_data2();
+void ps2_send_command2(u8 cmd);
+void ps2_send_data2(u8 data);
+u8 ps2_read_data2();
 
-uint8_t ps2_read_data();
+u8 ps2_read_data();
 bool ps2_data_available();
 
-void ps2_send_command(uint8_t cmd);
+void ps2_send_command(u8 cmd);
 
-void ps2_send_data(uint8_t data);
+void ps2_send_data(u8 data);
 bool ps2_can_send();
 
 void ps2_reset_cpu();

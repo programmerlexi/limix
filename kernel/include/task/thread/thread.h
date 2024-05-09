@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <types.h>
 #include <utils/strings/xstr.h>
 
 enum thread_state {
@@ -12,10 +13,10 @@ enum thread_state {
 };
 
 typedef struct thread {
-  uint64_t tid;
+  u64 tid;
   enum thread_state state;
-  uint64_t rsp;
-  uint64_t entry;
+  u64 rsp;
+  u64 entry;
   xstr_t cwd;
 
   struct thread *next;

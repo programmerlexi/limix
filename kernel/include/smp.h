@@ -1,6 +1,7 @@
 #pragma once
 #include <boot/limine.h>
 #include <stdint.h>
+#include <types.h>
 
 /* SMP actions (CMDs) */
 #define SMP_ACTION_NONE 0
@@ -24,11 +25,11 @@
 
 typedef union {
   struct {
-    uint8_t state;
-    uint8_t cmd_type;
-    uint8_t cmd_args[6];
+    u8 state;
+    u8 cmd_type;
+    u8 cmd_args[6];
   };
-  uint64_t data;
+  u64 data;
 } smp_cmd_t;
 
 void _smp_start(struct limine_smp_info *info_structure);

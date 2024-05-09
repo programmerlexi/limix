@@ -1,23 +1,22 @@
 #pragma once
 
-/* This is essentially just fancy double-buffering */
-
 #include <gfx/gfx.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <types.h>
 
 #define DRM_ATTACHED_TO_SCREEN 1
 #define DRM_ATTACHED_TO_PROCESS 2
 
 typedef struct {
-  uint32_t *framebuffer;
-  uint64_t width;
-  uint64_t height;
-  uint8_t flags;
-  uint32_t lock;
+  u32 *framebuffer;
+  u64 width;
+  u64 height;
+  u8 flags;
+  u32 lock;
 } drm_t;
 
-typedef uint64_t drm_number_t;
+typedef u64 drm_number_t;
 
 void drm_init();
 void drm_switch(drm_number_t drm_number); // Attach a DRM to the screen

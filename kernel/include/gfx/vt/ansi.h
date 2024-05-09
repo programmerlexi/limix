@@ -2,11 +2,12 @@
 
 #include <gfx/vt/vt.h>
 #include <stdbool.h>
+#include <types.h>
 
 enum ANSI_STATE { C1, CSI_CMD, ARG, SEMICOLON };
 
 typedef struct ansi_state {
-  char args[8];
+  u8 args[8];
   bool working;
   enum ANSI_STATE as;
   vt_graphic_rendition_t gr;
@@ -92,5 +93,5 @@ typedef struct ansi_state {
 #define SGR_DEFAULT_UNDERLINE_COLOR "59"
 
 ansi_state_t ansi_process(ansi_state_t input_state, char next_character);
-uint32_t ansi_convert_fg(vt_graphic_rendition_t rendition);
-uint32_t ansi_convert_bg(vt_graphic_rendition_t rendition);
+u32 ansi_convert_fg(vt_graphic_rendition_t rendition);
+u32 ansi_convert_bg(vt_graphic_rendition_t rendition);

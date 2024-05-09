@@ -2,21 +2,22 @@
 
 #include <stdint.h>
 #include <task/thread/thread.h>
+#include <types.h>
 
 typedef struct process {
-  uint64_t pid;
+  u64 pid;
 
-  uint64_t uid;
-  uint64_t gid;
-  uint64_t euid;
-  uint64_t egid;
+  u64 uid;
+  u64 gid;
+  u64 euid;
+  u64 egid;
 
-  uint64_t thread_count;
+  u64 thread_count;
   thread_t *threads;
 
-  uint64_t cpu;
+  u64 cpu;
 
-  uint64_t cr4;
+  u64 cr4;
 
   xstr_t name;
 

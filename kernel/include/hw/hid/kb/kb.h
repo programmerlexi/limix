@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <types.h>
 
 #include <hw/hid/kb/sets/set1.h>
 
@@ -109,8 +110,8 @@
 #define KB_KEY_ARROW_RIGHT KB_POS(6, 5)
 
 void kb_init();
-bool kb_get_key(uint8_t keycode);
-uint16_t kb_get_mods();
+bool kb_get_key(u8 keycode);
+u16 kb_get_mods();
 void kb_update();
 
-void kb_internal_set_key(uint8_t keycode, bool pressed);
+void kb_internal_set_key(u8 keycode, bool pressed);
