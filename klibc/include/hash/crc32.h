@@ -2,4 +2,4 @@
 
 #include <stdint.h>
 
-uint32_t crc32(uint8_t *p, uint64_t count);
+uint32_t crc32(uint8_t *data, uint64_t data_size);
