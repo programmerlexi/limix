@@ -82,6 +82,7 @@ void _start(void) {
   async_init();
 
   vfs_init();
+
   devfs_init();
   devfs_bind(vfs_make("dev"));
   devfs_reload();

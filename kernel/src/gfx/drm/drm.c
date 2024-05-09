@@ -326,4 +326,5 @@ void drm_register_vfs() {
     devfs_create(devname, _drm_read, _drm_write, dn);
     free(devname);
   }
+  devfs_reload();
 }
