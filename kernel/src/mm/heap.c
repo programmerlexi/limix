@@ -52,7 +52,7 @@ void expand_heap(size_t size) {
   }
   size_t pages = size / 0x1000;
   heapseg_t *new_seg = (heapseg_t *)request_page_block(pages);
-  nullsafe_with(new_seg, { kernel_panic_error("No more heap space"); });
+  nullsafe_error(new_seg, "No more heap space");
   new_seg->used = false;
   new_seg->prev = heap_last;
   heap_last->next = new_seg;
@@ -127,4 +127,16 @@ void *calloc(size_t size, uint8_t val) {
   }
   memset(ptr, val, size);
   return ptr;
+}
+
+uint32_t heap_get_used() {
+  uint32_t used = 0;
+  heapseg_t *c = heap_first;
+  while (c) {
+    used += sizeof(heapseg_t);
+    if (c->used)
+      used += c->size;
+    c = c->next;
+  }
+  return used;
 }

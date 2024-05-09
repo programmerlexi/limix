@@ -63,14 +63,23 @@ static int _devfs_write(uint64_t o, uint64_t s, char *b, file_t *f) {
   return d->write(d->data, o, s, b);
 }
 
+void _devfs_clear_files() {
+  for (uint64_t i = 0; i < devfs->root->file_count; i++) {
+    if (devfs->root->files[i]->data)
+      free(devfs->root->files[i]->data);
+    free(devfs->root->files[i]);
+  }
+  free(devfs->root->files);
+}
+
 void devfs_reload() {
   nullsafe(devfs);
   if (!devfs->root)
     devfs->root = malloc(sizeof(directory_t));
   nullsafe_error(devfs->root, "Out of memory");
-  devfs->root->file_count = dev_count;
   if (devfs->root->files)
-    free(devfs->root->files);
+    _devfs_clear_files();
+  devfs->root->file_count = dev_count;
   devfs->root->files = malloc(sizeof(void *) * dev_count);
   device_t *c = devices;
   for (uint64_t i = 0; i < dev_count; i++) {
