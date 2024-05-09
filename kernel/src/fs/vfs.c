@@ -2,11 +2,13 @@
 #include <debug.h>
 #include <fs/devfs.h>
 #include <fs/vfs.h>
+#include <kernel.h>
 #include <math/lib.h>
 #include <mm/heap.h>
 #include <stdint.h>
 #include <utils/errors.h>
 #include <utils/memory/heap_wrap.h>
+#include <utils/memory/safety.h>
 #include <utils/strings/strings.h>
 #include <utils/strings/xstr.h>
 
@@ -27,6 +29,7 @@ vfs_t *vfs_make(char *name) {
     c = c->next;
   }
   *a = malloc(sizeof(vfs_t));
+  nullsafe_error(*a, "Out of memory");
   (*a)->name = to_xstr(name);
   fs_count++;
   return *a;

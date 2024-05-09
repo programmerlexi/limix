@@ -1,10 +1,12 @@
 #include <debug.h>
 #include <fs/devfs.h>
 #include <fs/vfs.h>
+#include <kernel.h>
 #include <mm/heap.h>
 #include <stdint.h>
 #include <utils/errors.h>
 #include <utils/memory/memory.h>
+#include <utils/memory/safety.h>
 #include <utils/strings/xstr.h>
 
 #undef DEBUG_MODULE
@@ -43,6 +45,7 @@ void devfs_create(char *name, int (*read)(void *, uint64_t, uint64_t, char *),
     }
     p->next = device;
   }
+  nullsafe_error(device, "Out of memory");
   device->read = read;
   device->write = write;
   device->next = NULL;
@@ -61,14 +64,18 @@ static int _devfs_write(uint64_t o, uint64_t s, char *b, file_t *f) {
 }
 
 void devfs_reload() {
+  nullsafe(devfs);
   if (!devfs->root)
     devfs->root = malloc(sizeof(directory_t));
+  nullsafe_error(devfs->root, "Out of memory");
   devfs->root->file_count = dev_count;
-  devfs->root->files =
-      malloc(sizeof(void *) * dev_count); // Memory leak, but idc.
+  if (devfs->root->files)
+    free(devfs->root->files);
+  devfs->root->files = malloc(sizeof(void *) * dev_count);
   device_t *c = devices;
   for (uint64_t i = 0; i < dev_count; i++) {
     devfs->root->files[i] = malloc(sizeof(file_t));
+    nullsafe_error(devfs->root->files[i], "Out of memory");
     devfs->root->files[i]->name = c->name;
     devfs->root->files[i]->read = _devfs_read;
     devfs->root->files[i]->write = _devfs_write;

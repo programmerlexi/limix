@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <utils/errors.h>
 #include <utils/memory/memory.h>
+#include <utils/memory/safety.h>
 
 static drm_t drms[MAX_DRMS];
 static uint64_t active_drm;
@@ -319,7 +320,9 @@ static int _drm_read(void *d, uint64_t o, uint64_t s, char *b) {
 void drm_register_vfs() {
   for (uint64_t i = 0; i < MAX_DRMS; i++) {
     drm_number_t *dn = malloc(sizeof(drm_number_t));
+    nullsafe_error(dn, "Out of memory");
     char *devname = malloc(4);
+    nullsafe_error(devname, "Out of memory");
     memcpy(devname, "drm", 3);
     devname[3] = 'a' + i;
     *dn = i;
