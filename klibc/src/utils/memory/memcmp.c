@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <types.h>
 
-int memcmp(const void *s1, const void *s2, size_t n) {
+i32 memcmp(const void *s1, const void *s2, size_t n) {
   if (!n) {
     return 0;
   } // nothing to compare?

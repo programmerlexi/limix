@@ -50,7 +50,7 @@ static void insert_page(void *page) {
 }
 
 bool mm_init(struct limine_memmap_response *mmap) {
-  int usable = 0;
+  i32 usable = 0;
   for (u64 i = 0; i < mmap->entry_count; i++) {
     if (mmap->entries[i]->type == LIMINE_MEMMAP_USABLE) {
       usable++;

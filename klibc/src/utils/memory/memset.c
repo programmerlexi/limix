@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <types.h>
 
-void *memset(void *dst, int sval, size_t count) {
+void *memset(void *dst, i32 sval, size_t count) {
   if (!count) {
     return dst;
   } // nothing to set?

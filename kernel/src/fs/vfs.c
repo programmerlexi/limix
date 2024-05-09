@@ -45,9 +45,9 @@ vfs_t *vfs_fs(char *name) {
   }
   return c;
 }
-int vfs_find_directory(directory_t **result, char *path) {
+i32 vfs_find_directory(directory_t **result, char *path) {
   u64 ft;
-  int tr = vfs_type(path, &ft);
+  i32 tr = vfs_type(path, &ft);
   if (tr != E_SUCCESS)
     return tr;
   if (ft != 0)
@@ -100,9 +100,9 @@ int vfs_find_directory(directory_t **result, char *path) {
   }
   return E_INVOP;
 }
-int vfs_find_file(file_t **result, char *path) {
+i32 vfs_find_file(file_t **result, char *path) {
   u64 ft;
-  int tr = vfs_type(path, &ft);
+  i32 tr = vfs_type(path, &ft);
   if (tr != E_SUCCESS)
     return tr;
   if (ft != 1)
@@ -156,7 +156,7 @@ int vfs_find_file(file_t **result, char *path) {
   return E_INVOP;
 }
 
-int vfs_type(char *path, u64 *type) {
+i32 vfs_type(char *path, u64 *type) {
   if (!strlen(path))
     return E_INVOPT;
   char *fs_name = clone(path, strnext(path, PATHSEP));

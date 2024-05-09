@@ -5,7 +5,7 @@
 #include <utils/memory/memory.h>
 #include <utils/strings/strings.h>
 
-int reverse(char *s, size_t len) {
+i32 reverse(char *s, size_t len) {
   if (!len || !s)
     return STR_NOBUF;
   char c;

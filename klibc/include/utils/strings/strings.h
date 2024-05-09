@@ -9,9 +9,9 @@
 #define STR_OVERFLOW 2
 #define STR_LOWBASE 3
 
-int ntos(char *buffer, ssize_t integer, uint8_t base, size_t length,
+i32 ntos(char *buffer, ssize_t integer, uint8_t base, size_t length,
          bool unsign, bool pad);
-int reverse(char *buffer, size_t len);
+i32 reverse(char *buffer, size_t len);
 size_t strlen(char *string);
 size_t strnext(char *string, char token);
 bool strncmp(char *a, char *b, size_t size);

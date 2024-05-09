@@ -1,6 +1,8 @@
 #pragma once
 
-typedef int error_t;
+#include <types.h>
+
+typedef i32 error_t;
 
 #define E_SUCCESS 0
 

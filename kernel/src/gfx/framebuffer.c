@@ -29,7 +29,7 @@ void putchar16(size_t x, size_t y, char ch, u32 color) {
 }
 
 void putstr16(size_t x, size_t y, char *s, u32 color) {
-  int xo = 0;
+  i32 xo = 0;
   while (*s) {
     putchar16(x + xo, y, *s, color);
     s++;

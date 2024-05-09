@@ -61,7 +61,7 @@ static void _async_wrapper(result_t (*func)(variety_t), variety_t arg) {
 
 future_t async(result_t (*func)(variety_t), variety_t arg) {
   task_t *t = NULL;
-  for (int i = 0; i < THREAD_LIMIT; i++) {
+  for (i32 i = 0; i < THREAD_LIMIT; i++) {
     if (threads[i].state == ASYNC_NONE) {
       t = &threads[i];
       break;

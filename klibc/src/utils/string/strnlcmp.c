@@ -8,8 +8,8 @@
 bool strnlcmp(char *a, char *b, size_t n, size_t l) {
   if (min(strlen(a), l) != min(strlen(b), l))
     return false;
-  int sl = min(min(strlen(a), strlen(b)), n);
-  for (int i = 0; i < sl; i++) {
+  i32 sl = min(min(strlen(a), strlen(b)), n);
+  for (i32 i = 0; i < sl; i++) {
     if (a[i] != b[i])
       return false;
   }

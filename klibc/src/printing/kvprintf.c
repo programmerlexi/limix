@@ -5,7 +5,7 @@
 
 void kvprintf(char *s, va_list args) {
   bool format = false;
-  int base = 0;
+  i32 base = 0;
   bool sign = true;
   while (*s) {
     if (format) {

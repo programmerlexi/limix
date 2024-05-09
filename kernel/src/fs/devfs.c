@@ -16,18 +16,18 @@ static device_t *devices;
 static vfs_t *devfs;
 static u64 dev_count;
 
-static int zero_r(void *p, u64 o, u64 s, char *b) {
+static i32 zero_r(void *p, u64 o, u64 s, char *b) {
   memset(b, 0, s);
   return E_SUCCESS;
 }
-static int zero_w(void *p, u64 o, u64 s, char *b) { return E_SUCCESS; }
+static i32 zero_w(void *p, u64 o, u64 s, char *b) { return E_SUCCESS; }
 
 void devfs_init() {
   devfs_create("null", zero_r, zero_w, NULL);
   devfs_create("zero", zero_r, zero_w, NULL);
 }
-void devfs_create(char *name, int (*read)(void *, u64, u64, char *),
-                  int (*write)(void *, u64, u64, char *), void *data) {
+void devfs_create(char *name, i32 (*read)(void *, u64, u64, char *),
+                  i32 (*write)(void *, u64, u64, char *), void *data) {
   debugf("Creating dev node '%s'...", name);
   device_t *device;
   if (!devices)
@@ -51,11 +51,11 @@ void devfs_create(char *name, int (*read)(void *, u64, u64, char *),
   dev_count++;
 }
 
-static int _devfs_read(u64 o, u64 s, char *b, file_t *f) {
+static i32 _devfs_read(u64 o, u64 s, char *b, file_t *f) {
   device_t *d = f->data;
   return d->read(d->data, o, s, b);
 }
-static int _devfs_write(u64 o, u64 s, char *b, file_t *f) {
+static i32 _devfs_write(u64 o, u64 s, char *b, file_t *f) {
   device_t *d = f->data;
   return d->write(d->data, o, s, b);
 }

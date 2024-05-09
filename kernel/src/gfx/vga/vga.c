@@ -53,11 +53,11 @@ void draw_rect(size_t x0, size_t y0, size_t width, size_t height, u32 color) {
 void draw_circle(size_t x0, size_t y0, size_t radius, u32 color, u8 width) {
   if (width == 0)
     return;
-  int f = 1 - radius;
-  int ddF_x = 0;
-  int ddF_y = -2 * radius;
-  int x = 0;
-  int y = radius;
+  i32 f = 1 - radius;
+  i32 ddF_x = 0;
+  i32 ddF_y = -2 * radius;
+  i32 x = 0;
+  i32 y = radius;
 
   putpixel(x0, y0 + radius, color);
   putpixel(x0, y0 - radius, color);
@@ -86,7 +86,7 @@ void draw_circle(size_t x0, size_t y0, size_t radius, u32 color, u8 width) {
 }
 
 void draw_line(size_t x1, size_t y1, size_t x2, size_t y2, u32 color) {
-  int x, y, t, dx, dy, incx, incy, pdx, pdy, ddx, ddy, deltaslowdirection,
+  i32 x, y, t, dx, dy, incx, incy, pdx, pdy, ddx, ddy, deltaslowdirection,
       deltafastdirection, err;
   dx = x2 - x1;
   dy = y2 - y1;

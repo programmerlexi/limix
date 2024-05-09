@@ -5,7 +5,7 @@
 #include <utils/memory/memory.h>
 #include <utils/strings/strings.h>
 
-int ntos(char *buf, ssize_t i, u8 base, size_t length, bool unsign, bool pad) {
+i32 ntos(char *buf, ssize_t i, u8 base, size_t length, bool unsign, bool pad) {
   if (!length || buf == NULL)
     return STR_NOBUF;
 

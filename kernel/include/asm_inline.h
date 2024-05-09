@@ -22,7 +22,7 @@ static inline void irqrestore(unsigned long flags) {
   asm("push %0\n\tpopf" : : "rm"(flags) : "memory", "cc");
 }
 
-static inline void cpuid(int code, u32 *a, u32 *d) {
+static inline void cpuid(i32 code, u32 *a, u32 *d) {
   asm volatile("cpuid" : "=a"(*a), "=d"(*d) : "0"(code) : "ebx", "ecx");
 }
 

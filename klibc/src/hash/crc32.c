@@ -5,7 +5,7 @@
 
 static u32 crc32_poly(u8 i) {
   u32 r = (u32)i;
-  for (int j = 0; j < 8; j++) {
+  for (i32 j = 0; j < 8; j++) {
     bool l = r & 1;
     r >>= 1;
     if (l)

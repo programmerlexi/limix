@@ -29,7 +29,7 @@ static u32 fallback_font[] = {
     0x69961170, 0x00060000};
 
 void drm_init() {
-  for (int i = 0; i < MAX_DRMS; i++) {
+  for (i32 i = 0; i < MAX_DRMS; i++) {
     drms[i].width = g_fb->width;
     drms[i].height = g_fb->height;
     drms[i].framebuffer =
@@ -82,7 +82,7 @@ void drm_plot(u64 drm, u64 x, u64 y, u32 c) {
   spinunlock(&drms[drm].lock);
 }
 void drm_plot_line(u64 drm, u64 x0, u64 y0, u64 x1, u64 y1, u32 c) {
-  int x, y, t, dx, dy, incx, incy, pdx, pdy, ddx, ddy, deltaslowdirection,
+  i32 x, y, t, dx, dy, incx, incy, pdx, pdy, ddx, ddy, deltaslowdirection,
       deltafastdirection, err;
   dx = x1 - x0;
   dy = y1 - y0;
@@ -132,11 +132,11 @@ void drm_plot_rect(u64 drm, u64 x0, u64 y0, u64 x1, u64 y1, u32 c) {
   drm_plot_line(drm, x1, y0, x1, y1, c);
 }
 void drm_plot_circle(u64 drm, u64 x0, u64 y0, u64 r, u32 c) {
-  int f = 1 - r;
-  int ddF_x = 0;
-  int ddF_y = -2 * r;
-  int x = 0;
-  int y = r;
+  i32 f = 1 - r;
+  i32 ddF_x = 0;
+  i32 ddF_y = -2 * r;
+  i32 x = 0;
+  i32 y = r;
 
   drm_plot(drm, x0, y0 + r, c);
   drm_plot(drm, x0, y0 - r, c);
@@ -278,7 +278,7 @@ bool drm_is_attached_to_process(u64 drm) {
   return drms[drm].flags & DRM_ATTACHED_TO_PROCESS;
 }
 
-static int _drm_write(void *d, u64 o, u64 s, char *b) {
+static i32 _drm_write(void *d, u64 o, u64 s, char *b) {
   drm_number_t *dn = d;
   if (o > drm_width(*dn) * drm_height(*dn))
     return E_OUTOFBOUNDS;
@@ -291,7 +291,7 @@ static int _drm_write(void *d, u64 o, u64 s, char *b) {
   return E_SUCCESS;
 }
 
-static int _drm_read(void *d, u64 o, u64 s, char *b) {
+static i32 _drm_read(void *d, u64 o, u64 s, char *b) {
   drm_number_t *dn = d;
   if (o > drm_width(*dn) * drm_height(*dn))
     return E_OUTOFBOUNDS;
