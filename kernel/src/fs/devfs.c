@@ -14,23 +14,20 @@
 
 static device_t *devices;
 static vfs_t *devfs;
-static uint64_t dev_count;
+static u64 dev_count;
 
-static int zero_r(void *p, uint64_t o, uint64_t s, char *b) {
+static int zero_r(void *p, u64 o, u64 s, char *b) {
   memset(b, 0, s);
   return E_SUCCESS;
 }
-static int zero_w(void *p, uint64_t o, uint64_t s, char *b) {
-  return E_SUCCESS;
-}
+static int zero_w(void *p, u64 o, u64 s, char *b) { return E_SUCCESS; }
 
 void devfs_init() {
   devfs_create("null", zero_r, zero_w, NULL);
   devfs_create("zero", zero_r, zero_w, NULL);
 }
-void devfs_create(char *name, int (*read)(void *, uint64_t, uint64_t, char *),
-                  int (*write)(void *, uint64_t, uint64_t, char *),
-                  void *data) {
+void devfs_create(char *name, int (*read)(void *, u64, u64, char *),
+                  int (*write)(void *, u64, u64, char *), void *data) {
   debugf("Creating dev node '%s'...", name);
   device_t *device;
   if (!devices)
@@ -54,17 +51,17 @@ void devfs_create(char *name, int (*read)(void *, uint64_t, uint64_t, char *),
   dev_count++;
 }
 
-static int _devfs_read(uint64_t o, uint64_t s, char *b, file_t *f) {
+static int _devfs_read(u64 o, u64 s, char *b, file_t *f) {
   device_t *d = f->data;
   return d->read(d->data, o, s, b);
 }
-static int _devfs_write(uint64_t o, uint64_t s, char *b, file_t *f) {
+static int _devfs_write(u64 o, u64 s, char *b, file_t *f) {
   device_t *d = f->data;
   return d->write(d->data, o, s, b);
 }
 
 void _devfs_clear_files() {
-  for (uint64_t i = 0; i < devfs->root->file_count; i++) {
+  for (u64 i = 0; i < devfs->root->file_count; i++) {
     if (devfs->root->files[i]->data)
       free(devfs->root->files[i]->data);
     free(devfs->root->files[i]);
@@ -82,7 +79,7 @@ void devfs_reload() {
   devfs->root->file_count = dev_count;
   devfs->root->files = malloc(sizeof(void *) * dev_count);
   device_t *c = devices;
-  for (uint64_t i = 0; i < dev_count; i++) {
+  for (u64 i = 0; i < dev_count; i++) {
     devfs->root->files[i] = malloc(sizeof(file_t));
     nullsafe_error(devfs->root->files[i], "Out of memory");
     devfs->root->files[i]->name = c->name;

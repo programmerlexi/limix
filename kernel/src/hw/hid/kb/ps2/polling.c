@@ -7,7 +7,7 @@
 #include <io/pio.h>
 #include <printing.h>
 
-static uint8_t kb_set = 0;
+static u8 kb_set = 0;
 
 void kb_init_polling() {
   bool success = false;
@@ -38,7 +38,7 @@ set_leds:
   io_wait();
   if (ps2_read_data() == 0xFE) {
     io_wait();
-    uint8_t scancode_set = ps2_read_data();
+    u8 scancode_set = ps2_read_data();
     switch (scancode_set) {
     case 0x43:
       kb_set = 1;
@@ -50,7 +50,7 @@ set_leds:
       kb_set = 3;
       break;
     default:
-      logf(LOGLEVEL_ERROR, "Unrecognized set: %x", (uint32_t)scancode_set);
+      logf(LOGLEVEL_ERROR, "Unrecognized set: %x", (u32)scancode_set);
     }
   } else
     kb_set = ps2_read_data();

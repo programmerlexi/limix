@@ -9,8 +9,8 @@ static bool dual_channel = true;
 static bool port1_available = false;
 static bool port2_available = false;
 
-void ps2_send_command1(uint8_t cmd) { ps2_send_data1(cmd); }
-void ps2_send_data1(uint8_t data) {
+void ps2_send_command1(u8 cmd) { ps2_send_data1(cmd); }
+void ps2_send_data1(u8 data) {
   if (!port1_available)
     return;
   if (!ps2_can_send())
@@ -18,8 +18,8 @@ void ps2_send_data1(uint8_t data) {
   outb(PS2_PORT_DATA, data);
 }
 
-void ps2_send_command2(uint8_t cmd) { ps2_send_data2(cmd); }
-void ps2_send_data2(uint8_t data) {
+void ps2_send_command2(u8 cmd) { ps2_send_data2(cmd); }
+void ps2_send_data2(u8 data) {
   if (!port2_available)
     return;
   if (!ps2_can_send())
@@ -30,7 +30,7 @@ void ps2_send_data2(uint8_t data) {
   outb(PS2_PORT_DATA, data);
 }
 
-uint8_t ps2_read_data2() {
+u8 ps2_read_data2() {
   if (!port2_available)
     return 0;
   if (!ps2_data_available())
@@ -38,7 +38,7 @@ uint8_t ps2_read_data2() {
   return ps2_read_data();
 }
 
-uint8_t ps2_read_data() {
+u8 ps2_read_data() {
   if (ps2_data_available())
     return inb(PS2_PORT_DATA);
   return 0;
@@ -47,9 +47,9 @@ bool ps2_data_available() {
   return inb(PS2_PORT_STATUS) & PS2_STATUS_OUTPUT_BUFFER_FULL;
 }
 
-void ps2_send_command(uint8_t command) { outb(PS2_PORT_COMMAND, command); }
+void ps2_send_command(u8 command) { outb(PS2_PORT_COMMAND, command); }
 
-void ps2_send_data(uint8_t data) {
+void ps2_send_data(u8 data) {
   if (ps2_can_send())
     outb(PS2_PORT_DATA, data);
 }
@@ -74,7 +74,7 @@ void ps2_init() {
   ps2_send_command(PS2_COMMAND_READ_CCB);
   while (!ps2_data_available())
     asm("nop");
-  uint8_t ccb = ps2_read_data();
+  u8 ccb = ps2_read_data();
   dual_channel = ccb & PS2_CCB_PORT2_CLOCK;
   ps2_send_command(PS2_COMMAND_WRITE_CCB);
   while (!ps2_can_send())
@@ -88,7 +88,7 @@ void ps2_init() {
   ps2_send_command(PS2_COMMAND_TEST_CONTROLLER);
   while (!ps2_data_available())
     asm("nop");
-  uint8_t result = ps2_read_data();
+  u8 result = ps2_read_data();
   if (result != 0x55) {
     log(LOGLEVEL_CRITICAL, "PS/2 Controller failed self-test");
     return;
@@ -102,7 +102,7 @@ void ps2_init() {
     log(LOGLEVEL_ANALYZE, "Checking dual-channel");
     ps2_send_command(PS2_COMMAND_ENABLE_PORT2);
     io_wait();
-    uint8_t ccb = ps2_read_data();
+    u8 ccb = ps2_read_data();
     dual_channel = !(ccb & PS2_CCB_PORT2_CLOCK);
     if (dual_channel)
       ps2_send_command(PS2_COMMAND_DISABLE_PORT2);

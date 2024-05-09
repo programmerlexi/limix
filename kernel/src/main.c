@@ -31,7 +31,7 @@
 #include <types.h>
 #include <utils/strings/strings.h>
 
-uint64_t hhaddr;
+u64 hhaddr;
 
 void _start(void) {
   if (LIMINE_BASE_REVISION_SUPPORTED == false) {

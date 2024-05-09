@@ -16,7 +16,7 @@
 #define DEBUG_MODULE "vfs"
 
 static vfs_t *filesystems;
-static uint64_t fs_count;
+static u64 fs_count;
 
 void vfs_init() { fs_count = 0; }
 
@@ -46,7 +46,7 @@ vfs_t *vfs_fs(char *name) {
   return c;
 }
 int vfs_find_directory(directory_t **result, char *path) {
-  uint64_t ft;
+  u64 ft;
   int tr = vfs_type(path, &ft);
   if (tr != E_SUCCESS)
     return tr;
@@ -62,7 +62,7 @@ int vfs_find_directory(directory_t **result, char *path) {
   if (!fs)
     return E_NOENT;
   directory_t *d = fs->root;
-  uint64_t it = 0;
+  u64 it = 0;
   while (strlen(path) > strnext(path, PATHSEP)) {
     if (it)
       return E_NOENT;
@@ -70,7 +70,7 @@ int vfs_find_directory(directory_t **result, char *path) {
     path += strnext(path, PATHSEP) + 1;
     char *name = clone(path, min(strnext(path, PATHSEP), strlen(path)));
     bool found = false;
-    for (uint64_t i = 0; i < d->directory_count; i++) {
+    for (u64 i = 0; i < d->directory_count; i++) {
       if (strlen(d->directories[i]->name.cstr) != strlen(name))
         continue;
       if (strncmp(d->directories[i]->name.cstr, name, strlen(name))) {
@@ -83,7 +83,7 @@ int vfs_find_directory(directory_t **result, char *path) {
     }
     if (found)
       continue;
-    for (uint64_t i = 0; i < d->file_count; i++) {
+    for (u64 i = 0; i < d->file_count; i++) {
       if (strlen(d->files[i]->name.cstr) != strlen(name))
         continue;
       if (strncmp(d->files[i]->name.cstr, name, strlen(name))) {
@@ -101,7 +101,7 @@ int vfs_find_directory(directory_t **result, char *path) {
   return E_INVOP;
 }
 int vfs_find_file(file_t **result, char *path) {
-  uint64_t ft;
+  u64 ft;
   int tr = vfs_type(path, &ft);
   if (tr != E_SUCCESS)
     return tr;
@@ -117,7 +117,7 @@ int vfs_find_file(file_t **result, char *path) {
   if (!fs)
     return E_NOENT;
   directory_t *d = fs->root;
-  uint64_t it = 0;
+  u64 it = 0;
   while (strlen(path) > strnext(path, PATHSEP)) {
     if (it)
       return E_NOENT;
@@ -125,7 +125,7 @@ int vfs_find_file(file_t **result, char *path) {
     path += strnext(path, PATHSEP) + 1;
     char *name = clone(path, min(strnext(path, PATHSEP), strlen(path)));
     bool found = false;
-    for (uint64_t i = 0; i < d->directory_count; i++) {
+    for (u64 i = 0; i < d->directory_count; i++) {
       if (strlen(d->directories[i]->name.cstr) != strlen(name))
         continue;
       if (strncmp(d->directories[i]->name.cstr, name, strlen(name))) {
@@ -137,7 +137,7 @@ int vfs_find_file(file_t **result, char *path) {
     }
     if (found)
       continue;
-    for (uint64_t i = 0; i < d->file_count; i++) {
+    for (u64 i = 0; i < d->file_count; i++) {
       if (strlen(d->files[i]->name.cstr) != strlen(name))
         continue;
       if (strncmp(d->files[i]->name.cstr, name, strlen(name))) {
@@ -156,7 +156,7 @@ int vfs_find_file(file_t **result, char *path) {
   return E_INVOP;
 }
 
-int vfs_type(char *path, uint64_t *type) {
+int vfs_type(char *path, u64 *type) {
   if (!strlen(path))
     return E_INVOPT;
   char *fs_name = clone(path, strnext(path, PATHSEP));
@@ -165,7 +165,7 @@ int vfs_type(char *path, uint64_t *type) {
   if (!fs)
     return E_NOENT;
   directory_t *d = fs->root;
-  uint64_t it = 0;
+  u64 it = 0;
   while (strlen(path) > strnext(path, PATHSEP)) {
     if (it)
       return E_NOENT;
@@ -173,7 +173,7 @@ int vfs_type(char *path, uint64_t *type) {
     path += strnext(path, PATHSEP) + 1;
     char *name = clone(path, min(strnext(path, PATHSEP), strlen(path)));
     bool found = false;
-    for (uint64_t i = 0; i < d->directory_count; i++) {
+    for (u64 i = 0; i < d->directory_count; i++) {
       if (strlen(d->directories[i]->name.cstr) != strlen(name))
         continue;
       if (strncmp(d->directories[i]->name.cstr, name, strlen(name))) {
@@ -185,7 +185,7 @@ int vfs_type(char *path, uint64_t *type) {
     }
     if (found)
       continue;
-    for (uint64_t i = 0; i < d->file_count; i++) {
+    for (u64 i = 0; i < d->file_count; i++) {
       if (strlen(d->files[i]->name.cstr) != strlen(name))
         continue;
       if (strncmp(d->files[i]->name.cstr, name, strlen(name))) {

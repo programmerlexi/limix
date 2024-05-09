@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <task/thread/thread.h>
 
-static uint64_t latest_tid = 0;
+static u64 latest_tid = 0;
 
 thread_t *thread_create() {
   thread_t *t = (thread_t *)malloc(sizeof(thread_t));
@@ -13,7 +13,7 @@ thread_t *thread_create() {
 
 void thread_destroy(thread_t *t) { free(t); }
 
-extern void exec_thread_switch(uint64_t *prev, uint64_t *next);
+extern void exec_thread_switch(u64 *prev, u64 *next);
 
 void thread_switch(thread_t *t, thread_t *p) {
   p->state = THREAD_IDLE;

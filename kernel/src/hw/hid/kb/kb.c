@@ -17,9 +17,9 @@ void kb_init() {
   log(LOGLEVEL_ANALYZE, "Zeroing keyboard state");
   memset(key_state, 0, 256);
 }
-bool kb_get_key(uint8_t k) { return key_state[k]; }
-uint16_t kb_get_mods() {
-  uint16_t s = 0;
+bool kb_get_key(u8 k) { return key_state[k]; }
+u16 kb_get_mods() {
+  u16 s = 0;
   if (caps_lock)
     s |= KB_MOD_CAPS;
   if (num_lock)
@@ -41,4 +41,4 @@ uint16_t kb_get_mods() {
   return s;
 }
 
-void kb_internal_set_key(uint8_t key, bool state) { key_state[key] = state; }
+void kb_internal_set_key(u8 key, bool state) { key_state[key] = state; }

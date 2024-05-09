@@ -9,9 +9,9 @@
 #include <utils/strings/strings.h>
 
 idt_gate_t idt[256];
-static inline void lidt(void *base, uint16_t size) {
+static inline void lidt(void *base, u16 size) {
   struct {
-    uint16_t length;
+    u16 length;
     void *base;
   } __attribute__((packed)) IDTR = {size, base};
 
@@ -54,14 +54,13 @@ void idt_init() {
   lidt((void *)idt, sizeof(idt) - 1);
   asm volatile("sti" ::: "memory");
 }
-void idt_add_handler(uint8_t id, void *handler, uint8_t flags, uint8_t ist) {
-  idt_gate_t ig = {
-      .offset_low = (uint16_t)((uint64_t)handler & 0xffff),
-      .segment_selector = 0x8,
-      .ist = ist,
-      .flags = flags,
-      .offset_mid = (uint16_t)(((uint64_t)handler & 0xffff0000) >> 16),
-      .offset_high = (uint32_t)(((uint64_t)handler & (~0xffffffff)) >> 32),
-      .reserved = 0};
+void idt_add_handler(u8 id, void *handler, u8 flags, u8 ist) {
+  idt_gate_t ig = {.offset_low = (u16)((u64)handler & 0xffff),
+                   .segment_selector = 0x8,
+                   .ist = ist,
+                   .flags = flags,
+                   .offset_mid = (u16)(((u64)handler & 0xffff0000) >> 16),
+                   .offset_high = (u32)(((u64)handler & (~0xffffffff)) >> 32),
+                   .reserved = 0};
   idt[id] = ig;
 }

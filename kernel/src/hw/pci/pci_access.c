@@ -2,32 +2,30 @@
 #include <io/pio.h>
 #include <stdint.h>
 
-uint16_t pci_config_read_word(uint8_t bus, uint8_t device, uint8_t func,
-                              uint8_t offset) {
-  uint32_t addr;
-  uint32_t lbus = (uint32_t)bus;
-  uint32_t lslot = (uint32_t)device;
-  uint32_t lfunc = (uint32_t)func;
-  uint16_t tmp = 0;
+u16 pci_config_read_word(u8 bus, u8 device, u8 func, u8 offset) {
+  u32 addr;
+  u32 lbus = (u32)bus;
+  u32 lslot = (u32)device;
+  u32 lfunc = (u32)func;
+  u16 tmp = 0;
 
-  addr = (uint32_t)((lbus << 16) | (lslot << 11) | (lfunc << 8) |
-                    (offset & 0xFC) | ((uint32_t)0x80000000));
+  addr = (u32)((lbus << 16) | (lslot << 11) | (lfunc << 8) | (offset & 0xFC) |
+               ((u32)0x80000000));
 
   outd(PCI_CONFIG_ADDRESS, addr);
-  uint32_t data = ind(PCI_CONFIG_DATA);
-  uint16_t data015 = (uint16_t)data;
-  uint16_t data1531 = (uint16_t)(data >> 16);
+  u32 data = ind(PCI_CONFIG_DATA);
+  u16 data015 = (u16)data;
+  u16 data1531 = (u16)(data >> 16);
   data = (data015 << 16) | (data1531 << 0);
-  tmp = (uint16_t)((data >> ((offset & 2) * 8)) & 0xFFFF);
+  tmp = (u16)((data >> ((offset & 2) * 8)) & 0xFFFF);
   return tmp;
 }
 
-uint8_t pci_config_read_byte(uint8_t bus, uint8_t slot, uint8_t func,
-                             uint8_t offset) {
-  uint16_t w = pci_config_read_word(bus, slot, func, offset);
+u8 pci_config_read_byte(u8 bus, u8 slot, u8 func, u8 offset) {
+  u16 w = pci_config_read_word(bus, slot, func, offset);
   return w & (0xff << 8 * (1 - (offset % 2))) >> 8 * (1 - (offset % 2));
   //  return (w >> ((~offset & 1) * 8)) & 0xff;
 }
-uint16_t pci_check_vendor(uint8_t bus, uint8_t slot) {
+u16 pci_check_vendor(u8 bus, u8 slot) {
   return pci_config_read_word(bus, slot, 0, PCI_OFFSET_ALL_VENDOR);
 }

@@ -12,21 +12,21 @@
 #include <utils/memory/memory.h>
 
 static vt_char_t *vt_buffer;
-static uint64_t vt_height;
-static uint64_t vt_width;
-static uint64_t vt_x;
-static uint64_t vt_y;
+static u64 vt_height;
+static u64 vt_width;
+static u64 vt_x;
+static u64 vt_y;
 
-static uint64_t dirty_start;
-static uint64_t dirty_end;
+static u64 dirty_start;
+static u64 dirty_end;
 static bool dirty;
 static bool full_redraw;
 
-static uint32_t vt_lock;
+static u32 vt_lock;
 
 static ansi_state_t state;
 
-static uint64_t attached_drm;
+static u64 attached_drm;
 static bool avail;
 
 #define lock_vt spinlock(&vt_lock)
@@ -34,7 +34,7 @@ static bool avail;
 
 bool vt_is_available() { return avail; }
 
-void vt_init(uint64_t attached_to_drm) {
+void vt_init(u64 attached_to_drm) {
   attached_drm = attached_to_drm;
   vt_width = drm_width(attached_drm) / 8;
   vt_height = drm_height(attached_drm) / 17;
@@ -58,10 +58,10 @@ void vt_clear() {
   unlock_vt;
   vt_flush();
 }
-void vt_draw_char(uint64_t i) {
+void vt_draw_char(u64 i) {
   vt_char_t c = vt_buffer[i];
-  uint64_t cx = i % vt_width;
-  uint64_t cy = i / vt_width;
+  u64 cx = i % vt_width;
+  u64 cy = i / vt_width;
   if (c.unicode)
     drm_plot_char_solid(attached_drm, cx * 8, cy * 17, c.unicode, c.fg.fb_color,
                         c.bg.fb_color);
@@ -73,7 +73,7 @@ void vt_flush() {
     return;
   if (full_redraw) {
     drm_clear(attached_drm);
-    for (uint64_t i = 0; i < (vt_width * vt_height); i++) {
+    for (u64 i = 0; i < (vt_width * vt_height); i++) {
       vt_draw_char(i);
     }
     full_redraw = false;
@@ -82,7 +82,7 @@ void vt_flush() {
   if (dirty) {
     // drm_fill_rel_rect(attached_drm, 0, vt_y * 17, vt_width * 8, 34,
     // 0x000000);
-    for (uint64_t i = dirty_start; i <= dirty_end; i++) {
+    for (u64 i = dirty_start; i <= dirty_end; i++) {
       if (i >= vt_width * vt_height)
         break;
       vt_draw_char(i);

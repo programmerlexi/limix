@@ -16,7 +16,7 @@
 
 static process_t *procs;
 static local_scheduler_t *scheds;
-static uint32_t glob_sched_lock;
+static u32 glob_sched_lock;
 static sched_frame_t *frames;
 
 void sched_glob_init() {

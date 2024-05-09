@@ -3,6 +3,7 @@
 #include <mm/mm.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <types.h>
 #include <utils/memory/memory.h>
 #include <utils/memory/safety.h>
 
@@ -50,10 +51,10 @@ static void insert_page(void *page) {
 
 bool mm_init(struct limine_memmap_response *mmap) {
   int usable = 0;
-  for (uint64_t i = 0; i < mmap->entry_count; i++) {
+  for (u64 i = 0; i < mmap->entry_count; i++) {
     if (mmap->entries[i]->type == LIMINE_MEMMAP_USABLE) {
       usable++;
-      for (uint64_t j = 0; j < mmap->entries[i]->length; j += 0x1000) {
+      for (u64 j = 0; j < mmap->entries[i]->length; j += 0x1000) {
         insert_page((void *)(mmap->entries[i]->base + j));
       }
     }

@@ -1,6 +1,7 @@
 #include <hw/pci/codes.h>
 #include <hw/pci/pci.h>
 #include <stdint.h>
+#include <types.h>
 
 static const char *device_class_names[] = {
     "Unclassified",           "Mass Storage Controller",
@@ -14,7 +15,7 @@ static const char *device_class_names[] = {
     "Encryption Controller",  "Signal Processing Controller",
     "Processing Accelerator", "Non Essential Instrumentation"};
 
-static char *get_vendor_name(uint16_t id) {
+static char *get_vendor_name(u16 id) {
   switch (id) {
   case 0x8086:
     return "Intel Corp";
@@ -28,7 +29,7 @@ static char *get_vendor_name(uint16_t id) {
   return "-";
 }
 
-static const char *get_device_name(uint16_t vID, uint16_t dID) {
+static const char *get_device_name(u16 vID, u16 dID) {
   switch (vID) {
   case 0x8086: // Intel
     switch (dID) {
@@ -77,7 +78,7 @@ static const char *get_device_name(uint16_t vID, uint16_t dID) {
   }
   return "";
 }
-static const char *mass_storage_subclass_name(uint8_t scID) {
+static const char *mass_storage_subclass_name(u8 scID) {
   switch (scID) {
   case 0x00:
     return "SCSI Bus Controller";
@@ -103,7 +104,7 @@ static const char *mass_storage_subclass_name(uint8_t scID) {
   return "-";
 }
 
-static const char *serial_bus_subclass_name(uint8_t scID) {
+static const char *serial_bus_subclass_name(u8 scID) {
   switch (scID) {
   case 0x00:
     return "FireWire (IEEE 1394) Controller";
@@ -131,7 +132,7 @@ static const char *serial_bus_subclass_name(uint8_t scID) {
   return "-";
 }
 
-static const char *bridge_dev_subclass_name(uint8_t scID) {
+static const char *bridge_dev_subclass_name(u8 scID) {
   switch (scID) {
   case 0x00:
     return "Host Bridge";
@@ -161,7 +162,7 @@ static const char *bridge_dev_subclass_name(uint8_t scID) {
   return "-";
 }
 
-static const char *network_subclass_name(uint8_t scID) {
+static const char *network_subclass_name(u8 scID) {
   switch (scID) {
   case 0x00:
     return "Ethernet Controller";
@@ -186,7 +187,7 @@ static const char *network_subclass_name(uint8_t scID) {
   }
   return "-";
 }
-static const char *get_subclass_name(uint8_t cID, uint8_t scID) {
+static const char *get_subclass_name(u8 cID, u8 scID) {
   switch (cID) {
   case 0x01:
     return mass_storage_subclass_name(scID);
@@ -205,7 +206,7 @@ static const char *get_subclass_name(uint8_t cID, uint8_t scID) {
   return "-";
 }
 
-static const char *get_progif_name(uint8_t cID, uint8_t scID, uint8_t prgIF) {
+static const char *get_progif_name(u8 cID, u8 scID, u8 prgIF) {
   switch (cID) {
   case 0x01:
     switch (scID) {
@@ -251,23 +252,23 @@ static const char *get_progif_name(uint8_t cID, uint8_t scID, uint8_t prgIF) {
   return "-";
 }
 
-char *pci_get_classname(uint8_t bus, uint8_t slot, uint8_t func) {
-  uint8_t c = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_CLASS);
+char *pci_get_classname(u8 bus, u8 slot, u8 func) {
+  u8 c = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_CLASS);
   if (c < 0x40)
     return (char *)device_class_names[c];
   return "-";
 }
-char *pci_get_subclassname(uint8_t bus, uint8_t slot, uint8_t func) {
-  uint8_t c = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_CLASS);
-  uint8_t sc = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_CLASS);
+char *pci_get_subclassname(u8 bus, u8 slot, u8 func) {
+  u8 c = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_CLASS);
+  u8 sc = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_CLASS);
   return (char *)get_subclass_name(c, sc);
 }
-char *pci_get_device_name(uint8_t bus, uint8_t slot, uint8_t func) {
+char *pci_get_device_name(u8 bus, u8 slot, u8 func) {
   return (char *)get_device_name(
       pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_VENDOR),
       pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_DEVICE));
 }
-char *pci_get_vendor_name(uint8_t bus, uint8_t slot, uint8_t func) {
+char *pci_get_vendor_name(u8 bus, u8 slot, u8 func) {
   return (char *)get_vendor_name(
       pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_VENDOR));
 }

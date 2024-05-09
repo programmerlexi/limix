@@ -1,33 +1,34 @@
 #include <stddef.h>
 #include <stdint.h>
+#include <types.h>
 
 void *memset(void *dst, int sval, size_t count) {
   if (!count) {
     return dst;
   } // nothing to set?
-  uint64_t addr = (uint64_t)dst;
-  uint64_t val = (sval & 0xFF); // create a 64-bit version of 'sval'
+  u64 addr = (u64)dst;
+  u64 val = (sval & 0xFF); // create a 64-bit version of 'sval'
   val |= ((val << 8) & 0xFF00);
   val |= ((val << 16) & 0xFFFF0000);
   val |= ((val << 32) & 0xFFFFFFFF00000000);
 
   while (count >= 8) {
-    *(uint64_t *)addr = (uint64_t)val;
+    *(u64 *)addr = (u64)val;
     addr += 8;
     count -= 8;
   }
   while (count >= 4) {
-    *(uint32_t *)addr = (uint32_t)val;
+    *(u32 *)addr = (u32)val;
     addr += 4;
     count -= 4;
   }
   while (count >= 2) {
-    *(uint16_t *)addr = (uint16_t)val;
+    *(u16 *)addr = (u16)val;
     addr += 2;
     count -= 2;
   }
   while (count >= 1) {
-    *(uint8_t *)addr = (uint8_t)val;
+    *(u8 *)addr = (u8)val;
     addr += 1;
     count -= 1;
   }

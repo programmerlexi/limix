@@ -27,7 +27,7 @@ void _smp_start(struct limine_smp_info *cpu_info) {
     while (cmd->cmd_type != SMP_ACTION_DATA) {
       asm volatile("nop");
     }
-    uint64_t new_cmd = cmd->data & 0x0000ffffffffffff;
+    u64 new_cmd = cmd->data & 0x0000ffffffffffff;
     cmd->cmd_type = SMP_ACTION_NONE;
     cmd->state = SMP_STATE_INIT_CMD2;
 
@@ -47,14 +47,14 @@ void _smp_start(struct limine_smp_info *cpu_info) {
   while (cmd->cmd_type != SMP_ACTION_DATA) {
     asm volatile("nop");
   }
-  uint32_t lapic_id = (cmd->data & 0x0000ffffffff0000) >> 16;
+  u32 lapic_id = (cmd->data & 0x0000ffffffff0000) >> 16;
   cmd->cmd_type = SMP_ACTION_NONE;
   cmd->state = SMP_STATE_INIT_PID;
 
   while (cmd->cmd_type != SMP_ACTION_DATA) {
     asm volatile("nop");
   }
-  uint32_t processor_id = (cmd->data & 0x0000ffffffff0000) >> 16;
+  u32 processor_id = (cmd->data & 0x0000ffffffff0000) >> 16;
 
   // Validate data
   if (cpu_info->lapic_id != lapic_id ||
@@ -82,7 +82,7 @@ void _smp_start(struct limine_smp_info *cpu_info) {
 }
 
 void smp_init() {
-  for (uint64_t i = 0; i < smp_request.response->cpu_count; i++) {
+  for (u64 i = 0; i < smp_request.response->cpu_count; i++) {
     if (smp_request.response->bsp_lapic_id ==
         smp_request.response->cpus[i]->lapic_id)
       continue;
@@ -90,7 +90,7 @@ void smp_init() {
   }
   block_on_count(&smp_cpu, smp_request.response->cpu_count - 1);
 
-  for (uint64_t i = 0; i < smp_request.response->cpu_count; i++) {
+  for (u64 i = 0; i < smp_request.response->cpu_count; i++) {
     if (smp_request.response->bsp_lapic_id ==
         smp_request.response->cpus[i]->lapic_id)
       continue;
@@ -111,8 +111,8 @@ void smp_init() {
     if (max_cycles <= 0)
       continue;
 
-    cmd->data = (cmd->data & 0xffff000000000000) |
-                (((uint64_t)cmd & 0x0000ffffffffffff));
+    cmd->data =
+        (cmd->data & 0xffff000000000000) | (((u64)cmd & 0x0000ffffffffffff));
     cmd->cmd_type = SMP_ACTION_DATA;
 
     while (cmd->state != SMP_STATE_INIT_CMD2) {
@@ -128,7 +128,7 @@ void smp_init() {
       continue;
 
     cmd->data = (cmd->data & 0xffff0000ffffffff) |
-                (((uint64_t)cmd & 0xffff000000000000) >> 16);
+                (((u64)cmd & 0xffff000000000000) >> 16);
     cmd->cmd_type = SMP_ACTION_DATA;
 
     while (cmd->state != SMP_STATE_INIT_LAPIC) {

@@ -20,8 +20,8 @@ extern void hcf();
 static task_t *threads;
 static task_t *current;
 
-static uint64_t count;
-static uint64_t waiting;
+static u64 count;
+static u64 waiting;
 
 void async_init() {
   log(LOGLEVEL_ANALYZE,
@@ -80,9 +80,9 @@ future_t async(result_t (*func)(variety_t), variety_t arg) {
   }
 
   t->sp = (void *)((uintptr_t)t->page + 0x1000 - 72);
-  *(uint64_t *)(t->page + 0x1000 - 8) = (uintptr_t)_async_wrapper;
-  *(uint64_t *)(t->page + 0x1000 - 16) = (uintptr_t)t->page + 0x1000;
-  *(uint64_t *)(t->page + 0x1000 - 24) = (uintptr_t)func;
+  *(u64 *)(t->page + 0x1000 - 8) = (uintptr_t)_async_wrapper;
+  *(u64 *)(t->page + 0x1000 - 16) = (uintptr_t)t->page + 0x1000;
+  *(u64 *)(t->page + 0x1000 - 24) = (uintptr_t)func;
   *(variety_t *)(t->page + 0x1000 - 32) = arg;
   future_t future;
   future.run = t;

@@ -1,9 +1,10 @@
 #include <hash/crc32.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <types.h>
 
-static uint32_t crc32_poly(uint8_t i) {
-  uint32_t r = (uint32_t)i;
+static u32 crc32_poly(u8 i) {
+  u32 r = (u32)i;
   for (int j = 0; j < 8; j++) {
     bool l = r & 1;
     r >>= 1;
@@ -13,9 +14,9 @@ static uint32_t crc32_poly(uint8_t i) {
   return r;
 }
 
-uint32_t crc32(uint8_t *p, uint64_t count) {
-  uint32_t r = 0xffffffff;
+u32 crc32(u8 *p, u64 count) {
+  u32 r = 0xffffffff;
   while (count-- != 0)
-    r = crc32_poly(((uint8_t)r ^ *(p++))) ^ (r >> 8);
+    r = crc32_poly(((u8)r ^ *(p++))) ^ (r >> 8);
   return ~r;
 }

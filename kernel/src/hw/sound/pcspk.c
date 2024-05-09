@@ -2,8 +2,8 @@
 #include <io/pio.h>
 #include <stdint.h>
 
-void play_sound(uint32_t freq) {
-  uint32_t div;
+void play_sound(u32 freq) {
+  u32 div;
   uint8_t tmp;
 
   div = 1193180 / freq;

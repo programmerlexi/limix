@@ -1,10 +1,11 @@
 #include <stddef.h>
 #include <stdint.h>
+#include <types.h>
 #include <utils/memory/memory.h>
 
 void *memmove(void *dest, const void *src, size_t n) {
-  uint8_t *pdest = (uint8_t *)dest;
-  const uint8_t *psrc = (const uint8_t *)src;
+  u8 *pdest = (u8 *)dest;
+  const u8 *psrc = (const u8 *)src;
 
   if (src > dest) {
     memcpy(dest, src, n);

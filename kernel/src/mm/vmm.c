@@ -27,19 +27,19 @@ virtual_address_space_t init_new_vas() {
 }
 virtual_address_space_t clone_vas(virtual_address_space_t o) {
   virtual_address_space_t n = init_new_vas();
-  for (uint64_t i = 0; i < 511; i++) {
+  for (u64 i = 0; i < 511; i++) {
     if (!(o.pml4[i] & PTE_PRESENT))
       continue;
     pdp_t pdp = (pdp_t)HHDM(PTE_ADDR(o.pml4[i]));
-    for (uint64_t j = 0; j < 512; j++) {
+    for (u64 j = 0; j < 512; j++) {
       if (!(pdp[j] & PTE_PRESENT))
         continue;
       pd_t pd = (pd_t)HHDM(PTE_ADDR(pdp[j]));
-      for (uint64_t k = 0; k < 512; k++) {
+      for (u64 k = 0; k < 512; k++) {
         if (!(pd[k] & PTE_PRESENT))
           continue;
         pt_t pt = (pt_t)HHDM(PTE_ADDR(pd[k]));
-        for (uint64_t l = 0; l < 512; l++) {
+        for (u64 l = 0; l < 512; l++) {
           pte_t pte = pt[l];
           if (!(pte & PTE_PRESENT))
             continue;

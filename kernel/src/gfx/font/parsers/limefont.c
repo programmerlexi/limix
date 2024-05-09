@@ -17,21 +17,20 @@ bool limefont_parse(void *font) {
     error("Font not loadable: Invalid magic");
     return false;
   }
-  g_8x16_font =
-      (uint8_t *)malloc(head->width * head->height * head->glyphs / 8);
+  g_8x16_font = (u8 *)malloc(head->width * head->height * head->glyphs / 8);
   if (!g_8x16_font) {
     error("Font not loadable: Not enough memory");
     return false;
   }
   limefont_relocation_t *relocs =
-      (limefont_relocation_t *)((uint64_t)head + sizeof(limefont_header_t) +
+      (limefont_relocation_t *)((u64)head + sizeof(limefont_header_t) +
                                 head->width * head->height * head->glyphs / 8);
-  for (uint32_t i = 0; i < head->relocs; i++) {
+  for (u32 i = 0; i < head->relocs; i++) {
     debug("Copying relocation");
     limefont_relocation_t r = relocs[i];
-    memcpy((void *)((uint64_t)g_8x16_font +
+    memcpy((void *)((u64)g_8x16_font +
                     (r.target * head->width * head->height / 8)),
-           (void *)((uint64_t)head + sizeof(limefont_header_t) +
+           (void *)((u64)head + sizeof(limefont_header_t) +
                     (r.source * head->width * head->height / 8)),
            r.count * (head->width * head->height / 8));
   }

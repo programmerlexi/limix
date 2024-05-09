@@ -13,11 +13,11 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "font"
 
-uint8_t *g_8x16_font;
+u8 *g_8x16_font;
 
 void font_parse() {
   if (module_request.response)
-    for (uint64_t i = 0; i < module_request.response->module_count; i++) {
+    for (u64 i = 0; i < module_request.response->module_count; i++) {
       if (!strncmp(module_request.response->modules[i]->cmdline, "font", 4))
         continue;
       debug("Found font module");

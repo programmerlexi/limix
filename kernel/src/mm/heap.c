@@ -119,7 +119,7 @@ void *malloc(size_t size) {
   return malloc(size);
 }
 
-void *calloc(size_t size, uint8_t val) {
+void *calloc(size_t size, u8 val) {
   void *ptr = malloc(size);
   if (size % 0x10 > 0) {
     size -= size % 0x10;
@@ -129,8 +129,8 @@ void *calloc(size_t size, uint8_t val) {
   return ptr;
 }
 
-uint32_t heap_get_used() {
-  uint32_t used = 0;
+u32 heap_get_used() {
+  u32 used = 0;
   heapseg_t *c = heap_first;
   while (c) {
     used += sizeof(heapseg_t);

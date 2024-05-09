@@ -15,10 +15,10 @@
 #include <utils/memory/safety.h>
 
 static drm_t drms[MAX_DRMS];
-static uint64_t active_drm;
-static uint32_t drm_sys_lock;
+static u64 active_drm;
+static u32 drm_sys_lock;
 
-static uint32_t fallback_font[] = {
+static u32 fallback_font[] = {
     0x6999f999, 0xe99e99e0, 0x78888870, 0xe99999e0, 0xf88f88f0, 0xf88f8880,
     0x788b9960, 0x999f9990, 0x44444440, 0x11199960, 0x9ac8ca90, 0x888888f0,
     0x9ff99990, 0x9ddbb990, 0x69999960, 0xe99e8880, 0x6999db70, 0xe99eca90,
@@ -45,7 +45,7 @@ static void _drm_sync_real() {
   drm_t ad = drms[active_drm];
   memcpy(g_fb->address, ad.framebuffer, ad.width * ad.height * 4);
 }
-void drm_switch(uint64_t drm) {
+void drm_switch(u64 drm) {
   if (drm >= MAX_DRMS)
     return;
   memcpy(drms[active_drm].framebuffer, g_fb->address,
@@ -63,7 +63,7 @@ void drm_sync() {
 #endif
   spinunlock(&drm_sys_lock);
 }
-void drm_plot(uint64_t drm, uint64_t x, uint64_t y, uint32_t c) {
+void drm_plot(u64 drm, u64 x, u64 y, u32 c) {
   if (x > drms[drm].width)
     return;
   if (y > drms[drm].height)
@@ -74,15 +74,14 @@ void drm_plot(uint64_t drm, uint64_t x, uint64_t y, uint32_t c) {
 #else
   if (active_drm == drm) {
     spinlock(&drm_sys_lock);
-    ((uint32_t *)g_fb->address)[drms[drm].width * y + x] = c;
+    ((u32 *)g_fb->address)[drms[drm].width * y + x] = c;
     spinunlock(&drm_sys_lock);
   } else
     drms[drm].framebuffer[drms[drm].width * y + x] = c;
 #endif
   spinunlock(&drms[drm].lock);
 }
-void drm_plot_line(uint64_t drm, uint64_t x0, uint64_t y0, uint64_t x1,
-                   uint64_t y1, uint32_t c) {
+void drm_plot_line(u64 drm, u64 x0, u64 y0, u64 x1, u64 y1, u32 c) {
   int x, y, t, dx, dy, incx, incy, pdx, pdy, ddx, ddy, deltaslowdirection,
       deltafastdirection, err;
   dx = x1 - x0;
@@ -126,15 +125,13 @@ void drm_plot_line(uint64_t drm, uint64_t x0, uint64_t y0, uint64_t x1,
     drm_plot(drm, x, y, c);
   }
 }
-void drm_plot_rect(uint64_t drm, uint64_t x0, uint64_t y0, uint64_t x1,
-                   uint64_t y1, uint32_t c) {
+void drm_plot_rect(u64 drm, u64 x0, u64 y0, u64 x1, u64 y1, u32 c) {
   drm_plot_line(drm, x0, y0, x1, y0, c);
   drm_plot_line(drm, x0, y0, x0, y1, c);
   drm_plot_line(drm, x0, y1, x1, y1, c);
   drm_plot_line(drm, x1, y0, x1, y1, c);
 }
-void drm_plot_circle(uint64_t drm, uint64_t x0, uint64_t y0, uint64_t r,
-                     uint32_t c) {
+void drm_plot_circle(u64 drm, u64 x0, u64 y0, u64 r, u32 c) {
   int f = 1 - r;
   int ddF_x = 0;
   int ddF_y = -2 * r;
@@ -166,44 +163,40 @@ void drm_plot_circle(uint64_t drm, uint64_t x0, uint64_t y0, uint64_t r,
     drm_plot(drm, x0 - y, y0 - x, c);
   }
 }
-void drm_fill_rect(uint64_t drm, uint64_t x0, uint64_t y0, uint64_t x1,
-                   uint64_t y1, uint32_t c) {
-  for (uint64_t x = x0; x < x1; x++) {
-    for (uint64_t y = y0; y < y1; y++) {
+void drm_fill_rect(u64 drm, u64 x0, u64 y0, u64 x1, u64 y1, u32 c) {
+  for (u64 x = x0; x < x1; x++) {
+    for (u64 y = y0; y < y1; y++) {
       drm_plot(drm, x, y, c);
     }
   }
 }
-void drm_fill_rel_rect(uint64_t drm, uint64_t x0, uint64_t y0, uint64_t w,
-                       uint64_t h, uint32_t c) {
-  for (uint64_t x = x0; x < x0 + w; x++) {
-    for (uint64_t y = y0; y < y0 + h; y++) {
+void drm_fill_rel_rect(u64 drm, u64 x0, u64 y0, u64 w, u64 h, u32 c) {
+  for (u64 x = x0; x < x0 + w; x++) {
+    for (u64 y = y0; y < y0 + h; y++) {
       drm_plot(drm, x, y, c);
     }
   }
 }
-void drm_clear(uint64_t drm) {
+void drm_clear(u64 drm) {
   spinlock(&drm_sys_lock);
   memset(drms[drm].framebuffer, 0, drms[drm].width * drms[drm].height * 4);
   spinunlock(&drm_sys_lock);
   drm_sync();
 }
-static void _drm_plot_char(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
-                           uint32_t c) {
-  for (uint8_t hi = 0; hi < 16; hi++) {
-    uint8_t m = 0x80;
-    for (uint8_t i = 0; i < 8; i++) {
+static void _drm_plot_char(u64 drm, u64 x, u64 y, u32 ch, u32 c) {
+  for (u8 hi = 0; hi < 16; hi++) {
+    u8 m = 0x80;
+    for (u8 i = 0; i < 8; i++) {
       if (g_8x16_font[16 * ch + hi] & m)
         drm_plot(drm, x + i, y + hi, c);
       m >>= 1;
     }
   }
 }
-static void _drm_plot_char_solid(uint64_t drm, uint64_t x, uint64_t y,
-                                 uint32_t ch, uint32_t c, uint32_t b) {
-  for (uint8_t hi = 0; hi < 16; hi++) {
-    uint8_t m = 0x80;
-    for (uint8_t i = 0; i < 8; i++) {
+static void _drm_plot_char_solid(u64 drm, u64 x, u64 y, u32 ch, u32 c, u32 b) {
+  for (u8 hi = 0; hi < 16; hi++) {
+    u8 m = 0x80;
+    for (u8 i = 0; i < 8; i++) {
       if (g_8x16_font[16 * ch + hi] & m)
         drm_plot(drm, x + i, y + hi, c);
       else
@@ -213,7 +206,7 @@ static void _drm_plot_char_solid(uint64_t drm, uint64_t x, uint64_t y,
   }
 }
 
-static uint32_t _drm_get_fallback(uint32_t c) {
+static u32 _drm_get_fallback(u32 c) {
   if (c >= 'A' && c <= 'Z')
     return fallback_font[c - 'A'];
   if (c >= 'a' && c <= 'z')
@@ -241,22 +234,21 @@ static uint32_t _drm_get_fallback(uint32_t c) {
   return c;
 }
 
-static void _drm_plot_char_fallback(uint64_t drm, uint64_t x, uint64_t y,
-                                    uint32_t ch, uint32_t c) {
-  for (uint8_t hi = 0; hi < 8; hi++) {
-    uint8_t m = 0x80;
-    for (uint8_t i = 0; i < 4; i++) {
+static void _drm_plot_char_fallback(u64 drm, u64 x, u64 y, u32 ch, u32 c) {
+  for (u8 hi = 0; hi < 8; hi++) {
+    u8 m = 0x80;
+    for (u8 i = 0; i < 4; i++) {
       if ((_drm_get_fallback(ch) >> ((7 - hi) * 4)) & m)
         drm_fill_rel_rect(drm, x + i * 2, y + hi * 2, 2, 2, c);
       m >>= 1;
     }
   }
 }
-static void _drm_plot_char_solid_fallback(uint64_t drm, uint64_t x, uint64_t y,
-                                          uint32_t ch, uint32_t c, uint32_t b) {
-  for (uint8_t hi = 0; hi < 8; hi++) {
-    uint8_t m = 0x80;
-    for (uint8_t i = 0; i < 4; i++) {
+static void _drm_plot_char_solid_fallback(u64 drm, u64 x, u64 y, u32 ch, u32 c,
+                                          u32 b) {
+  for (u8 hi = 0; hi < 8; hi++) {
+    u8 m = 0x80;
+    for (u8 i = 0; i < 4; i++) {
       if ((_drm_get_fallback(ch) >> ((7 - hi) * 4)) & m)
         drm_fill_rel_rect(drm, x + (i * 2), y + (hi * 2), 2, 2, c);
       else
@@ -266,58 +258,56 @@ static void _drm_plot_char_solid_fallback(uint64_t drm, uint64_t x, uint64_t y,
   }
 }
 
-void drm_plot_char(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
-                   uint32_t c) {
+void drm_plot_char(u64 drm, u64 x, u64 y, u32 ch, u32 c) {
   if (g_8x16_font)
     _drm_plot_char(drm, x, y, ch, c);
   else
     _drm_plot_char_fallback(drm, x, y, ch, c);
 }
-void drm_plot_char_solid(uint64_t drm, uint64_t x, uint64_t y, uint32_t ch,
-                         uint32_t c, uint32_t b) {
+void drm_plot_char_solid(u64 drm, u64 x, u64 y, u32 ch, u32 c, u32 b) {
   if (g_8x16_font)
     _drm_plot_char_solid(drm, x, y, ch, c, b);
   else
     _drm_plot_char_solid_fallback(drm, x, y, ch, c, b);
 }
 
-uint64_t drm_width(uint64_t drm) { return drms[drm].width; }
-uint64_t drm_height(uint64_t drm) { return drms[drm].height; }
+u64 drm_width(u64 drm) { return drms[drm].width; }
+u64 drm_height(u64 drm) { return drms[drm].height; }
 
-bool drm_is_attached_to_process(uint64_t drm) {
+bool drm_is_attached_to_process(u64 drm) {
   return drms[drm].flags & DRM_ATTACHED_TO_PROCESS;
 }
 
-static int _drm_write(void *d, uint64_t o, uint64_t s, char *b) {
+static int _drm_write(void *d, u64 o, u64 s, char *b) {
   drm_number_t *dn = d;
   if (o > drm_width(*dn) * drm_height(*dn))
     return E_OUTOFBOUNDS;
   if (o + s > drm_width(*dn) * drm_height(*dn))
     return E_OUTOFBOUNDS;
-  for (uint64_t i = 0; i < s; i++) {
+  for (u64 i = 0; i < s; i++) {
     drm_plot(*dn, (o + i) % drm_width(*dn), (o + i) / drm_width(*dn),
-             ((uint32_t *)b)[i]);
+             ((u32 *)b)[i]);
   }
   return E_SUCCESS;
 }
 
-static int _drm_read(void *d, uint64_t o, uint64_t s, char *b) {
+static int _drm_read(void *d, u64 o, u64 s, char *b) {
   drm_number_t *dn = d;
   if (o > drm_width(*dn) * drm_height(*dn))
     return E_OUTOFBOUNDS;
   if (o + s > drm_width(*dn) * drm_height(*dn))
     return E_OUTOFBOUNDS;
-  for (uint64_t i = 0; i < s; i++) {
+  for (u64 i = 0; i < s; i++) {
     if (active_drm == *dn)
-      ((uint32_t *)b)[i] = ((uint32_t *)g_fb->address)[o * i];
+      ((u32 *)b)[i] = ((u32 *)g_fb->address)[o * i];
     else
-      ((uint32_t *)b)[i] = drms[*dn].framebuffer[o + i];
+      ((u32 *)b)[i] = drms[*dn].framebuffer[o + i];
   }
   return E_SUCCESS;
 }
 
 void drm_register_vfs() {
-  for (uint64_t i = 0; i < MAX_DRMS; i++) {
+  for (u64 i = 0; i < MAX_DRMS; i++) {
     drm_number_t *dn = malloc(sizeof(drm_number_t));
     nullsafe_error(dn, "Out of memory");
     char *devname = malloc(4);

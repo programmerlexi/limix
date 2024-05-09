@@ -27,6 +27,6 @@ __attribute__((aligned(0x1000))) gdt_t default_gdt = {
 void gdt_init(void) {
   gdt_descriptor_t gdt_desc;
   gdt_desc.size = sizeof(gdt_t) - 1;
-  gdt_desc.offset = PHY((uint64_t)&default_gdt);
+  gdt_desc.offset = PHY((u64)&default_gdt);
   load_gdt(&gdt_desc);
 }

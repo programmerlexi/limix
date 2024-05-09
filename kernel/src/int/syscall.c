@@ -6,8 +6,7 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "syscall"
 
-void syscall(uint64_t syscall_id, uint64_t p0, uint64_t p1, uint64_t p2,
-             uint64_t p3) {
+void syscall(u64 syscall_id, u64 p0, u64 p1, u64 p2, u64 p3) {
   switch (syscall_id) {
   case SYSCALL_TEST:
     debug("Syscall test");
