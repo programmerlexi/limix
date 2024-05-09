@@ -36,8 +36,7 @@ void drm_init() {
         request_page_block(((g_fb->width * g_fb->height * 4) + 4095) / 4096);
     drms[i].flags = 0;
     if (drms[i].framebuffer == NULL) {
-      serial_writes("[!!] DRM init failed\n\r");
-      hcf();
+      kernel_panic_error("DRM init failed");
     }
   }
   active_drm = 0;

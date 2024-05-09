@@ -43,9 +43,8 @@ void _start(void) {
 
   if (framebuffer_request.response == NULL ||
       framebuffer_request.response->framebuffer_count < 1) {
-    serial_writes("[!!] This kernel is meant for graphical systems. Please "
-                  "attach a monitor!\n\r");
-    hcf();
+    kernel_panic_error("This kernel is meant for graphical systems. Please "
+                       "attach a monitor!");
   }
 
   fb_init(framebuffer_request.response->framebuffers[0]);
@@ -54,15 +53,13 @@ void _start(void) {
   idt_init();
 
   if (paging_request.response->mode != USED_PAGING_MODE) {
-    serial_writes("[!!] Paging mode isn't matching!\n\r");
-    hcf();
+    kernel_panic_error("Paging mode isn't matching!");
   }
 
   hhaddr = hhdm_request.response->offset;
 
   if (!mm_init(mmap_request.response)) {
-    serial_writes("[!!] MM seems to have failed\n\r");
-    hcf();
+    kernel_panic_error("MM seems to have failed.");
   }
 
   init_kernel_vas();
