@@ -42,4 +42,4 @@ typedef struct {
 
 void idt_init();
 void idt_add_handler(u8 id, void *handler, u8 flags, u8 ist);
-extern idt_gate_t idt[256];
+extern idt_gate_t g_idt[256];

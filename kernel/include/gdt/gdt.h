@@ -58,7 +58,7 @@ typedef enum {
   GDT_FLAG_GRANULARITY_4K = 0x80,
 } GDT_FLAGS;
 
-extern gdt_t default_gdt;
+extern gdt_t g_gdt;
 
 extern void load_gdt(gdt_descriptor_t *gdt_descriptor);
 void gdt_init(void);

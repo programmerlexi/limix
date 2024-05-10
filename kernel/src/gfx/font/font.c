@@ -16,13 +16,13 @@
 u8 *g_8x16_font;
 
 void font_parse() {
-  if (module_request.response)
-    for (u64 i = 0; i < module_request.response->module_count; i++) {
-      if (!strncmp(module_request.response->modules[i]->cmdline, "font", 4))
+  if (g_module_request.response)
+    for (u64 i = 0; i < g_module_request.response->module_count; i++) {
+      if (!strncmp(g_module_request.response->modules[i]->cmdline, "font", 4))
         continue;
       debug("Found font module");
       debug("Attempting limefont parser...");
-      if (limefont_parse(module_request.response->modules[i]->address))
+      if (limefont_parse(g_module_request.response->modules[i]->address))
         break;
       debug("Limefont failed.");
     }

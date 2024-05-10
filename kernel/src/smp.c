@@ -82,20 +82,20 @@ void _smp_start(struct limine_smp_info *cpu_info) {
 }
 
 void smp_init() {
-  for (u64 i = 0; i < smp_request.response->cpu_count; i++) {
-    if (smp_request.response->bsp_lapic_id ==
-        smp_request.response->cpus[i]->lapic_id)
+  for (u64 i = 0; i < g_smp_request.response->cpu_count; i++) {
+    if (g_smp_request.response->bsp_lapic_id ==
+        g_smp_request.response->cpus[i]->lapic_id)
       continue;
-    smp_request.response->cpus[i]->goto_address = _smp_start;
+    g_smp_request.response->cpus[i]->goto_address = _smp_start;
   }
-  block_on_count(&_smp_cpu, smp_request.response->cpu_count - 1);
+  block_on_count(&_smp_cpu, g_smp_request.response->cpu_count - 1);
 
-  for (u64 i = 0; i < smp_request.response->cpu_count; i++) {
-    if (smp_request.response->bsp_lapic_id ==
-        smp_request.response->cpus[i]->lapic_id)
+  for (u64 i = 0; i < g_smp_request.response->cpu_count; i++) {
+    if (g_smp_request.response->bsp_lapic_id ==
+        g_smp_request.response->cpus[i]->lapic_id)
       continue;
     smp_cmd_t *cmd =
-        (smp_cmd_t *)&(smp_request.response->cpus[i]->extra_argument);
+        (smp_cmd_t *)&(g_smp_request.response->cpus[i]->extra_argument);
 
     int64_t max_cycles = 0x1ffffff;
 
@@ -143,7 +143,7 @@ void smp_init() {
     if (max_cycles <= 0)
       continue;
 
-    cmd->data = smp_request.response->cpus[i]->lapic_id << 16;
+    cmd->data = g_smp_request.response->cpus[i]->lapic_id << 16;
     cmd->cmd_type = SMP_ACTION_DATA;
 
     while (cmd->state != SMP_STATE_INIT_PID) {
@@ -158,7 +158,7 @@ void smp_init() {
     if (max_cycles <= 0)
       continue;
 
-    cmd->data = smp_request.response->cpus[i]->processor_id << 16;
+    cmd->data = g_smp_request.response->cpus[i]->processor_id << 16;
     cmd->cmd_type = SMP_ACTION_DATA;
 
     while (cmd->state != SMP_STATE_INIT_WAIT_ACK &&

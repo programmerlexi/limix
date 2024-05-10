@@ -41,24 +41,24 @@ void _start(void) {
   serial_early_init();
   serial_writes("Serial initialized!\n\r");
 
-  if (framebuffer_request.response == NULL ||
-      framebuffer_request.response->framebuffer_count < 1) {
+  if (g_framebuffer_request.response == NULL ||
+      g_framebuffer_request.response->framebuffer_count < 1) {
     kernel_panic_error("This kernel is meant for graphical systems. Please "
                        "attach a monitor!");
   }
 
-  fb_init(framebuffer_request.response->framebuffers[0]);
+  fb_init(g_framebuffer_request.response->framebuffers[0]);
 
   gdt_init();
   idt_init();
 
-  if (paging_request.response->mode != USED_PAGING_MODE) {
+  if (g_paging_request.response->mode != USED_PAGING_MODE) {
     kernel_panic_error("Paging mode isn't matching!");
   }
 
-  g_hhaddr = hhdm_request.response->offset;
+  g_hhaddr = g_hhdm_request.response->offset;
 
-  if (!mm_init(mmap_request.response)) {
+  if (!mm_init(g_mmap_request.response)) {
     kernel_panic_error("MM seems to have failed.");
   }
 

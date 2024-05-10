@@ -8,7 +8,7 @@
 #include <utils/memory/memory.h>
 #include <utils/strings/strings.h>
 
-idt_gate_t idt[256];
+idt_gate_t g_idt[256];
 static inline void _lidt(void *base, u16 size) {
   struct {
     u16 length;
@@ -38,7 +38,7 @@ __attribute__((interrupt)) void df_handler(interrupt_frame_t *int_frame) {
 }
 
 void idt_init() {
-  memset(idt, 0, sizeof(idt_gate_t) * 256);
+  memset(g_idt, 0, sizeof(idt_gate_t) * 256);
 
   idt_add_handler(0x0D, (void *)gpf_handler,
                   IDT_FLAGS_DPL0 | IDT_FLAGS_PRESENT | IDT_FLAGS_GATE_TYPE_TRAP,
@@ -51,7 +51,7 @@ void idt_init() {
                   IDT_FLAGS_DPL3 | IDT_FLAGS_PRESENT | IDT_FLAGS_GATE_TYPE_INT,
                   0);
 
-  _lidt((void *)idt, sizeof(idt) - 1);
+  _lidt((void *)g_idt, sizeof(g_idt) - 1);
   asm volatile("sti" ::: "memory");
 }
 void idt_add_handler(u8 id, void *handler, u8 flags, u8 ist) {
@@ -62,5 +62,5 @@ void idt_add_handler(u8 id, void *handler, u8 flags, u8 ist) {
                    .offset_mid = (u16)(((u64)handler & 0xffff0000) >> 16),
                    .offset_high = (u32)(((u64)handler & (~0xffffffff)) >> 32),
                    .reserved = 0};
-  idt[id] = ig;
+  g_idt[id] = ig;
 }

@@ -1,7 +1,7 @@
 #include <gdt/gdt.h>
 #include <mm/hhtp.h>
 
-__attribute__((aligned(0x1000))) gdt_t default_gdt = {
+__attribute__((aligned(0x1000))) gdt_t g_gdt = {
     {0, 0, 0, 0x00, 0x00, 0}, // null
     {0xff, 0, 0,
      GDT_ACCESS_CODE_SEGMENT | GDT_ACCESS_PRESENT | GDT_ACCESS_CODE_READABLE |
@@ -27,6 +27,6 @@ __attribute__((aligned(0x1000))) gdt_t default_gdt = {
 void gdt_init(void) {
   gdt_descriptor_t gdt_desc;
   gdt_desc.size = sizeof(gdt_t) - 1;
-  gdt_desc.offset = PHY((u64)&default_gdt);
+  gdt_desc.offset = PHY((u64)&g_gdt);
   load_gdt(&gdt_desc);
 }
