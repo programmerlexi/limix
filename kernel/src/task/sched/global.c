@@ -14,45 +14,45 @@
 #include <task/thread/thread.h>
 #include <utils/strings/xstr.h>
 
-static process_t *procs;
-static local_scheduler_t *scheds;
-static u32 glob_sched_lock;
-static sched_frame_t *frames;
+static process_t *_procs;
+static local_scheduler_t *_scheds;
+static u32 _glob_sched_lock;
+static sched_frame_t *_frames;
 
 void sched_glob_init() {
   log(LOGLEVEL_DEBUG, "Creating main process");
-  procs = proc_create();
-  if (!procs)
+  _procs = proc_create();
+  if (!_procs)
     kernel_panic_error("Out of memory");
-  procs->pid = 0;
-  procs->uid = -1;
-  procs->gid = -1;
-  procs->euid = -1;
-  procs->egid = -1;
-  procs->cr4 = read_cr4();
-  procs->thread_count = 1;
-  procs->threads = thread_create();
-  if (!procs->threads)
+  _procs->pid = 0;
+  _procs->uid = -1;
+  _procs->gid = -1;
+  _procs->euid = -1;
+  _procs->egid = -1;
+  _procs->cr4 = read_cr4();
+  _procs->thread_count = 1;
+  _procs->threads = thread_create();
+  if (!_procs->threads)
     kernel_panic_error("Out of memory");
-  procs->name = to_xstr("kernel");
-  procs->cpu = 0;
+  _procs->name = to_xstr("kernel");
+  _procs->cpu = 0;
   log(LOGLEVEL_ANALYZE, "Filling task state");
-  thread_switch(procs->threads, procs->threads);
-  glob_sched_lock = 0;
+  thread_switch(_procs->threads, _procs->threads);
+  _glob_sched_lock = 0;
   log(LOGLEVEL_INFO, "Global scheduler initialized");
 }
 
-void sched_glob_aquire() { spinlock(&glob_sched_lock); }
-void sched_glob_release() { spinunlock(&glob_sched_lock); }
+void sched_glob_aquire() { spinlock(&_glob_sched_lock); }
+void sched_glob_release() { spinunlock(&_glob_sched_lock); }
 
 void sched_glob_tick() {
   sched_glob_aquire();
-  local_scheduler_t *c = scheds;
+  local_scheduler_t *c = _scheds;
   while (c) {
     if (!c->shed_lock) {
       spinlock(&c->shed_lock);
 
-      sched_frame_t *cf = frames;
+      sched_frame_t *cf = _frames;
       while (cf) {
         if (!cf->assigned) {
           if (cf->proc->cpu == c->cpu) {
@@ -77,15 +77,15 @@ void sched_register_cpu(local_scheduler_t *ls) {
   sched_glob_aquire();
 
   log(LOGLEVEL_ANALYZE, "Registering scheduler");
-  ls->next = scheds;
-  scheds = ls;
+  ls->next = _scheds;
+  _scheds = ls;
   log(LOGLEVEL_DEBUG, "Registered scheduler");
 
   sched_glob_release();
 }
 
 void sched_glob_list_processes() {
-  process_t *p = procs;
+  process_t *p = _procs;
   while (p) {
     kprintf("Process '%s' (PID %u) Threads: %u\n\r", p->name.cstr, (int)p->pid,
             (int)p->thread_count);

@@ -8,23 +8,23 @@
 #include <stdint.h>
 #include <utils/memory/memory.h>
 
-static bool key_state[256];
-static bool caps_lock;
-static bool num_lock;
-static bool scroll_lock;
+static bool _key_state[256];
+static bool _caps_lock;
+static bool _num_lock;
+static bool _scroll_lock;
 
 void kb_init() {
   log(LOGLEVEL_ANALYZE, "Zeroing keyboard state");
-  memset(key_state, 0, 256);
+  memset(_key_state, 0, 256);
 }
-bool kb_get_key(u8 k) { return key_state[k]; }
+bool kb_get_key(u8 k) { return _key_state[k]; }
 u16 kb_get_mods() {
   u16 s = 0;
-  if (caps_lock)
+  if (_caps_lock)
     s |= KB_MOD_CAPS;
-  if (num_lock)
+  if (_num_lock)
     s |= KB_MOD_NUM;
-  if (scroll_lock)
+  if (_scroll_lock)
     s |= KB_MOD_SCROLL;
   if (kb_get_key(KB_KEY_LSHIFT))
     s |= KB_MOD_SHIFT | KB_MOD_LEFT_SHIFT;
@@ -41,4 +41,4 @@ u16 kb_get_mods() {
   return s;
 }
 
-void kb_internal_set_key(u8 key, bool state) { key_state[key] = state; }
+void kb_internal_set_key(u8 key, bool state) { _key_state[key] = state; }

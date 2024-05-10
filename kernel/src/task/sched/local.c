@@ -9,18 +9,18 @@
 #include <task/sched/local.h>
 #include <task/thread/thread.h>
 
-static u32 sched_initialize = 1;
+static u32 _sched_initialize = 1;
 
-void unlock_lschedi() { spinunlock(&sched_initialize); }
+void unlock_lschedi() { spinunlock(&_sched_initialize); }
 
 local_scheduler_t *sched_local_init(u64 cpu) {
-  spinlock(&sched_initialize);
+  spinlock(&_sched_initialize);
   log(LOGLEVEL_ANALYZE, "Creating local scheduler");
   local_scheduler_t *s = malloc(sizeof(local_scheduler_t));
   s->cpu = cpu;
   sched_register_cpu(s);
   log(LOGLEVEL_INFO, "Local scheduler initialized");
-  spinunlock(&sched_initialize);
+  spinunlock(&_sched_initialize);
   return s;
 }
 

@@ -12,29 +12,29 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "devfs"
 
-static device_t *devices;
-static vfs_t *devfs;
-static u64 dev_count;
+static device_t *_devices;
+static vfs_t *_devfs;
+static u64 _dev_count;
 
-static i32 zero_r(void *p, u64 o, u64 s, char *b) {
+static i32 _zero_r(void *p, u64 o, u64 s, char *b) {
   memset(b, 0, s);
   return E_SUCCESS;
 }
-static i32 zero_w(void *p, u64 o, u64 s, char *b) { return E_SUCCESS; }
+static i32 _zero_w(void *p, u64 o, u64 s, char *b) { return E_SUCCESS; }
 
 void devfs_init() {
-  devfs_create("null", zero_r, zero_w, NULL);
-  devfs_create("zero", zero_r, zero_w, NULL);
+  devfs_create("null", _zero_r, _zero_w, NULL);
+  devfs_create("zero", _zero_r, _zero_w, NULL);
 }
 void devfs_create(char *name, i32 (*read)(void *, u64, u64, char *),
                   i32 (*write)(void *, u64, u64, char *), void *data) {
   debugf("Creating dev node '%s'...", name);
   device_t *device;
-  if (!devices)
-    device = devices = malloc(sizeof(device_t));
+  if (!_devices)
+    device = _devices = malloc(sizeof(device_t));
   else {
     device = malloc(sizeof(device_t));
-    device_t *c = devices;
+    device_t *c = _devices;
     device_t *p = NULL;
     while (c) {
       p = c;
@@ -48,7 +48,7 @@ void devfs_create(char *name, i32 (*read)(void *, u64, u64, char *),
   device->next = NULL;
   device->name = to_xstr(name);
   device->data = data;
-  dev_count++;
+  _dev_count++;
 }
 
 static i32 _devfs_read(u64 o, u64 s, char *b, file_t *f) {
@@ -60,34 +60,34 @@ static i32 _devfs_write(u64 o, u64 s, char *b, file_t *f) {
   return d->write(d->data, o, s, b);
 }
 
-void _devfs_clear_files() {
-  for (u64 i = 0; i < devfs->root->file_count; i++) {
-    if (devfs->root->files[i]->data)
-      free(devfs->root->files[i]->data);
-    free(devfs->root->files[i]);
+static void _devfs_clear_files() {
+  for (u64 i = 0; i < _devfs->root->file_count; i++) {
+    if (_devfs->root->files[i]->data)
+      free(_devfs->root->files[i]->data);
+    free(_devfs->root->files[i]);
   }
-  free(devfs->root->files);
+  free(_devfs->root->files);
 }
 
 void devfs_reload() {
-  nullsafe(devfs);
-  if (!devfs->root)
-    devfs->root = malloc(sizeof(directory_t));
-  nullsafe_error(devfs->root, "Out of memory");
-  if (devfs->root->files)
+  nullsafe(_devfs);
+  if (!_devfs->root)
+    _devfs->root = malloc(sizeof(directory_t));
+  nullsafe_error(_devfs->root, "Out of memory");
+  if (_devfs->root->files)
     _devfs_clear_files();
-  devfs->root->file_count = dev_count;
-  devfs->root->files = malloc(sizeof(void *) * dev_count);
-  device_t *c = devices;
-  for (u64 i = 0; i < dev_count; i++) {
-    devfs->root->files[i] = malloc(sizeof(file_t));
-    nullsafe_error(devfs->root->files[i], "Out of memory");
-    devfs->root->files[i]->name = c->name;
-    devfs->root->files[i]->read = _devfs_read;
-    devfs->root->files[i]->write = _devfs_write;
-    devfs->root->files[i]->data = c;
-    devfs->root->files[i]->size = 0;
+  _devfs->root->file_count = _dev_count;
+  _devfs->root->files = malloc(sizeof(void *) * _dev_count);
+  device_t *c = _devices;
+  for (u64 i = 0; i < _dev_count; i++) {
+    _devfs->root->files[i] = malloc(sizeof(file_t));
+    nullsafe_error(_devfs->root->files[i], "Out of memory");
+    _devfs->root->files[i]->name = c->name;
+    _devfs->root->files[i]->read = _devfs_read;
+    _devfs->root->files[i]->write = _devfs_write;
+    _devfs->root->files[i]->data = c;
+    _devfs->root->files[i]->size = 0;
     c = c->next;
   }
 }
-void devfs_bind(vfs_t *fs) { devfs = fs; }
+void devfs_bind(vfs_t *fs) { _devfs = fs; }

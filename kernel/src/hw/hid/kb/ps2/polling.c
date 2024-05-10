@@ -7,7 +7,7 @@
 #include <io/pio.h>
 #include <printing.h>
 
-static u8 kb_set = 0;
+static u8 _kb_set = 0;
 
 void kb_init_polling() {
   bool success = false;
@@ -41,26 +41,26 @@ set_leds:
     u8 scancode_set = ps2_read_data();
     switch (scancode_set) {
     case 0x43:
-      kb_set = 1;
+      _kb_set = 1;
       break;
     case 0x41:
-      kb_set = 2;
+      _kb_set = 2;
       break;
     case 0x3f:
-      kb_set = 3;
+      _kb_set = 3;
       break;
     default:
       logf(LOGLEVEL_ERROR, "Unrecognized set: %x", (u32)scancode_set);
     }
   } else
-    kb_set = ps2_read_data();
-  if (kb_set == 2) {
+    _kb_set = ps2_read_data();
+  if (_kb_set == 2) {
     log(LOGLEVEL_WARN1, "Scancode set 2 has missing features");
   }
-  if (kb_set == 1) {
+  if (_kb_set == 1) {
     log(LOGLEVEL_WARN1, "Scancode set 1 is not fully implemented");
   }
-  if (kb_set == 3) {
+  if (_kb_set == 3) {
     log(LOGLEVEL_CRITICAL, "Scancode set 3 is not supported");
   }
   log(LOGLEVEL_INFO, "Keyboard done.");

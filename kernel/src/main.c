@@ -31,7 +31,7 @@
 #include <types.h>
 #include <utils/strings/strings.h>
 
-u64 hhaddr;
+u64 g_hhaddr;
 
 void _start(void) {
   if (LIMINE_BASE_REVISION_SUPPORTED == false) {
@@ -56,7 +56,7 @@ void _start(void) {
     kernel_panic_error("Paging mode isn't matching!");
   }
 
-  hhaddr = hhdm_request.response->offset;
+  g_hhaddr = hhdm_request.response->offset;
 
   if (!mm_init(mmap_request.response)) {
     kernel_panic_error("MM seems to have failed.");

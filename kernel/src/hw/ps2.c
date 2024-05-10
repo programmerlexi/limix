@@ -5,13 +5,13 @@
 #include <io/pio.h>
 #include <kernel.h>
 
-static bool dual_channel = true;
-static bool port1_available = false;
-static bool port2_available = false;
+static bool _dual_channel = true;
+static bool _port1_available = false;
+static bool _port2_available = false;
 
 void ps2_send_command1(u8 cmd) { ps2_send_data1(cmd); }
 void ps2_send_data1(u8 data) {
-  if (!port1_available)
+  if (!_port1_available)
     return;
   if (!ps2_can_send())
     return;
@@ -20,7 +20,7 @@ void ps2_send_data1(u8 data) {
 
 void ps2_send_command2(u8 cmd) { ps2_send_data2(cmd); }
 void ps2_send_data2(u8 data) {
-  if (!port2_available)
+  if (!_port2_available)
     return;
   if (!ps2_can_send())
     return;
@@ -31,7 +31,7 @@ void ps2_send_data2(u8 data) {
 }
 
 u8 ps2_read_data2() {
-  if (!port2_available)
+  if (!_port2_available)
     return 0;
   if (!ps2_data_available())
     return 0;
@@ -75,7 +75,7 @@ void ps2_init() {
   while (!ps2_data_available())
     asm("nop");
   u8 ccb = ps2_read_data();
-  dual_channel = ccb & PS2_CCB_PORT2_CLOCK;
+  _dual_channel = ccb & PS2_CCB_PORT2_CLOCK;
   ps2_send_command(PS2_COMMAND_WRITE_CCB);
   while (!ps2_can_send())
     asm("nop");
@@ -98,13 +98,13 @@ void ps2_init() {
     asm("nop");
   ps2_send_data(ccb & ~(PS2_CCB_PORT1_INT | PS2_CCB_PORT2_INT |
                         PS2_CCB_PORT1_TRANSLATION));
-  if (dual_channel) {
+  if (_dual_channel) {
     log(LOGLEVEL_ANALYZE, "Checking dual-channel");
     ps2_send_command(PS2_COMMAND_ENABLE_PORT2);
     io_wait();
     u8 ccb = ps2_read_data();
-    dual_channel = !(ccb & PS2_CCB_PORT2_CLOCK);
-    if (dual_channel)
+    _dual_channel = !(ccb & PS2_CCB_PORT2_CLOCK);
+    if (_dual_channel)
       ps2_send_command(PS2_COMMAND_DISABLE_PORT2);
   }
   log(LOGLEVEL_ANALYZE, "Testing port 1");
@@ -115,9 +115,9 @@ void ps2_init() {
     log(LOGLEVEL_WARN1, "WARNING: First PS/2 port failed, keyboard may "
                         "not be available.");
   } else {
-    port1_available = true;
+    _port1_available = true;
   }
-  if (dual_channel) {
+  if (_dual_channel) {
     log(LOGLEVEL_ANALYZE, "Testing port 2");
     ps2_send_command(PS2_COMMAND_TEST_PORT2);
     while (!ps2_data_available())
@@ -126,10 +126,10 @@ void ps2_init() {
       log(LOGLEVEL_WARN1, "WARNING: Second PS/2 port failed, mouse may "
                           "not be available.");
     } else {
-      port2_available = true;
+      _port2_available = true;
     }
   }
-  if (!(port1_available || port2_available)) {
+  if (!(_port1_available || _port2_available)) {
     log(LOGLEVEL_CRITICAL,
         "ERROR: All PS/2 ports failed, keyboard and mouse will not be "
         "available using PS/2.");

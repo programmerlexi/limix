@@ -3,7 +3,7 @@
 #include <io/serial/serial.h>
 #include <stddef.h>
 
-static bool serial_available = false;
+static bool _serial_available = false;
 
 void serial_early_init() {
   outb(DEFAULT_COM + COM_INT_ENABLE, 0);
@@ -25,17 +25,17 @@ void serial_early_init() {
   outb(DEFAULT_COM + COM_MODEM_CTRL, COM_MODEM_CTRL_DTR | COM_MODEM_CTRL_RTS |
                                          COM_MODEM_CTRL_OUT1 |
                                          COM_MODEM_CTRL_OUT2);
-  serial_available = true;
+  _serial_available = true;
 }
 char serial_read() {
-  if (!serial_available)
+  if (!_serial_available)
     return 0;
   while (!serial_received())
     ;
   return inb(DEFAULT_COM + COM_DATA);
 }
 void serial_write(char c) {
-  if (!serial_available)
+  if (!_serial_available)
     return;
   while (!serial_can_send())
     ;
@@ -52,7 +52,7 @@ bool serial_can_send() {
 void serial_writes(char *s) {
   if (s == NULL)
     return;
-  if (!serial_available)
+  if (!_serial_available)
     return;
   while (*s) {
     serial_write(*s);

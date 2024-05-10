@@ -9,7 +9,7 @@
 #include <utils/strings/strings.h>
 
 idt_gate_t idt[256];
-static inline void lidt(void *base, u16 size) {
+static inline void _lidt(void *base, u16 size) {
   struct {
     u16 length;
     void *base;
@@ -51,7 +51,7 @@ void idt_init() {
                   IDT_FLAGS_DPL3 | IDT_FLAGS_PRESENT | IDT_FLAGS_GATE_TYPE_INT,
                   0);
 
-  lidt((void *)idt, sizeof(idt) - 1);
+  _lidt((void *)idt, sizeof(idt) - 1);
   asm volatile("sti" ::: "memory");
 }
 void idt_add_handler(u8 id, void *handler, u8 flags, u8 ist) {

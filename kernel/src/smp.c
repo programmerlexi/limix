@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include <task/sched/local.h>
 
-static semaphore_t smp_cpu = 0;
+static semaphore_t _smp_cpu = 0;
 void unlock_lschedi();
 
 void _smp_start(struct limine_smp_info *cpu_info) {
@@ -20,7 +20,7 @@ void _smp_start(struct limine_smp_info *cpu_info) {
   cmd->data = 0;
   cmd->state = SMP_STATE_INIT_CMD;
 
-  unblock(&smp_cpu);
+  unblock(&_smp_cpu);
 
   // putstr16((cpu_info->processor_id * 9), 0, "P", 0xffff00);
   {
@@ -88,7 +88,7 @@ void smp_init() {
       continue;
     smp_request.response->cpus[i]->goto_address = _smp_start;
   }
-  block_on_count(&smp_cpu, smp_request.response->cpu_count - 1);
+  block_on_count(&_smp_cpu, smp_request.response->cpu_count - 1);
 
   for (u64 i = 0; i < smp_request.response->cpu_count; i++) {
     if (smp_request.response->bsp_lapic_id ==

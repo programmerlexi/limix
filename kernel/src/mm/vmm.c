@@ -7,12 +7,12 @@
 #include <stdint.h>
 #include <utils/memory/memory.h>
 
-static virtual_address_space_t kas;
+static virtual_address_space_t _kas;
 
 void init_kernel_vas() {
-  kas.pml4 = (pml4_t)read_cr4();
-  kas.exists = true;
-  kas.allow_kas_changes = true;
+  _kas.pml4 = (pml4_t)read_cr4();
+  _kas.exists = true;
+  _kas.allow_kas_changes = true;
 }
 virtual_address_space_t init_new_vas() {
   virtual_address_space_t vas;
@@ -22,7 +22,7 @@ virtual_address_space_t init_new_vas() {
   memset(vas.pml4, 0, 0x1000);
   vas.exists = false;
   vas.allow_kas_changes = false;
-  vas.pml4[511] = kas.pml4[511];
+  vas.pml4[511] = _kas.pml4[511];
   return vas;
 }
 virtual_address_space_t clone_vas(virtual_address_space_t o) {
@@ -55,10 +55,10 @@ virtual_address_space_t clone_vas(virtual_address_space_t o) {
   return n;
 }
 
-bool kmmap(vaddr_t v, paddr_t p) { return mmap(kas, v, p); }
-bool is_kmapped(vaddr_t v) { return is_mapped(kas, v); }
-bool kunmap(vaddr_t v) { return munmap(kas, v); }
-paddr_t kmapping(vaddr_t v) { return mapping(kas, v); }
+bool kmmap(vaddr_t v, paddr_t p) { return mmap(_kas, v, p); }
+bool is_kmapped(vaddr_t v) { return is_mapped(_kas, v); }
+bool kunmap(vaddr_t v) { return munmap(_kas, v); }
+paddr_t kmapping(vaddr_t v) { return mapping(_kas, v); }
 
 bool mmap(virtual_address_space_t as, vaddr_t v, paddr_t p) {
   if (!as.exists)

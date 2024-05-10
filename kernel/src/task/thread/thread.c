@@ -2,11 +2,11 @@
 #include <stdint.h>
 #include <task/thread/thread.h>
 
-static u64 latest_tid = 0;
+static u64 _latest_tid = 0;
 
 thread_t *thread_create() {
   thread_t *t = (thread_t *)malloc(sizeof(thread_t));
-  t->tid = ++latest_tid;
+  t->tid = ++_latest_tid;
   t->state = THREAD_INIT;
   return t;
 }

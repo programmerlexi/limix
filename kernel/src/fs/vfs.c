@@ -15,15 +15,15 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "vfs"
 
-static vfs_t *filesystems;
-static u64 fs_count;
+static vfs_t *_filesystems;
+static u64 _fs_count;
 
-void vfs_init() { fs_count = 0; }
+void vfs_init() { _fs_count = 0; }
 
 vfs_t *vfs_make(char *name) {
   debugf("Making mount '%s'", name);
-  vfs_t **a = &filesystems;
-  vfs_t *c = filesystems;
+  vfs_t **a = &_filesystems;
+  vfs_t *c = _filesystems;
   while (c) {
     a = &c->next;
     c = c->next;
@@ -31,12 +31,12 @@ vfs_t *vfs_make(char *name) {
   *a = malloc(sizeof(vfs_t));
   nullsafe_error(*a, "Out of memory");
   (*a)->name = to_xstr(name);
-  fs_count++;
+  _fs_count++;
   return *a;
 }
 
 vfs_t *vfs_fs(char *name) {
-  vfs_t *c = filesystems;
+  vfs_t *c = _filesystems;
   while (c) {
     if (strlen(name) == c->name.length)
       if (strncmp(c->name.cstr, name, min(strlen(c->name.cstr), strlen(name))))

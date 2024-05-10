@@ -14,11 +14,11 @@
 #include <utils/memory/memory.h>
 #include <utils/memory/safety.h>
 
-static drm_t drms[MAX_DRMS];
-static u64 active_drm;
-static u32 drm_sys_lock;
+static drm_t _drms[MAX_DRMS];
+static u64 _active_drm;
+static u32 _drm_sys_lock;
 
-static u32 fallback_font[] = {
+static u32 _fallback_font[] = {
     0x6999f999, 0xe99e99e0, 0x78888870, 0xe99999e0, 0xf88f88f0, 0xf88f8880,
     0x788b9960, 0x999f9990, 0x44444440, 0x11199960, 0x9ac8ca90, 0x888888f0,
     0x9ff99990, 0x9ddbb990, 0x69999960, 0xe99e8880, 0x6999db70, 0xe99eca90,
@@ -30,56 +30,56 @@ static u32 fallback_font[] = {
 
 void drm_init() {
   for (i32 i = 0; i < MAX_DRMS; i++) {
-    drms[i].width = g_fb->width;
-    drms[i].height = g_fb->height;
-    drms[i].framebuffer =
+    _drms[i].width = g_fb->width;
+    _drms[i].height = g_fb->height;
+    _drms[i].framebuffer =
         request_page_block(((g_fb->width * g_fb->height * 4) + 4095) / 4096);
-    drms[i].flags = 0;
-    if (drms[i].framebuffer == NULL) {
+    _drms[i].flags = 0;
+    if (_drms[i].framebuffer == NULL) {
       kernel_panic_error("DRM init failed");
     }
   }
-  active_drm = 0;
+  _active_drm = 0;
 }
 static void _drm_sync_real() {
-  drm_t ad = drms[active_drm];
+  drm_t ad = _drms[_active_drm];
   memcpy(g_fb->address, ad.framebuffer, ad.width * ad.height * 4);
 }
 void drm_switch(u64 drm) {
   if (drm >= MAX_DRMS)
     return;
-  memcpy(drms[active_drm].framebuffer, g_fb->address,
-         drms[active_drm].width * drms[active_drm].height * 4);
-  spinlock(&drm_sys_lock);
-  active_drm = drm;
+  memcpy(_drms[_active_drm].framebuffer, g_fb->address,
+         _drms[_active_drm].width * _drms[_active_drm].height * 4);
+  spinlock(&_drm_sys_lock);
+  _active_drm = drm;
   _drm_sync_real();
-  spinunlock(&drm_sys_lock);
+  spinunlock(&_drm_sys_lock);
 }
 
 void drm_sync() {
-  spinlock(&drm_sys_lock);
+  spinlock(&_drm_sys_lock);
 #ifndef DRM_WRITETHROUGH
   _drm_sync_real();
 #endif
-  spinunlock(&drm_sys_lock);
+  spinunlock(&_drm_sys_lock);
 }
 void drm_plot(u64 drm, u64 x, u64 y, u32 c) {
-  if (x > drms[drm].width)
+  if (x > _drms[drm].width)
     return;
-  if (y > drms[drm].height)
+  if (y > _drms[drm].height)
     return;
-  spinlock(&drms[drm].lock);
+  spinlock(&_drms[drm].lock);
 #ifndef DRM_WRITETHROUGH
   drms[drm].framebuffer[drms[drm].width * y + x] = c;
 #else
-  if (active_drm == drm) {
-    spinlock(&drm_sys_lock);
-    ((u32 *)g_fb->address)[drms[drm].width * y + x] = c;
-    spinunlock(&drm_sys_lock);
+  if (_active_drm == drm) {
+    spinlock(&_drm_sys_lock);
+    ((u32 *)g_fb->address)[_drms[drm].width * y + x] = c;
+    spinunlock(&_drm_sys_lock);
   } else
-    drms[drm].framebuffer[drms[drm].width * y + x] = c;
+    _drms[drm].framebuffer[_drms[drm].width * y + x] = c;
 #endif
-  spinunlock(&drms[drm].lock);
+  spinunlock(&_drms[drm].lock);
 }
 void drm_plot_line(u64 drm, u64 x0, u64 y0, u64 x1, u64 y1, u32 c) {
   i32 x, y, t, dx, dy, incx, incy, pdx, pdy, ddx, ddy, deltaslowdirection,
@@ -178,9 +178,9 @@ void drm_fill_rel_rect(u64 drm, u64 x0, u64 y0, u64 w, u64 h, u32 c) {
   }
 }
 void drm_clear(u64 drm) {
-  spinlock(&drm_sys_lock);
-  memset(drms[drm].framebuffer, 0, drms[drm].width * drms[drm].height * 4);
-  spinunlock(&drm_sys_lock);
+  spinlock(&_drm_sys_lock);
+  memset(_drms[drm].framebuffer, 0, _drms[drm].width * _drms[drm].height * 4);
+  spinunlock(&_drm_sys_lock);
   drm_sync();
 }
 static void _drm_plot_char(u64 drm, u64 x, u64 y, u32 ch, u32 c) {
@@ -208,27 +208,27 @@ static void _drm_plot_char_solid(u64 drm, u64 x, u64 y, u32 ch, u32 c, u32 b) {
 
 static u32 _drm_get_fallback(u32 c) {
   if (c >= 'A' && c <= 'Z')
-    return fallback_font[c - 'A'];
+    return _fallback_font[c - 'A'];
   if (c >= 'a' && c <= 'z')
-    return fallback_font[c - 'a'];
+    return _fallback_font[c - 'a'];
   if (c == '[')
-    return fallback_font['Z' - 'A' + 1];
+    return _fallback_font['Z' - 'A' + 1];
   if (c == ']')
-    return fallback_font['Z' - 'A' + 2];
+    return _fallback_font['Z' - 'A' + 2];
   if (c == '/')
-    return fallback_font['Z' - 'A' + 3];
+    return _fallback_font['Z' - 'A' + 3];
   if (c == ':')
-    return fallback_font['Z' - 'A' + 4];
+    return _fallback_font['Z' - 'A' + 4];
   if (c == '.')
-    return fallback_font['Z' - 'A' + 5];
+    return _fallback_font['Z' - 'A' + 5];
   if (c == '=')
-    return fallback_font['Z' - 'A' + 6];
+    return _fallback_font['Z' - 'A' + 6];
   if (c == '_')
-    return fallback_font['Z' - 'A' + 7];
+    return _fallback_font['Z' - 'A' + 7];
   if (c >= '0' && c <= '9')
-    return fallback_font['Z' - 'A' + 8 + c - '0'];
+    return _fallback_font['Z' - 'A' + 8 + c - '0'];
   if (c == '-')
-    return fallback_font['Z' - 'A' + 18];
+    return _fallback_font['Z' - 'A' + 18];
   if (c == ' ')
     return 0;
   return c;
@@ -271,11 +271,11 @@ void drm_plot_char_solid(u64 drm, u64 x, u64 y, u32 ch, u32 c, u32 b) {
     _drm_plot_char_solid_fallback(drm, x, y, ch, c, b);
 }
 
-u64 drm_width(u64 drm) { return drms[drm].width; }
-u64 drm_height(u64 drm) { return drms[drm].height; }
+u64 drm_width(u64 drm) { return _drms[drm].width; }
+u64 drm_height(u64 drm) { return _drms[drm].height; }
 
 bool drm_is_attached_to_process(u64 drm) {
-  return drms[drm].flags & DRM_ATTACHED_TO_PROCESS;
+  return _drms[drm].flags & DRM_ATTACHED_TO_PROCESS;
 }
 
 static i32 _drm_write(void *d, u64 o, u64 s, char *b) {
@@ -298,10 +298,10 @@ static i32 _drm_read(void *d, u64 o, u64 s, char *b) {
   if (o + s > drm_width(*dn) * drm_height(*dn))
     return E_OUTOFBOUNDS;
   for (u64 i = 0; i < s; i++) {
-    if (active_drm == *dn)
+    if (_active_drm == *dn)
       ((u32 *)b)[i] = ((u32 *)g_fb->address)[o * i];
     else
-      ((u32 *)b)[i] = drms[*dn].framebuffer[o + i];
+      ((u32 *)b)[i] = _drms[*dn].framebuffer[o + i];
   }
   return E_SUCCESS;
 }

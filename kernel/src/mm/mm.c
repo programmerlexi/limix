@@ -7,30 +7,30 @@
 #include <utils/memory/memory.h>
 #include <utils/memory/safety.h>
 
-static memseg_t *first = NULL;
-static memseg_t *last = NULL;
+static memseg_t *_first = NULL;
+static memseg_t *_last = NULL;
 
-static void insert_page(void *page) {
+static void _insert_page(void *page) {
   nullsafe(page);
   memseg_t *seg = (memseg_t *)HHDM(page);
-  if (first == NULL) {
+  if (_first == NULL) {
     seg->prev = NULL;
     seg->next = NULL;
-    first = seg;
-    last = seg;
-  } else if ((uintptr_t)seg < (uintptr_t)first) {
-    seg->next = first;
-    first->prev = seg;
+    _first = seg;
+    _last = seg;
+  } else if ((uintptr_t)seg < (uintptr_t)_first) {
+    seg->next = _first;
+    _first->prev = seg;
     seg->prev = NULL;
-    first = seg;
-  } else if ((uintptr_t)seg > (uintptr_t)last) {
+    _first = seg;
+  } else if ((uintptr_t)seg > (uintptr_t)_last) {
     seg->next = NULL;
-    seg->prev = last;
-    last->next = seg;
-    last = seg;
+    seg->prev = _last;
+    _last->next = seg;
+    _last = seg;
   } else {
-    memseg_t *c = first->next;
-    memseg_t *p = first;
+    memseg_t *c = _first->next;
+    memseg_t *p = _first;
     while (c != NULL) {
       if ((uintptr_t)p == (uintptr_t)seg)
         return;
@@ -55,7 +55,7 @@ bool mm_init(struct limine_memmap_response *mmap) {
     if (mmap->entries[i]->type == LIMINE_MEMMAP_USABLE) {
       usable++;
       for (u64 j = 0; j < mmap->entries[i]->length; j += 0x1000) {
-        insert_page((void *)(mmap->entries[i]->base + j));
+        _insert_page((void *)(mmap->entries[i]->base + j));
       }
     }
   }
@@ -63,23 +63,23 @@ bool mm_init(struct limine_memmap_response *mmap) {
 }
 
 void *request_page() {
-  if (first == NULL)
+  if (_first == NULL)
     return NULL;
-  memseg_t *s = first;
-  if (last == first) {
-    last = NULL;
+  memseg_t *s = _first;
+  if (_last == _first) {
+    _last = NULL;
   }
-  first = first->next;
+  _first = _first->next;
   memset(s, 0, 0x1000);
   return s;
 }
 
 void *request_page_block(size_t n) {
-  if (first == NULL)
+  if (_first == NULL)
     return NULL;
   size_t cl = 0;
-  memseg_t *c = first->next;
-  memseg_t *p = first;
+  memseg_t *c = _first->next;
+  memseg_t *p = _first;
   memseg_t *s = p;
   while (cl != n && c != NULL) {
     if (((uintptr_t)p + 0x1000) != (uintptr_t)c) {
@@ -94,10 +94,10 @@ void *request_page_block(size_t n) {
     return NULL;
   s->next = c;
   c->prev = s;
-  if (s == first)
-    first = c;
-  if (s == last)
-    last = s->prev;
+  if (s == _first)
+    _first = c;
+  if (s == _last)
+    _last = s->prev;
   memset(s, 0, 0x1000 * n);
   return s;
 }
@@ -105,7 +105,7 @@ void *request_page_block(size_t n) {
 void free_page(void *p) {
   nullsafe(p);
   memset(p, 0, 0x1000);
-  insert_page(p);
+  _insert_page(p);
 }
 
 void free_page_block(void *p, size_t n) {
