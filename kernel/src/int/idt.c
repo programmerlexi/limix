@@ -1,12 +1,9 @@
-#include <gfx/framebuffer.h>
-#include <gfx/vga.h>
-#include <int/idt.h>
-#include <int/syscall.h>
-#include <io/serial/serial.h>
-#include <kernel.h>
-#include <mm/hhtp.h>
-#include <utils/memory/memory.h>
-#include <utils/strings/strings.h>
+#include "int/idt.h"
+#include "int/syscall.h"
+#include "io/serial/serial.h"
+#include "kernel.h"
+#include "utils/memory/memory.h"
+#include "utils/strings/strings.h"
 
 idt_gate_t g_idt[256];
 static inline void _lidt(void *base, u16 size) {
@@ -38,7 +35,7 @@ __attribute__((interrupt)) void df_handler(interrupt_frame_t *int_frame) {
 }
 
 void idt_init() {
-  memset(g_idt, 0, sizeof(idt_gate_t) * 256);
+  kmemset(g_idt, 0, sizeof(idt_gate_t) * 256);
 
   idt_add_handler(0x0D, (void *)gpf_handler,
                   IDT_FLAGS_DPL0 | IDT_FLAGS_PRESENT | IDT_FLAGS_GATE_TYPE_TRAP,

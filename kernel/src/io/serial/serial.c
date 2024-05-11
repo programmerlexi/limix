@@ -1,6 +1,6 @@
-#include <config.h>
-#include <io/pio.h>
-#include <io/serial/serial.h>
+#include "io/serial/serial.h"
+#include "config.h"
+#include "io/pio.h"
 #include <stddef.h>
 
 static bool _serial_available = false;

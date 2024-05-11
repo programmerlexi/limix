@@ -1,8 +1,8 @@
 #pragma once
 
+#include "types.h"
+#include "utils/strings/xstr.h"
 #include <stdint.h>
-#include <types.h>
-#include <utils/strings/xstr.h>
 
 typedef struct file {
   xstr_t name;

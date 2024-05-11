@@ -1,9 +1,8 @@
-#include <math/lib.h>
+#include "types.h"
+#include "utils/memory/memory.h"
+#include "utils/strings/strings.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include <types.h>
-#include <utils/memory/memory.h>
-#include <utils/strings/strings.h>
 
 i32 ntos(char *buf, ssize_t i, u8 base, size_t length, bool unsign, bool pad) {
   if (!length || buf == NULL)
@@ -12,9 +11,9 @@ i32 ntos(char *buf, ssize_t i, u8 base, size_t length, bool unsign, bool pad) {
   if (base < 2)
     return STR_LOWBASE;
 
-  memset(buf, 0, length);
+  kmemset(buf, 0, length);
   if (pad)
-    memset(buf, '0', length);
+    kmemset(buf, '0', length);
 
   if (i == 0) {
     buf[0] = '0';

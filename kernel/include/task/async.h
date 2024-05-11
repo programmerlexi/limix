@@ -1,8 +1,8 @@
 #pragma once
 
+#include "utils/results.h"
+#include "utils/variety.h"
 #include <stdbool.h>
-#include <utils/results.h>
-#include <utils/variety.h>
 
 #define THREAD_LIMIT 128
 

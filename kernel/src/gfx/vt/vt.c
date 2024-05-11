@@ -1,15 +1,14 @@
-#include <config.h>
-#include <gfx/drm.h>
-#include <gfx/vt/ansi.h>
-#include <gfx/vt/vt.h>
-#include <io/serial/serial.h>
-#include <kernel.h>
-#include <kipc/spinlock.h>
-#include <math/lib.h>
-#include <mm/mm.h>
+#include "gfx/vt/vt.h"
+#include "config.h"
+#include "gfx/drm.h"
+#include "gfx/vt/ansi.h"
+#include "kernel.h"
+#include "kipc/spinlock.h"
+#include "math/lib.h"
+#include "mm/mm.h"
+#include "utils/memory/memory.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include <utils/memory/memory.h>
 
 static vt_char_t *_vt_buffer;
 static u64 _vt_height;
@@ -53,7 +52,7 @@ void vt_clear() {
   lock_vt;
   _vt_x = 0;
   _vt_y = 0;
-  memset(_vt_buffer, 0, _vt_height * _vt_width * sizeof(vt_char_t));
+  kmemset(_vt_buffer, 0, _vt_height * _vt_width * sizeof(vt_char_t));
   _full_redraw = true;
   unlock_vt;
   vt_flush();
@@ -104,14 +103,14 @@ void vt_advance_y() {
   _dirty = true;
   if (_vt_y >= _vt_height) {
     _vt_y -= CONFIG_SCROLL_STEP;
-    memmove(_vt_buffer,
-            (void *)((uintptr_t)_vt_buffer +
-                     sizeof(vt_char_t) * _vt_width * CONFIG_SCROLL_STEP),
-            _vt_width * (_vt_height - CONFIG_SCROLL_STEP) * sizeof(vt_char_t));
-    memset((void *)((uintptr_t)_vt_buffer +
-                    sizeof(vt_char_t) *
-                        (_vt_width * (_vt_height - CONFIG_SCROLL_STEP))),
-           0, _vt_width * sizeof(vt_char_t) * CONFIG_SCROLL_STEP);
+    kmemmove(_vt_buffer,
+             (void *)((uintptr_t)_vt_buffer +
+                      sizeof(vt_char_t) * _vt_width * CONFIG_SCROLL_STEP),
+             _vt_width * (_vt_height - CONFIG_SCROLL_STEP) * sizeof(vt_char_t));
+    kmemset((void *)((uintptr_t)_vt_buffer +
+                     sizeof(vt_char_t) *
+                         (_vt_width * (_vt_height - CONFIG_SCROLL_STEP))),
+            0, _vt_width * sizeof(vt_char_t) * CONFIG_SCROLL_STEP);
     _full_redraw = true;
   }
   vt_flush();

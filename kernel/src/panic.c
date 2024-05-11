@@ -1,7 +1,7 @@
-#include <debug.h>
-#include <gfx/vt/vt.h>
-#include <io/serial/serial.h>
-#include <kernel.h>
+#include "debug.h"
+#include "gfx/vt/vt.h"
+#include "io/serial/serial.h"
+#include "kernel.h"
 
 void hcf(void) {
   asm("cli");

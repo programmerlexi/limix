@@ -1,14 +1,10 @@
-#include <boot/requests.h>
-#include <debug.h>
-#include <gfx/font/font.h>
-#include <gfx/font/parsers/limefont.h>
-#include <gfx/vt/vt.h>
-#include <io/serial/serial.h>
-#include <kernel.h>
-#include <mm/heap.h>
+#include "gfx/font/font.h"
+#include "boot/requests.h"
+#include "debug.h"
+#include "gfx/font/parsers/limefont.h"
+#include "gfx/vt/vt.h"
+#include "utils/strings/strings.h"
 #include <stdint.h>
-#include <utils/memory/memory.h>
-#include <utils/strings/strings.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "font"
@@ -18,7 +14,7 @@ u8 *g_8x16_font;
 void font_parse() {
   if (g_module_request.response)
     for (u64 i = 0; i < g_module_request.response->module_count; i++) {
-      if (!strncmp(g_module_request.response->modules[i]->cmdline, "font", 4))
+      if (!kstrncmp(g_module_request.response->modules[i]->cmdline, "font", 4))
         continue;
       debug("Found font module");
       debug("Attempting limefont parser...");

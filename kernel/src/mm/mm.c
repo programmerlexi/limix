@@ -1,11 +1,11 @@
-#include <boot/limine.h>
-#include <mm/hhtp.h>
-#include <mm/mm.h>
+#include "mm/mm.h"
+#include "boot/limine.h"
+#include "mm/hhtp.h"
+#include "types.h"
+#include "utils/memory/memory.h"
+#include "utils/memory/safety.h"
 #include <stddef.h>
 #include <stdint.h>
-#include <types.h>
-#include <utils/memory/memory.h>
-#include <utils/memory/safety.h>
 
 static memseg_t *_first = NULL;
 static memseg_t *_last = NULL;
@@ -70,7 +70,7 @@ void *request_page() {
     _last = NULL;
   }
   _first = _first->next;
-  memset(s, 0, 0x1000);
+  kmemset(s, 0, 0x1000);
   return s;
 }
 
@@ -98,13 +98,13 @@ void *request_page_block(size_t n) {
     _first = c;
   if (s == _last)
     _last = s->prev;
-  memset(s, 0, 0x1000 * n);
+  kmemset(s, 0, 0x1000 * n);
   return s;
 }
 
 void free_page(void *p) {
   nullsafe(p);
-  memset(p, 0, 0x1000);
+  kmemset(p, 0, 0x1000);
   _insert_page(p);
 }
 

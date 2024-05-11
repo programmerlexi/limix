@@ -1,11 +1,11 @@
-#include <asm_inline.h>
-#include <kernel.h>
-#include <mm/hhtp.h>
-#include <mm/mm.h>
-#include <mm/pmi.h>
-#include <mm/vmm.h>
+#include "mm/vmm.h"
+#include "asm_inline.h"
+#include "kernel.h"
+#include "mm/hhtp.h"
+#include "mm/mm.h"
+#include "mm/pmi.h"
+#include "utils/memory/memory.h"
 #include <stdint.h>
-#include <utils/memory/memory.h>
 
 static virtual_address_space_t _kas;
 
@@ -19,7 +19,7 @@ virtual_address_space_t init_new_vas() {
   vas.pml4 = request_page();
   if (!vas.pml4)
     return vas;
-  memset(vas.pml4, 0, 0x1000);
+  kmemset(vas.pml4, 0, 0x1000);
   vas.exists = false;
   vas.allow_kas_changes = false;
   vas.pml4[511] = _kas.pml4[511];
@@ -71,7 +71,7 @@ bool mmap(virtual_address_space_t as, vaddr_t v, paddr_t p) {
     pdp = request_page();
     if (!pdp)
       return false;
-    memset(pdp, 0, 0x1000);
+    kmemset(pdp, 0, 0x1000);
     pml4e = PTE_PRESENT | PTE_WRITABLE | PTE_ADDR(PHY((uintptr_t)pdp));
     as.pml4[idx.pdp_i] = pml4e;
   } else {
@@ -84,7 +84,7 @@ bool mmap(virtual_address_space_t as, vaddr_t v, paddr_t p) {
     pd = request_page();
     if (!pd)
       return false;
-    memset(pd, 0, 0x1000);
+    kmemset(pd, 0, 0x1000);
     pdpe = PTE_PRESENT | PTE_WRITABLE | PTE_ADDR(PHY((uintptr_t)pd));
     pdp[idx.pd_i] = pdpe;
   } else {
@@ -97,7 +97,7 @@ bool mmap(virtual_address_space_t as, vaddr_t v, paddr_t p) {
     pt = request_page();
     if (!pt)
       return false;
-    memset(pt, 0, 0x1000);
+    kmemset(pt, 0, 0x1000);
     pde = PTE_PRESENT | PTE_WRITABLE | PTE_ADDR(PHY((uintptr_t)pt));
     pd[idx.pt_i] = pde;
   } else {

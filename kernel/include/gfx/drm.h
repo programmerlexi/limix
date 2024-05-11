@@ -1,9 +1,9 @@
 #pragma once
 
-#include <gfx/gfx.h>
+#include "gfx/gfx.h"
+#include "types.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include <types.h>
 
 #define DRM_ATTACHED_TO_SCREEN 1
 #define DRM_ATTACHED_TO_PROCESS 2

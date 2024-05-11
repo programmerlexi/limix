@@ -1,9 +1,9 @@
+#include "hw/ps2.h"
+#include "debug.h"
+#include "io/pio.h"
+
+#undef DEBUG_MODULE
 #define DEBUG_MODULE "ps/2"
-#include <debug.h>
-#include <gfx/vt/vt.h>
-#include <hw/ps2.h>
-#include <io/pio.h>
-#include <kernel.h>
 
 static bool _dual_channel = true;
 static bool _port1_available = false;

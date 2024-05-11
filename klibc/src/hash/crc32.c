@@ -1,7 +1,7 @@
-#include <hash/crc32.h>
+#include "hash/crc32.h"
+#include "types.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include <types.h>
 
 static u32 _crc32_poly(u8 i) {
   u32 r = (u32)i;

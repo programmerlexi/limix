@@ -1,18 +1,19 @@
-#define DEBUG_MODULE "sched_global"
-
-#include <asm_inline.h>
-#include <debug.h>
-#include <kernel.h>
-#include <kipc/spinlock.h>
-#include <mm/heap.h>
-#include <printing.h>
+#include "task/sched/global.h"
+#include "asm_inline.h"
+#include "debug.h"
+#include "kernel.h"
+#include "kipc/spinlock.h"
+#include "mm/heap.h"
+#include "printing.h"
+#include "task/proc/proc.h"
+#include "task/sched/common.h"
+#include "task/sched/local.h"
+#include "task/thread/thread.h"
+#include "utils/strings/xstr.h"
 #include <stdint.h>
-#include <task/proc/proc.h>
-#include <task/sched/common.h>
-#include <task/sched/global.h>
-#include <task/sched/local.h>
-#include <task/thread/thread.h>
-#include <utils/strings/xstr.h>
+
+#undef DEBUG_MODULE
+#define DEBUG_MODULE "sched_global"
 
 static process_t *_procs;
 static local_scheduler_t *_scheds;
@@ -56,7 +57,7 @@ void sched_glob_tick() {
       while (cf) {
         if (!cf->assigned) {
           if (cf->proc->cpu == c->cpu) {
-            frame_container_t *nfc = malloc(sizeof(frame_container_t));
+            frame_container_t *nfc = kmalloc(sizeof(frame_container_t));
             nfc->next = c->frames;
             c->frames = nfc;
             nfc->frame = cf;

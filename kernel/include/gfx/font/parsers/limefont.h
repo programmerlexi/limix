@@ -1,8 +1,8 @@
 #pragma once
 
+#include "types.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include <types.h>
 
 #define LIMEFONT_MAGIC "LIMEFONT"
 

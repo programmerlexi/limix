@@ -1,8 +1,8 @@
 #pragma once
 
+#include "task/proc/proc.h"
+#include "task/thread/thread.h"
 #include <stdbool.h>
-#include <task/proc/proc.h>
-#include <task/thread/thread.h>
 
 typedef struct sched_frame {
   process_t *proc;

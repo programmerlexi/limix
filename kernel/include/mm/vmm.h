@@ -1,8 +1,8 @@
 #pragma once
 
+#include "types.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include <types.h>
 
 typedef u64 pml4e_t;
 typedef u64 pdpe_t;

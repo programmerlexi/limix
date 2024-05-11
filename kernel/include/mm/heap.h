@@ -1,8 +1,8 @@
 #pragma once
 
+#include "types.h"
 #include <stddef.h>
 #include <stdint.h>
-#include <types.h>
 
 typedef struct heapseg {
   size_t size;
@@ -14,5 +14,5 @@ typedef struct heapseg {
 void heap_init();
 uint32_t heap_get_used();
 
-void *malloc(size_t count);
-void free(void *pointer);
+void *kmalloc(size_t count);
+void kfree(void *pointer);

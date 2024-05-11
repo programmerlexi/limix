@@ -37,7 +37,7 @@ override CFLAGS += \
 		-Wno-unused-parameter \
 		-Wno-unused-function \
 		-Wno-implicit-fallthrough \
-    -std=gnu11 \
+		-std=gnu2x \
     -ffreestanding \
     -fno-stack-protector \
     -fno-stack-check \
@@ -49,9 +49,8 @@ override CFLAGS += \
     -mno-mmx \
     -mno-sse \
     -mno-sse2 \
-    -mno-red-zone \
-		-std=gnu2x
- 
+    -mno-red-zone
+
 # Internal C preprocessor flags that should not be changed by the user.
 override CPPFLAGS := \
     -I include \

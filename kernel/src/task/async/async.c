@@ -1,17 +1,15 @@
-#define DEBUG_MODULE "async"
-
-#include <debug.h>
-#include <io/serial/serial.h>
-#include <kernel.h>
-#include <mm/heap.h>
-#include <mm/hhtp.h>
-#include <mm/mm.h>
+#include "task/async.h"
+#include "debug.h"
+#include "io/serial/serial.h"
+#include "kernel.h"
+#include "mm/mm.h"
+#include "utils/memory/safety.h"
+#include "utils/results.h"
+#include "utils/variety.h"
 #include <stdint.h>
-#include <task/async.h>
-#include <utils/memory/memory.h>
-#include <utils/memory/safety.h>
-#include <utils/results.h>
-#include <utils/variety.h>
+
+#undef DEBUG_MODULE
+#define DEBUG_MODULE "async"
 
 extern void exec_switch(task_t *prev, task_t *next);
 extern void exec_first_switch(task_t *prev, task_t *next);

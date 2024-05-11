@@ -1,7 +1,7 @@
 #pragma once
 
+#include "types.h"
 #include <stdint.h>
-#include <types.h>
 
 void font_parse();
 

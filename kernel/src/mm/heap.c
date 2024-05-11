@@ -1,13 +1,10 @@
-#include <config.h>
-#include <io/serial/serial.h>
-#include <kernel.h>
-#include <mm/heap.h>
-#include <mm/hhtp.h>
-#include <mm/mm.h>
-#include <mm/vmm.h>
+#include "mm/heap.h"
+#include "config.h"
+#include "kernel.h"
+#include "mm/mm.h"
+#include "utils/memory/memory.h"
+#include "utils/memory/safety.h"
 #include <stdint.h>
-#include <utils/memory/memory.h>
-#include <utils/memory/safety.h>
 
 static heapseg_t *_heap_first;
 static heapseg_t *_heap_last;
@@ -17,7 +14,7 @@ void heap_init() {
   if (!_heap_first)
     kernel_panic_error("Not enough memory for heap");
   _heap_last = _heap_first;
-  memset(_heap_first, 0, CONFIG_HEAP_INITIAL_PAGES * 0x1000);
+  kmemset(_heap_first, 0, CONFIG_HEAP_INITIAL_PAGES * 0x1000);
   _heap_first->next = NULL;
   _heap_first->prev = NULL;
   _heap_first->size = (CONFIG_HEAP_INITIAL_PAGES * 0x1000) - sizeof(heapseg_t);
@@ -83,7 +80,7 @@ static heapseg_t *_heap_split(heapseg_t *seg, size_t size) {
   return new_seg;
 }
 
-void free(void *addr) {
+void kfree(void *addr) {
   nullsafe(addr);
   heapseg_t *seg = (heapseg_t *)addr - 1;
   seg->used = false;
@@ -91,7 +88,7 @@ void free(void *addr) {
   _heap_combine_backward(seg);
 }
 
-void *malloc(size_t size) {
+void *kmalloc(size_t size) {
   if (size % 0x10 > 0) {
     size -= size % 0x10;
     size += 0x10;
@@ -116,16 +113,16 @@ void *malloc(size_t size) {
     seg = seg->next;
   }
   expand_heap((size + sizeof(heapseg_t)) * 2);
-  return malloc(size);
+  return kmalloc(size);
 }
 
 void *calloc(size_t size, u8 val) {
-  void *ptr = malloc(size);
+  void *ptr = kmalloc(size);
   if (size % 0x10 > 0) {
     size -= size % 0x10;
     size += 0x10;
   }
-  memset(ptr, val, size);
+  kmemset(ptr, val, size);
   return ptr;
 }
 

@@ -1,11 +1,10 @@
-#define DEBUG_MODULE "kb_poll"
+#include "debug.h"
+#include "hw/hid/kb/poll.h"
+#include "hw/ps2.h"
+#include "io/pio.h"
 
-#include <debug.h>
-#include <hw/hid/kb/kb.h>
-#include <hw/hid/kb/poll.h>
-#include <hw/ps2.h>
-#include <io/pio.h>
-#include <printing.h>
+#undef DEBUG_MODULE
+#define DEBUG_MODULE "kb_poll"
 
 static u8 _kb_set = 0;
 

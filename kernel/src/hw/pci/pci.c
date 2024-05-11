@@ -1,5 +1,4 @@
-#include <debug.h>
-#include <hw/pci/pci.h>
+#include "hw/pci/pci.h"
 #include <stdint.h>
 
 #undef DEBUG_MODULE

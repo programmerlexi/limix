@@ -1,13 +1,12 @@
-#include <debug.h>
-#include <fs/devfs.h>
-#include <fs/vfs.h>
-#include <kernel.h>
-#include <mm/heap.h>
+#include "fs/devfs.h"
+#include "debug.h"
+#include "fs/vfs.h"
+#include "mm/heap.h"
+#include "utils/errors.h"
+#include "utils/memory/memory.h"
+#include "utils/memory/safety.h"
+#include "utils/strings/xstr.h"
 #include <stdint.h>
-#include <utils/errors.h>
-#include <utils/memory/memory.h>
-#include <utils/memory/safety.h>
-#include <utils/strings/xstr.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "devfs"
@@ -17,7 +16,7 @@ static vfs_t *_devfs;
 static u64 _dev_count;
 
 static i32 _zero_r(void *p, u64 o, u64 s, char *b) {
-  memset(b, 0, s);
+  kmemset(b, 0, s);
   return E_SUCCESS;
 }
 static i32 _zero_w(void *p, u64 o, u64 s, char *b) { return E_SUCCESS; }
@@ -31,9 +30,9 @@ void devfs_create(char *name, i32 (*read)(void *, u64, u64, char *),
   debugf("Creating dev node '%s'...", name);
   device_t *device;
   if (!_devices)
-    device = _devices = malloc(sizeof(device_t));
+    device = _devices = kmalloc(sizeof(device_t));
   else {
-    device = malloc(sizeof(device_t));
+    device = kmalloc(sizeof(device_t));
     device_t *c = _devices;
     device_t *p = NULL;
     while (c) {
@@ -63,24 +62,24 @@ static i32 _devfs_write(u64 o, u64 s, char *b, file_t *f) {
 static void _devfs_clear_files() {
   for (u64 i = 0; i < _devfs->root->file_count; i++) {
     if (_devfs->root->files[i]->data)
-      free(_devfs->root->files[i]->data);
-    free(_devfs->root->files[i]);
+      kfree(_devfs->root->files[i]->data);
+    kfree(_devfs->root->files[i]);
   }
-  free(_devfs->root->files);
+  kfree(_devfs->root->files);
 }
 
 void devfs_reload() {
   nullsafe(_devfs);
   if (!_devfs->root)
-    _devfs->root = malloc(sizeof(directory_t));
+    _devfs->root = kmalloc(sizeof(directory_t));
   nullsafe_error(_devfs->root, "Out of memory");
   if (_devfs->root->files)
     _devfs_clear_files();
   _devfs->root->file_count = _dev_count;
-  _devfs->root->files = malloc(sizeof(void *) * _dev_count);
+  _devfs->root->files = kmalloc(sizeof(void *) * _dev_count);
   device_t *c = _devices;
   for (u64 i = 0; i < _dev_count; i++) {
-    _devfs->root->files[i] = malloc(sizeof(file_t));
+    _devfs->root->files[i] = kmalloc(sizeof(file_t));
     nullsafe_error(_devfs->root->files[i], "Out of memory");
     _devfs->root->files[i]->name = c->name;
     _devfs->root->files[i]->read = _devfs_read;

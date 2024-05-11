@@ -1,6 +1,5 @@
-#include "kernel.h"
-#include <debug.h>
-#include <int/syscall.h>
+#include "int/syscall.h"
+#include "debug.h"
 #include <stdint.h>
 
 #undef DEBUG_MODULE

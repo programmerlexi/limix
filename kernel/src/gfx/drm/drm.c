@@ -1,18 +1,17 @@
-#include <config.h>
-#include <fs/devfs.h>
-#include <gfx/drm.h>
-#include <gfx/font/font.h>
-#include <gfx/framebuffer.h>
-#include <io/serial/serial.h>
-#include <kernel.h>
-#include <kipc/spinlock.h>
-#include <math/lib.h>
-#include <mm/heap.h>
-#include <mm/mm.h>
+#include "gfx/drm.h"
+#include "config.h"
+#include "fs/devfs.h"
+#include "gfx/font/font.h"
+#include "gfx/framebuffer.h"
+#include "kernel.h"
+#include "kipc/spinlock.h"
+#include "math/lib.h"
+#include "mm/heap.h"
+#include "mm/mm.h"
+#include "utils/errors.h"
+#include "utils/memory/memory.h"
+#include "utils/memory/safety.h"
 #include <stdint.h>
-#include <utils/errors.h>
-#include <utils/memory/memory.h>
-#include <utils/memory/safety.h>
 
 static drm_t _drms[MAX_DRMS];
 static u64 _active_drm;
@@ -43,13 +42,13 @@ void drm_init() {
 }
 static void _drm_sync_real() {
   drm_t ad = _drms[_active_drm];
-  memcpy(g_fb->address, ad.framebuffer, ad.width * ad.height * 4);
+  kmemcpy(g_fb->address, ad.framebuffer, ad.width * ad.height * 4);
 }
 void drm_switch(u64 drm) {
   if (drm >= MAX_DRMS)
     return;
-  memcpy(_drms[_active_drm].framebuffer, g_fb->address,
-         _drms[_active_drm].width * _drms[_active_drm].height * 4);
+  kmemcpy(_drms[_active_drm].framebuffer, g_fb->address,
+          _drms[_active_drm].width * _drms[_active_drm].height * 4);
   spinlock(&_drm_sys_lock);
   _active_drm = drm;
   _drm_sync_real();
@@ -179,7 +178,7 @@ void drm_fill_rel_rect(u64 drm, u64 x0, u64 y0, u64 w, u64 h, u32 c) {
 }
 void drm_clear(u64 drm) {
   spinlock(&_drm_sys_lock);
-  memset(_drms[drm].framebuffer, 0, _drms[drm].width * _drms[drm].height * 4);
+  kmemset(_drms[drm].framebuffer, 0, _drms[drm].width * _drms[drm].height * 4);
   spinunlock(&_drm_sys_lock);
   drm_sync();
 }
@@ -308,15 +307,15 @@ static i32 _drm_read(void *d, u64 o, u64 s, char *b) {
 
 void drm_register_vfs() {
   for (u64 i = 0; i < MAX_DRMS; i++) {
-    drm_number_t *dn = malloc(sizeof(drm_number_t));
+    drm_number_t *dn = kmalloc(sizeof(drm_number_t));
     nullsafe_error(dn, "Out of memory");
-    char *devname = malloc(4);
+    char *devname = kmalloc(4);
     nullsafe_error(devname, "Out of memory");
-    memcpy(devname, "drm", 3);
+    kmemcpy(devname, "drm", 3);
     devname[3] = 'a' + i;
     *dn = i;
     devfs_create(devname, _drm_read, _drm_write, dn);
-    free(devname);
+    kfree(devname);
   }
   devfs_reload();
 }

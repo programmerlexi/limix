@@ -1,8 +1,8 @@
 #pragma once
+#include "types.h"
 #include <stddef.h>
-#include <types.h>
 
-void *memcpy(void *destination, const void *source, size_t count);
-void *memset(void *destination, i32 value, size_t count);
-void *memmove(void *destination, const void *source, size_t count);
-i32 memcmp(const void *destination, const void *source, size_t count);
+void *kmemcpy(void *destination, const void *source, size_t count);
+void *kmemset(void *destination, i32 value, size_t count);
+void *kmemmove(void *destination, const void *source, size_t count);
+i32 kmemcmp(const void *destination, const void *source, size_t count);

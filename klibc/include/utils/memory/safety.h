@@ -1,5 +1,7 @@
 #pragma once
 
+void kernel_panic_error(const char *error);
+
 #define nullsafe_with(pointer, block)                                          \
   if (!pointer)                                                                \
   block

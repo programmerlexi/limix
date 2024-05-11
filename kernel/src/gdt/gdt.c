@@ -1,5 +1,5 @@
-#include <gdt/gdt.h>
-#include <mm/hhtp.h>
+#include "gdt/gdt.h"
+#include "mm/hhtp.h"
 
 __attribute__((aligned(0x1000))) gdt_t g_gdt = {
     {0, 0, 0, 0x00, 0x00, 0}, // null

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <fs/vfs.h>
+#include "fs/vfs.h"
+#include "types.h"
+#include "utils/strings/xstr.h"
 #include <stdint.h>
-#include <types.h>
-#include <utils/strings/xstr.h>
 
 typedef struct device {
   xstr_t name;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <boot/limine.h>
-#include <gfx/gfx.h>
+#include "boot/limine.h"
+#include "gfx/gfx.h"
 #include <stddef.h>
 #include <stdint.h>
 

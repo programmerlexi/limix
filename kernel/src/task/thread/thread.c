@@ -1,17 +1,17 @@
-#include <mm/heap.h>
+#include "task/thread/thread.h"
+#include "mm/heap.h"
 #include <stdint.h>
-#include <task/thread/thread.h>
 
 static u64 _latest_tid = 0;
 
 thread_t *thread_create() {
-  thread_t *t = (thread_t *)malloc(sizeof(thread_t));
+  thread_t *t = (thread_t *)kmalloc(sizeof(thread_t));
   t->tid = ++_latest_tid;
   t->state = THREAD_INIT;
   return t;
 }
 
-void thread_destroy(thread_t *t) { free(t); }
+void thread_destroy(thread_t *t) { kfree(t); }
 
 extern void exec_thread_switch(u64 *prev, u64 *next);
 

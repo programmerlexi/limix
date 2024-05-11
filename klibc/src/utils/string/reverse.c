@@ -1,9 +1,8 @@
-#include <math/lib.h>
+#include "types.h"
+#include "utils/memory/memory.h"
+#include "utils/strings/strings.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include <types.h>
-#include <utils/memory/memory.h>
-#include <utils/strings/strings.h>
 
 i32 reverse(char *s, size_t len) {
   if (!len || !s)

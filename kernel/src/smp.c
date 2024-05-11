@@ -1,14 +1,14 @@
-#define DEBUG_MODULE "smp"
-
-#include <boot/limine.h>
-#include <boot/requests.h>
-#include <debug.h>
-#include <gfx/framebuffer.h>
-#include <kernel.h>
-#include <kipc/semaphore.h>
-#include <smp.h>
+#include "smp.h"
+#include "boot/limine.h"
+#include "boot/requests.h"
+#include "debug.h"
+#include "kernel.h"
+#include "kipc/semaphore.h"
+#include "task/sched/local.h"
 #include <stdbool.h>
-#include <task/sched/local.h>
+
+#undef DEBUG_MODULE
+#define DEBUG_MODULE "smp"
 
 static semaphore_t _smp_cpu = 0;
 void unlock_lschedi();

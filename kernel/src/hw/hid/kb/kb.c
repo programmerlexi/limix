@@ -1,12 +1,11 @@
-#define DEBUG_MODULE "kb"
-
-#include <config.h>
-#include <debug.h>
-#include <hw/hid/kb/kb.h>
-#include <hw/hid/kb/poll.h>
+#include "hw/hid/kb/kb.h"
+#include "debug.h"
+#include "utils/memory/memory.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include <utils/memory/memory.h>
+
+#undef DEBUG_MODULE
+#define DEBUG_MODULE "kb"
 
 static bool _key_state[256];
 static bool _caps_lock;
@@ -15,7 +14,7 @@ static bool _scroll_lock;
 
 void kb_init() {
   log(LOGLEVEL_ANALYZE, "Zeroing keyboard state");
-  memset(_key_state, 0, 256);
+  kmemset(_key_state, 0, 256);
 }
 bool kb_get_key(u8 k) { return _key_state[k]; }
 u16 kb_get_mods() {

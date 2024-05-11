@@ -1,8 +1,8 @@
 #pragma once
 
+#include "types.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include <types.h>
 
 #define PS2_PORT_DATA 0x60
 #define PS2_PORT_STATUS 0x64

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <gfx/vt/vt.h>
+#include "gfx/vt/vt.h"
+#include "types.h"
 #include <stdbool.h>
-#include <types.h>
 
 enum ANSI_STATE { C1, CSI_CMD, ARG, SEMICOLON };
 

@@ -1,10 +1,8 @@
 #pragma once
 
+#include "types.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include <types.h>
-
-#include <hw/hid/kb/sets/set1.h>
 
 #define KB_MOD_SHIFT 1 << 0
 #define KB_MOD_ALT 1 << 1
