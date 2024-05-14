@@ -49,7 +49,7 @@ set_leds:
       _kb_set = 3;
       break;
     default:
-      logf(LOGLEVEL_ERROR, "Unrecognized set: %x", (u32)scancode_set);
+      logf(LOGLEVEL_ERROR, "Unrecognized set: %x", (u64)scancode_set);
     }
   } else
     _kb_set = ps2_read_data();

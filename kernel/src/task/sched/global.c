@@ -88,8 +88,8 @@ void sched_register_cpu(local_scheduler_t *ls) {
 void sched_glob_list_processes() {
   process_t *p = _procs;
   while (p) {
-    kprintf("Process '%s' (PID %u) Threads: %u\n\r", p->name.cstr, (int)p->pid,
-            (int)p->thread_count);
+    logf(LOGLEVEL_INFO, "Process '%s' (PID %u) Threads: %u\n\r", p->name.cstr,
+         p->pid, p->thread_count);
     p = p->next;
   }
 }

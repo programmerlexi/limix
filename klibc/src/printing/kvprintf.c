@@ -23,7 +23,7 @@ void kvprintf(char *s, va_list args) {
         if (base == 2)
           sign = false;
         char numbuf[128];
-        ntos(numbuf, va_arg(args, int), base, 128, !sign, false);
+        ntos(numbuf, va_arg(args, i64), base, 128, !sign, false);
         kprint(numbuf);
         format = false;
         break;
