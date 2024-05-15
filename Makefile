@@ -1,4 +1,4 @@
-JOBS=8
+JOBS=$(shell nproc)
 
 COMMON_QEMU_FLAGS=-m 4G -smp 4 -serial stdio -usb -device qemu-xhci
 
