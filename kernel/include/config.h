@@ -12,12 +12,9 @@
 
 #define MAX_DRMS 1
 
-#define KERNEL_NAME "limix"
 #define KERNEL_MAJ "0"
 #define KERNEL_MIN "0"
 #define KERNEL_PATCH "1"
-#define KERNEL_RELEASE "dev"
-#define KERNEL_TYPE "core"
 
 #define CONFIG_KEYBOARD_MODE_POLL 0
 

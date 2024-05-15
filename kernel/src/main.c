@@ -70,8 +70,7 @@ void _start(void) {
 
   font_parse();
 
-  kprint("Welcome to " KERNEL_NAME " " KERNEL_RELEASE " " KERNEL_MAJ
-         "." KERNEL_MIN "." KERNEL_PATCH "-" KERNEL_TYPE "\n\r");
+  kprint("Welcome to limix " KERNEL_MAJ "." KERNEL_MIN "." KERNEL_PATCH "\n\r");
 
   async_init();
 
