@@ -6,7 +6,6 @@
 #include "types.h"
 #include "utils/memory/memory.h"
 #include "utils/memory/safety.h"
-#include <stdint.h>
 
 static heapseg_t *_heap_first;
 static heapseg_t *_heap_last;

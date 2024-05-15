@@ -1,6 +1,5 @@
 #include "task/thread/thread.h"
 #include "mm/heap.h"
-#include <stdint.h>
 
 static u64 _latest_tid = 0;
 

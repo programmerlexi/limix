@@ -1,6 +1,5 @@
 #include "hw/pci/pci.h"
 #include "types.h"
-#include <stdint.h>
 
 static const char *_device_class_names[] = {
     "Unclassified",           "Mass Storage Controller",
