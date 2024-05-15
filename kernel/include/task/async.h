@@ -4,8 +4,6 @@
 #include "utils/variety.h"
 #include <stdbool.h>
 
-#define THREAD_LIMIT 128
-
 enum async_state {
   ASYNC_NONE,
   ASYNC_RUNNING,

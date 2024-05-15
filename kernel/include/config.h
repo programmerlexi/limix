@@ -29,7 +29,8 @@
 #define PATHSEP '/'
 
 #define LOGLEVEL LOGLEVEL_DEBUG
-
 // #define LOG_SERIAL
 
 #define DRM_WRITETHROUGH
+
+#define TASK_LIMIT 128

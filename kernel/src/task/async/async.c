@@ -1,7 +1,6 @@
 #include "task/async.h"
+#include "config.h"
 #include "debug.h"
-#include "io/serial/serial.h"
-#include "kernel.h"
 #include "mm/mm.h"
 #include "utils/memory/safety.h"
 #include "utils/results.h"
@@ -22,10 +21,9 @@ static u64 _count;
 static u64 _waiting;
 
 void async_init() {
-  log(LOGLEVEL_ANALYZE,
-      "Allocating thread list for " xstr(THREAD_LIMIT) " threads");
+  log(LOGLEVEL_ANALYZE, "Allocating task list for " xstr(TASK_LIMIT) " tasks");
   _threads = request_page();
-  nullsafe_error(_threads, "Thread init failed");
+  nullsafe_error(_threads, "Task init failed");
   log(LOGLEVEL_DEBUG, "Setting up main task");
   _threads[0].state = ASYNC_RUNNING;
   _current = _threads;
@@ -59,23 +57,16 @@ static void _async_wrapper(result_t (*func)(variety_t), variety_t arg) {
 
 future_t async(result_t (*func)(variety_t), variety_t arg) {
   task_t *t = NULL;
-  for (i32 i = 0; i < THREAD_LIMIT; i++) {
+  for (i32 i = 0; i < TASK_LIMIT; i++)
     if (_threads[i].state == ASYNC_NONE) {
       t = &_threads[i];
       break;
     }
-  }
-  if (t == NULL) {
-    serial_writes("[!!] Failed to create thread: TOO_MANY_THREADS\n\r");
-    hcf();
-  }
+  nullsafe_error(t, "Failed to create task: TOO_MANY_THREADS");
   t->state = ASYNC_INIT;
   t->page = (void *)request_page();
 
-  if (t->page == NULL) {
-    serial_writes("[!!] Failed to create thread: OUT_OF_MEMORY\n\r");
-    hcf();
-  }
+  nullsafe_error(t->page, "Failed to create task: OUT_OF_MEMORY");
 
   t->sp = (void *)((uintptr_t)t->page + 0x1000 - 72);
   *(u64 *)(t->page + 0x1000 - 8) = (uintptr_t)_async_wrapper;
