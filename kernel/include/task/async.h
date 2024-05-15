@@ -2,7 +2,6 @@
 
 #include "utils/results.h"
 #include "utils/variety.h"
-#include <stdbool.h>
 
 enum async_state {
   ASYNC_NONE,

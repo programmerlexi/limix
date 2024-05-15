@@ -1,16 +1,15 @@
 #include "task/sched/global.h"
 #include "asm_inline.h"
 #include "debug.h"
+#include "defines.h"
 #include "kernel.h"
 #include "kipc/spinlock.h"
 #include "mm/heap.h"
-#include "printing.h"
 #include "task/proc/proc.h"
 #include "task/sched/common.h"
 #include "task/sched/local.h"
 #include "task/thread/thread.h"
 #include "utils/strings/xstr.h"
-#include <stdint.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "sched_global"
@@ -61,7 +60,7 @@ void sched_glob_tick() {
             nfc->next = c->frames;
             c->frames = nfc;
             nfc->frame = cf;
-            cf->assigned = true;
+            cf->assigned = TRUE;
           }
         }
         cf = cf->next;

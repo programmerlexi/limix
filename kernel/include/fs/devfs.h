@@ -3,7 +3,6 @@
 #include "fs/vfs.h"
 #include "types.h"
 #include "utils/strings/xstr.h"
-#include <stdint.h>
 
 typedef struct device {
   xstr_t name;

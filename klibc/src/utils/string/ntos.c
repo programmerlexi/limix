@@ -1,10 +1,9 @@
+#include "defines.h"
 #include "types.h"
 #include "utils/memory/memory.h"
 #include "utils/strings/strings.h"
-#include <stdbool.h>
-#include <stdint.h>
 
-i32 ntos(char *buf, ssize_t i, u8 base, size_t length, bool unsign, bool pad) {
+i32 ntos(char *buf, isz i, u8 base, usz length, BOOL unsign, BOOL pad) {
   if (!length || buf == NULL)
     return STR_NOBUF;
 
@@ -20,9 +19,9 @@ i32 ntos(char *buf, ssize_t i, u8 base, size_t length, bool unsign, bool pad) {
     return STR_OK;
   }
 
-  size_t p = 0;
+  usz p = 0;
   if (!unsign) {
-    ssize_t n = i;
+    isz n = i;
     while (n > 0 && p < length) {
       char d = (n % base);
       if (d < 10)
@@ -41,7 +40,7 @@ i32 ntos(char *buf, ssize_t i, u8 base, size_t length, bool unsign, bool pad) {
     else
       buf[p] = '+';
   } else {
-    size_t n = i;
+    usz n = i;
     while (n > 0 && p < length) {
       char d = (n % base);
       if (d < 10)

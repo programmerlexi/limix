@@ -1,9 +1,9 @@
 #pragma once
 
-#include <stddef.h>
+#include "types.h"
 
 typedef struct {
-  size_t length;
+  usz length;
   char *cstr;
 } xstr_t;
 

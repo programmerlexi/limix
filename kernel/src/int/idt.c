@@ -1,4 +1,5 @@
 #include "int/idt.h"
+#include "defines.h"
 #include "int/syscall.h"
 #include "io/serial/serial.h"
 #include "kernel.h"
@@ -19,7 +20,7 @@ __attribute__((interrupt)) void gpf_handler(interrupt_frame_t *int_frame) {
   asm("cli");
   serial_writes("Encountered GPF at 0x");
   char b[16];
-  ntos(b, int_frame->rip, 16, 16, true, true);
+  ntos(b, int_frame->rip, 16, 16, TRUE, TRUE);
   serial_writes(b);
   serial_writes("\n\r");
   kernel_panic_error("General Protection Fault (Check serial)");
@@ -28,7 +29,7 @@ __attribute__((interrupt)) void df_handler(interrupt_frame_t *int_frame) {
   asm("cli");
   serial_writes("DF 0x");
   char b[16];
-  ntos(b, int_frame->rip, 16, 16, true, true);
+  ntos(b, int_frame->rip, 16, 16, TRUE, TRUE);
   serial_writes(b);
   serial_writes("\n\r");
   kernel_panic_error("Double Fault (Check serial)");

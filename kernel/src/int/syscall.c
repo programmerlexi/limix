@@ -1,6 +1,5 @@
 #include "int/syscall.h"
 #include "debug.h"
-#include <stdint.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "syscall"

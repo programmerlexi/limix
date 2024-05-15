@@ -1,7 +1,7 @@
-#include <stddef.h>
+#include "types.h"
 
-size_t kstrlen(char *s) {
-  size_t i = 0;
+usz kstrlen(char *s) {
+  usz i = 0;
   while (*s) {
     i++;
     s++;

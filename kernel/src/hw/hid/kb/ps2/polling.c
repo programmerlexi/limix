@@ -1,4 +1,5 @@
 #include "debug.h"
+#include "defines.h"
 #include "hw/hid/kb/poll.h"
 #include "hw/ps2.h"
 #include "io/pio.h"
@@ -9,7 +10,7 @@
 static u8 _kb_set = 0;
 
 void kb_init_polling() {
-  bool success = false;
+  BOOL success = FALSE;
   while (!success) {
     log(LOGLEVEL_ANALYZE, "Resetting keyboard");
     ps2_send_command1(0xff);
@@ -19,7 +20,7 @@ void kb_init_polling() {
     io_wait();
     if (ps2_read_data() != 0xAA)
       continue;
-    success = true;
+    success = TRUE;
   }
   log(LOGLEVEL_ANALYZE, "Reset keyboard");
   log(LOGLEVEL_ANALYZE, "Turning off LEDs");

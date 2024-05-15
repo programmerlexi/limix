@@ -1,19 +1,19 @@
+#include "defines.h"
 #include "printing.h"
 #include "utils/strings/strings.h"
 #include <stdarg.h>
-#include <stdint.h>
 
 void kvprintf(char *s, va_list args) {
-  bool format = false;
+  BOOL format = FALSE;
   i32 base = 0;
-  bool sign = true;
+  BOOL sign = TRUE;
   while (*s) {
     if (format) {
       switch (*s) {
       case 'x':
         base += 6;
       case 'u':
-        sign = false;
+        sign = FALSE;
       case 'i':
         base += 2;
       case 'o':
@@ -21,23 +21,23 @@ void kvprintf(char *s, va_list args) {
       case 'd':
         base += 2;
         if (base == 2)
-          sign = false;
+          sign = FALSE;
         char numbuf[128];
-        ntos(numbuf, va_arg(args, i64), base, 128, !sign, false);
+        ntos(numbuf, va_arg(args, i64), base, 128, !sign, FALSE);
         kprint(numbuf);
-        format = false;
+        format = FALSE;
         break;
       case 's':
         kprint(va_arg(args, char *));
-        format = false;
+        format = FALSE;
         break;
       }
     } else {
       switch (*s) {
       case '%':
-        format = true;
+        format = TRUE;
         base = 0;
-        sign = true;
+        sign = TRUE;
         break;
       default:
         kprintc(*s);

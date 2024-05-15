@@ -1,8 +1,8 @@
 #pragma once
 
-#include <stdint.h>
+#include "types.h"
 
-typedef uint64_t absolute64_t;
-typedef uint64_t offset64_t;
-typedef uint32_t color32_t;
-typedef uint32_t index32_t;
+typedef u64 absolute64_t;
+typedef u64 offset64_t;
+typedef u32 color32_t;
+typedef u32 index32_t;

@@ -1,9 +1,10 @@
 #include "io/serial/serial.h"
 #include "config.h"
+#include "defines.h"
 #include "io/pio.h"
-#include <stddef.h>
+#include "types.h"
 
-static bool _serial_available = false;
+static BOOL _serial_available = FALSE;
 
 void serial_early_init() {
   outb(DEFAULT_COM + COM_INT_ENABLE, 0);
@@ -25,7 +26,7 @@ void serial_early_init() {
   outb(DEFAULT_COM + COM_MODEM_CTRL, COM_MODEM_CTRL_DTR | COM_MODEM_CTRL_RTS |
                                          COM_MODEM_CTRL_OUT1 |
                                          COM_MODEM_CTRL_OUT2);
-  _serial_available = true;
+  _serial_available = TRUE;
 }
 char serial_read() {
   if (!_serial_available)
@@ -42,10 +43,10 @@ void serial_write(char c) {
   return outb(DEFAULT_COM + COM_DATA, c);
 }
 
-bool serial_received() {
+BOOL serial_received() {
   return inb(DEFAULT_COM + COM_LINE_STATUS) & COM_LINE_STATUS_DR;
 }
-bool serial_can_send() {
+BOOL serial_can_send() {
   return inb(DEFAULT_COM + COM_LINE_STATUS) & COM_LINE_STATUS_THRE;
 }
 

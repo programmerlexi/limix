@@ -2,7 +2,6 @@
 
 #include "types.h"
 #include "utils/strings/xstr.h"
-#include <stdint.h>
 
 enum thread_state {
   THREAD_IDLE,

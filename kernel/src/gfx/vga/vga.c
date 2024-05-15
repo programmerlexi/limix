@@ -1,21 +1,19 @@
 #include "gfx/vga.h"
 #include "gfx/framebuffer.h"
 #include "math/lib.h"
-#include <stdint.h>
 
-void fill_rect(size_t x0, size_t y0, size_t width, size_t height, u32 color) {
-  for (size_t x = x0; x < x0 + width; x++) {
-    for (size_t y = y0; y < y0 + height; y++) {
+void fill_rect(u64 x0, u64 y0, u64 width, u64 height, u32 color) {
+  for (usz x = x0; x < x0 + width; x++) {
+    for (usz y = y0; y < y0 + height; y++) {
       putpixel(x, y, color);
     }
   }
 }
 
-void draw_ellipse(size_t xm, size_t ym, intmax_t a, intmax_t b, u32 color,
-                  u8 type) {
+void draw_ellipse(usz xm, usz ym, intmax_t a, intmax_t b, u32 color, u8 type) {
   intmax_t dx = 0, dy = b;
-  size_t a2 = a * a, b2 = b * b;
-  size_t err = b2 - (2 * b - 1) * a2, e2;
+  usz a2 = a * a, b2 = b * b;
+  usz err = b2 - (2 * b - 1) * a2, e2;
 
   do {
     if (E_3 & type)
@@ -43,14 +41,14 @@ void draw_ellipse(size_t xm, size_t ym, intmax_t a, intmax_t b, u32 color,
   }
 }
 
-void draw_rect(size_t x0, size_t y0, size_t width, size_t height, u32 color) {
+void draw_rect(usz x0, usz y0, usz width, usz height, u32 color) {
   draw_line(x0, y0, x0 + width, y0, color);
   draw_line(x0, y0, x0, y0 + height, color);
   draw_line(x0 + width, y0, x0 + width, y0 + height, color);
   draw_line(x0, y0 + height, x0 + width, y0 + height, color);
 }
 
-void draw_circle(size_t x0, size_t y0, size_t radius, u32 color, u8 width) {
+void draw_circle(usz x0, usz y0, usz radius, u32 color, u8 width) {
   if (width == 0)
     return;
   i32 f = 1 - radius;
@@ -85,7 +83,7 @@ void draw_circle(size_t x0, size_t y0, size_t radius, u32 color, u8 width) {
   }
 }
 
-void draw_line(size_t x1, size_t y1, size_t x2, size_t y2, u32 color) {
+void draw_line(usz x1, usz y1, usz x2, usz y2, u32 color) {
   i32 x, y, t, dx, dy, incx, incy, pdx, pdy, ddx, ddy, deltaslowdirection,
       deltafastdirection, err;
   dx = x2 - x1;

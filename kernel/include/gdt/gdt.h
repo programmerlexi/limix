@@ -1,7 +1,6 @@
 #pragma once
 
 #include "types.h"
-#include <stdint.h>
 
 typedef struct gdt_descriptor {
   u16 size;

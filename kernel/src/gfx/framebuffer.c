@@ -7,12 +7,11 @@ struct limine_framebuffer *g_fb;
 
 void fb_init(struct limine_framebuffer *fb) { g_fb = fb; }
 
-void putpixel(size_t x, size_t y, u32 c) {
+void putpixel(u64 x, u64 y, u32 c) {
   ((u32 *)g_fb->address)[y * g_fb->pitch / 4 + x] = c;
 }
 
-static void _internal_putchar(size_t x, size_t y, u8 ch, u32 color, u8 h,
-                              u8 *font) {
+static void _internal_putchar(usz x, usz y, u8 ch, u32 color, u8 h, u8 *font) {
   for (u8 hi = 0; hi < h; hi++) {
     u8 m = 0x80;
     for (u8 i = 0; i < 8; i++) {
@@ -23,12 +22,12 @@ static void _internal_putchar(size_t x, size_t y, u8 ch, u32 color, u8 h,
   }
 }
 
-void putchar16(size_t x, size_t y, char ch, u32 color) {
+void putchar16(u64 x, u64 y, char ch, u32 color) {
   if (g_8x16_font)
     _internal_putchar(x, y, (u8)ch, color, 16, g_8x16_font);
 }
 
-void putstr16(size_t x, size_t y, char *s, u32 color) {
+void putstr16(u64 x, u64 y, char *s, u32 color) {
   i32 xo = 0;
   while (*s) {
     putchar16(x + xo, y, *s, color);

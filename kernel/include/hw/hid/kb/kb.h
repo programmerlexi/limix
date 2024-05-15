@@ -1,8 +1,6 @@
 #pragma once
 
 #include "types.h"
-#include <stdbool.h>
-#include <stdint.h>
 
 #define KB_MOD_SHIFT 1 << 0
 #define KB_MOD_ALT 1 << 1
@@ -17,7 +15,7 @@
 #define KB_MOD_RIGHT_CTRL 1 << 10
 #define KB_MOD_SCROLL 1 << 11
 
-#define KB_POS(row, col) (uint8_t)((col & 0b00011111) | ((row & 0b111) << 5))
+#define KB_POS(row, col) (u8)((col & 0b00011111) | ((row & 0b111) << 5))
 
 #define KB_KEY_ESC KB_POS(0, 0)
 #define KB_KEY_F1 KB_POS(0, 1)
@@ -108,8 +106,8 @@
 #define KB_KEY_ARROW_RIGHT KB_POS(6, 5)
 
 void kb_init();
-bool kb_get_key(u8 keycode);
+BOOL kb_get_key(u8 keycode);
 u16 kb_get_mods();
 void kb_update();
 
-void kb_internal_set_key(u8 keycode, bool pressed);
+void kb_internal_set_key(u8 keycode, BOOL pressed);

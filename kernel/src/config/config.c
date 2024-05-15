@@ -1,11 +1,10 @@
 #include "config/config.h"
+#include "defines.h"
 #include "mm/heap.h"
-#include <stddef.h>
-#include <stdint.h>
 
 static config_module_t *_modules;
 
-static config_module_t *_config_resolve_module(uint64_t m) {
+static config_module_t *_config_resolve_module(u64 m) {
   config_module_t *c = _modules;
   while (c) {
     if (c->module == m)
@@ -15,7 +14,7 @@ static config_module_t *_config_resolve_module(uint64_t m) {
   return NULL;
 }
 static config_submodule_t *_config_resolve_submodule(config_module_t *m,
-                                                     uint64_t s) {
+                                                     u64 s) {
   config_submodule_t *c = m->submodules;
   while (c) {
     if (c->submodule == s)
@@ -25,7 +24,7 @@ static config_submodule_t *_config_resolve_submodule(config_module_t *m,
   return NULL;
 }
 static config_variable_t *_config_resolve_variable(config_submodule_t *s,
-                                                   uint64_t v) {
+                                                   u64 v) {
   config_variable_t *c = s->variables;
   while (c) {
     if (c->variable == v)
@@ -86,7 +85,7 @@ static config_variable_t *_config_get_or_create(config_path_t p) {
   return v;
 }
 
-uint64_t config_get_integer(config_path_t path) {
+u64 config_get_integer(config_path_t path) {
   config_variable_t *v = _config_resolve(path);
   if (v->type != 1)
     return 0;
@@ -107,7 +106,7 @@ char config_get_char(config_path_t path) {
   return v->value.character;
 }
 
-void config_set_integer(config_path_t path, uint64_t i) {
+void config_set_integer(config_path_t path, u64 i) {
   config_variable_t *v = _config_get_or_create(path);
   if (v->type == 0xff)
     v->type = 1;
@@ -132,7 +131,7 @@ void config_set_char(config_path_t path, char c) {
   v->value.character = c;
 }
 
-bool config_has(config_path_t path) { return _config_resolve(path); }
+BOOL config_has(config_path_t path) { return _config_resolve(path) != NULL; }
 
 void config_init() {
   _modules = kmalloc(sizeof(config_module_t));

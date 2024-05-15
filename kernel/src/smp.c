@@ -2,10 +2,10 @@
 #include "boot/limine.h"
 #include "boot/requests.h"
 #include "debug.h"
+#include "defines.h"
 #include "kernel.h"
 #include "kipc/semaphore.h"
 #include "task/sched/local.h"
-#include <stdbool.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "smp"
@@ -76,7 +76,7 @@ void _smp_start(struct limine_smp_info *cpu_info) {
 
   local_scheduler_t *ls = sched_local_init(processor_id);
 
-  while (true) {
+  while (TRUE) {
     sched_local_tick(ls);
   }
 }

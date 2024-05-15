@@ -1,7 +1,6 @@
 #pragma once
 #include "boot/limine.h"
 #include "types.h"
-#include <stdint.h>
 
 /* SMP actions (CMDs) */
 #define SMP_ACTION_NONE 0

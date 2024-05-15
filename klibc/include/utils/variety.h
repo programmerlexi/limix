@@ -1,16 +1,16 @@
 #pragma once
 
-#include <stdint.h>
+#include "types.h"
 
 typedef union {
-  uint8_t value_u8;
-  uint16_t value_u16;
-  uint32_t value_u32;
-  uint64_t value_u64;
-  uintptr_t value_uptr;
+  u8 value_u8;
+  u16 value_u16;
+  u32 value_u32;
+  u64 value_u64;
+  uptr value_uptr;
   void *ptr;
-  int8_t value_i8;
-  int16_t value_i16;
-  int32_t value_i32;
-  int64_t value_i64;
+  i8 value_i8;
+  i16 value_i16;
+  i32 value_i32;
+  i64 value_i64;
 } variety_t;

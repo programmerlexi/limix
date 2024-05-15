@@ -1,7 +1,9 @@
 #include "mm/heap.h"
 #include "config.h"
+#include "defines.h"
 #include "kernel.h"
 #include "mm/mm.h"
+#include "types.h"
 #include "utils/memory/memory.h"
 #include "utils/memory/safety.h"
 #include <stdint.h>
@@ -18,7 +20,7 @@ void heap_init() {
   _heap_first->next = NULL;
   _heap_first->prev = NULL;
   _heap_first->size = (CONFIG_HEAP_INITIAL_PAGES * 0x1000) - sizeof(heapseg_t);
-  _heap_first->used = false;
+  _heap_first->used = FALSE;
 }
 
 static void _heap_combine_forward(heapseg_t *seg) {
@@ -42,15 +44,15 @@ static void _heap_combine_backward(heapseg_t *seg) {
       _heap_combine_forward(seg->prev);
 }
 
-void expand_heap(size_t size) {
+void expand_heap(usz size) {
   if (size % 0x1000 > 0) {
     size -= size % 0x1000;
     size += 0x1000;
   }
-  size_t pages = size / 0x1000;
+  usz pages = size / 0x1000;
   heapseg_t *new_seg = (heapseg_t *)request_page_block(pages);
   nullsafe_error(new_seg, "No more heap space");
-  new_seg->used = false;
+  new_seg->used = FALSE;
   new_seg->prev = _heap_last;
   _heap_last->next = new_seg;
   _heap_last = new_seg;
@@ -59,13 +61,13 @@ void expand_heap(size_t size) {
   _heap_combine_backward(new_seg);
 }
 
-static heapseg_t *_heap_split(heapseg_t *seg, size_t size) {
+static heapseg_t *_heap_split(heapseg_t *seg, usz size) {
   if (size < 0x10)
     return NULL;
-  size_t splitSize = seg->size - size - sizeof(heapseg_t);
+  usz splitSize = seg->size - size - sizeof(heapseg_t);
   if (splitSize < 0x10)
     return NULL;
-  heapseg_t *new_seg = (heapseg_t *)((size_t)seg + size + sizeof(heapseg_t));
+  heapseg_t *new_seg = (heapseg_t *)((usz)seg + size + sizeof(heapseg_t));
 
   if (seg->next)
     seg->next->prev = new_seg;
@@ -83,12 +85,12 @@ static heapseg_t *_heap_split(heapseg_t *seg, size_t size) {
 void kfree(void *addr) {
   nullsafe(addr);
   heapseg_t *seg = (heapseg_t *)addr - 1;
-  seg->used = false;
+  seg->used = FALSE;
   _heap_combine_forward(seg);
   _heap_combine_backward(seg);
 }
 
-void *kmalloc(size_t size) {
+void *kmalloc(usz size) {
   if (size % 0x10 > 0) {
     size -= size % 0x10;
     size += 0x10;
@@ -96,16 +98,16 @@ void *kmalloc(size_t size) {
   if (size == 0)
     return NULL;
   heapseg_t *seg = _heap_first;
-  while (true) {
+  while (TRUE) {
     if (!seg->used) {
       if (seg->size > (size + sizeof(heapseg_t))) {
         _heap_split(seg, size);
-        seg->used = true;
-        return (void *)((size_t)seg + sizeof(heapseg_t));
+        seg->used = TRUE;
+        return (void *)((usz)seg + sizeof(heapseg_t));
       }
       if (seg->size >= size) {
-        seg->used = true;
-        return (void *)((size_t)seg + sizeof(heapseg_t));
+        seg->used = TRUE;
+        return (void *)((usz)seg + sizeof(heapseg_t));
       }
     }
     if (seg->next == NULL)
@@ -116,7 +118,7 @@ void *kmalloc(size_t size) {
   return kmalloc(size);
 }
 
-void *calloc(size_t size, u8 val) {
+void *calloc(usz size, u8 val) {
   void *ptr = kmalloc(size);
   if (size % 0x10 > 0) {
     size -= size % 0x10;

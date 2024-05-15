@@ -1,8 +1,6 @@
 #include "types.h"
-#include <stddef.h>
-#include <stdint.h>
 
-void *kmemcpy(void *dst, const void *src, size_t count) {
+void *kmemcpy(void *dst, const void *src, usz count) {
   if (!count) {
     return dst;
   } // nothing to copy?

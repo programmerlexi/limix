@@ -1,11 +1,10 @@
 #include "mm/mm.h"
 #include "boot/limine.h"
+#include "defines.h"
 #include "mm/hhtp.h"
 #include "types.h"
 #include "utils/memory/memory.h"
 #include "utils/memory/safety.h"
-#include <stddef.h>
-#include <stdint.h>
 
 static memseg_t *_first = NULL;
 static memseg_t *_last = NULL;
@@ -49,7 +48,7 @@ static void _insert_page(void *page) {
   }
 }
 
-bool mm_init(struct limine_memmap_response *mmap) {
+BOOL mm_init(struct limine_memmap_response *mmap) {
   i32 usable = 0;
   for (u64 i = 0; i < mmap->entry_count; i++) {
     if (mmap->entries[i]->type == LIMINE_MEMMAP_USABLE) {
@@ -74,10 +73,10 @@ void *request_page() {
   return s;
 }
 
-void *request_page_block(size_t n) {
+void *request_page_block(usz n) {
   if (_first == NULL)
     return NULL;
-  size_t cl = 0;
+  usz cl = 0;
   memseg_t *c = _first->next;
   memseg_t *p = _first;
   memseg_t *s = p;
@@ -108,9 +107,9 @@ void free_page(void *p) {
   _insert_page(p);
 }
 
-void free_page_block(void *p, size_t n) {
+void free_page_block(void *p, usz n) {
   nullsafe(p);
-  for (size_t i = 0; i < n; i++) {
+  for (usz i = 0; i < n; i++) {
     free_page((void *)((uintptr_t)p + n * 0x1000));
   }
 }

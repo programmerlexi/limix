@@ -1,10 +1,10 @@
 #pragma once
 
-#include <stdint.h>
+#include "types.h"
 
-extern uintptr_t g_hhaddr;
+extern uptr g_hhaddr;
 
 #define HHDM(addr)                                                             \
-  ((uintptr_t)addr < g_hhaddr ? ((uintptr_t)addr + g_hhaddr) : (uintptr_t)addr)
+  ((uptr)addr < g_hhaddr ? ((uptr)addr + g_hhaddr) : (uptr)addr)
 #define PHY(addr)                                                              \
-  ((uintptr_t)addr >= g_hhaddr ? ((uintptr_t)addr - g_hhaddr) : (uintptr_t)addr)
+  ((uptr)addr >= g_hhaddr ? ((uptr)addr - g_hhaddr) : (uptr)addr)

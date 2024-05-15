@@ -1,7 +1,6 @@
 #pragma once
 
 #include "types.h"
-#include <stdint.h>
 
 typedef struct {
   u64 pdp_i;

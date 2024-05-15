@@ -2,6 +2,7 @@
 #include "boot/requests.h"
 #include "config.h"
 #include "config/config.h"
+#include "defines.h"
 #include "fs/devfs.h"
 #include "fs/vfs.h"
 #include "gdt/gdt.h"
@@ -24,14 +25,11 @@
 #include "task/async.h"
 #include "task/sched/global.h"
 #include "types.h"
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
 
-u64 g_hhaddr;
+uptr g_hhaddr;
 
 void _start(void) {
-  if (LIMINE_BASE_REVISION_SUPPORTED == false) {
+  if (LIMINE_BASE_REVISION_SUPPORTED == FALSE) {
     hcf();
   }
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "boot/limine.h"
-#include <stdint.h>
 
 extern volatile uint64_t limine_base_revision[];
 

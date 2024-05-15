@@ -2,8 +2,6 @@
 
 #include "gfx/gfx.h"
 #include "types.h"
-#include <stdbool.h>
-#include <stdint.h>
 
 #define DRM_ATTACHED_TO_SCREEN 1
 #define DRM_ATTACHED_TO_PROCESS 2
@@ -41,5 +39,5 @@ void drm_fill_rel_rect(drm_number_t drm_number, absolute64_t x, absolute64_t y,
                        offset64_t w, offset64_t h, color32_t color);
 absolute64_t drm_width(drm_number_t drm_number);
 absolute64_t drm_height(drm_number_t drm_number);
-bool drm_is_attached_to_process(drm_number_t drm_number);
+BOOL drm_is_attached_to_process(drm_number_t drm_number);
 void drm_register_vfs();

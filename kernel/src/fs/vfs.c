@@ -1,6 +1,7 @@
 #include "fs/vfs.h"
 #include "config.h"
 #include "debug.h"
+#include "defines.h"
 #include "math/lib.h"
 #include "mm/heap.h"
 #include "utils/errors.h"
@@ -8,7 +9,6 @@
 #include "utils/memory/safety.h"
 #include "utils/strings/strings.h"
 #include "utils/strings/xstr.h"
-#include <stdint.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "vfs"
@@ -68,14 +68,14 @@ i32 vfs_find_directory(directory_t **result, char *path) {
     it = 0;
     path += kstrnext(path, PATHSEP) + 1;
     char *name = clone(path, min(kstrnext(path, PATHSEP), kstrlen(path)));
-    bool found = false;
+    BOOL found = FALSE;
     for (u64 i = 0; i < d->directory_count; i++) {
       if (kstrlen(d->directories[i]->name.cstr) != kstrlen(name))
         continue;
       if (kstrncmp(d->directories[i]->name.cstr, name, kstrlen(name))) {
         d = d->directories[i];
         kfree(name);
-        found = true;
+        found = TRUE;
         *result = d->directories[i];
         return E_SUCCESS;
       }
@@ -87,7 +87,7 @@ i32 vfs_find_directory(directory_t **result, char *path) {
         continue;
       if (kstrncmp(d->files[i]->name.cstr, name, kstrlen(name))) {
         kfree(name);
-        found = true;
+        found = TRUE;
         it = 1;
         break;
       }
@@ -123,14 +123,14 @@ i32 vfs_find_file(file_t **result, char *path) {
     it = 0;
     path += kstrnext(path, PATHSEP) + 1;
     char *name = clone(path, min(kstrnext(path, PATHSEP), kstrlen(path)));
-    bool found = false;
+    BOOL found = FALSE;
     for (u64 i = 0; i < d->directory_count; i++) {
       if (kstrlen(d->directories[i]->name.cstr) != kstrlen(name))
         continue;
       if (kstrncmp(d->directories[i]->name.cstr, name, kstrlen(name))) {
         d = d->directories[i];
         kfree(name);
-        found = true;
+        found = TRUE;
         break;
       }
     }
@@ -141,7 +141,7 @@ i32 vfs_find_file(file_t **result, char *path) {
         continue;
       if (kstrncmp(d->files[i]->name.cstr, name, kstrlen(name))) {
         kfree(name);
-        found = true;
+        found = TRUE;
         it = 1;
         *result = d->files[i];
         return E_SUCCESS;
@@ -171,14 +171,14 @@ i32 vfs_type(char *path, u64 *type) {
     it = 0;
     path += kstrnext(path, PATHSEP) + 1;
     char *name = clone(path, min(kstrnext(path, PATHSEP), kstrlen(path)));
-    bool found = false;
+    BOOL found = FALSE;
     for (u64 i = 0; i < d->directory_count; i++) {
       if (kstrlen(d->directories[i]->name.cstr) != kstrlen(name))
         continue;
       if (kstrncmp(d->directories[i]->name.cstr, name, kstrlen(name))) {
         d = d->directories[i];
         kfree(name);
-        found = true;
+        found = TRUE;
         break;
       }
     }
@@ -189,7 +189,7 @@ i32 vfs_type(char *path, u64 *type) {
         continue;
       if (kstrncmp(d->files[i]->name.cstr, name, kstrlen(name))) {
         kfree(name);
-        found = true;
+        found = TRUE;
         it = 1;
         break;
       }

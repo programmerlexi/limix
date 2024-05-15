@@ -2,8 +2,6 @@
 
 #include "boot/limine.h"
 #include "gfx/gfx.h"
-#include <stddef.h>
-#include <stdint.h>
 
 extern struct limine_framebuffer *g_fb;
 

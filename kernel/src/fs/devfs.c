@@ -1,12 +1,12 @@
 #include "fs/devfs.h"
 #include "debug.h"
+#include "defines.h"
 #include "fs/vfs.h"
 #include "mm/heap.h"
 #include "utils/errors.h"
 #include "utils/memory/memory.h"
 #include "utils/memory/safety.h"
 #include "utils/strings/xstr.h"
-#include <stdint.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "devfs"

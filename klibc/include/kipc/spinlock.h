@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include "types.h"
 
-void spinlock(uint32_t *spinlock);
-void spinunlock(uint32_t *spinlock);
+void spinlock(u32 *spinlock);
+void spinunlock(u32 *spinlock);

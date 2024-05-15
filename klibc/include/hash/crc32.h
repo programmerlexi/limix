@@ -1,5 +1,5 @@
 #pragma once
 
-#include <stdint.h>
+#include "types.h"
 
-uint32_t crc32(uint8_t *data, uint64_t data_size);
+u32 crc32(u8 *data, u64 data_size);

@@ -2,7 +2,6 @@
 
 #include "task/thread/thread.h"
 #include "types.h"
-#include <stdint.h>
 
 typedef struct process {
   u64 pid;

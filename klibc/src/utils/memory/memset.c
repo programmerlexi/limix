@@ -1,8 +1,6 @@
 #include "types.h"
-#include <stddef.h>
-#include <stdint.h>
 
-void *kmemset(void *dst, i32 sval, size_t count) {
+void *kmemset(void *dst, i32 sval, usz count) {
   if (!count) {
     return dst;
   } // nothing to set?

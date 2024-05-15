@@ -4,7 +4,6 @@
 #include "gfx/font/parsers/limefont.h"
 #include "gfx/vt/vt.h"
 #include "utils/strings/strings.h"
-#include <stdint.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "font"

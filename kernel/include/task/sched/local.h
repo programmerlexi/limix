@@ -11,7 +11,7 @@ typedef struct local_scheduler {
   frame_container_t *frames;
 
   u64 cpu;
-  uint32_t shed_lock;
+  u32 shed_lock;
 
   struct local_scheduler *next;
 } local_scheduler_t;

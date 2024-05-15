@@ -2,7 +2,6 @@
 
 #include "types.h"
 #include "utils/strings/xstr.h"
-#include <stdint.h>
 
 typedef struct file {
   xstr_t name;

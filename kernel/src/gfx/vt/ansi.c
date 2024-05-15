@@ -1,6 +1,6 @@
 #include "gfx/vt/ansi.h"
+#include "defines.h"
 #include "gfx/vt/vt.h"
-#include <stdint.h>
 
 static u32 _normal_colors[] = {0x000000, 0xd32f2f, 0xafb42b, 0xfbc02d,
                                0x512da8, 0x7b1fa2, 0xfbc02d, 0xeeeeee};
@@ -42,7 +42,7 @@ ansi_state_t ansi_process(ansi_state_t s, char c) {
       s.as = CSI_CMD;
       break;
     default:
-      s.working = false;
+      s.working = FALSE;
       break;
     }
     break;

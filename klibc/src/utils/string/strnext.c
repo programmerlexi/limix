@@ -1,7 +1,7 @@
-#include <stddef.h>
+#include "types.h"
 
-size_t kstrnext(char *s, char c) {
-  size_t i = 0;
+usz kstrnext(char *s, char c) {
+  usz i = 0;
   while (*s && *s != c) {
     i++;
     s++;
