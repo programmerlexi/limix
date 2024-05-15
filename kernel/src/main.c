@@ -1,6 +1,7 @@
 #include "boot/limine.h"
 #include "boot/requests.h"
 #include "config.h"
+#include "config/config.h"
 #include "fs/devfs.h"
 #include "fs/vfs.h"
 #include "gdt/gdt.h"
@@ -61,6 +62,8 @@ void _start(void) {
   init_kernel_vas();
 
   heap_init();
+
+  config_init();
 
   drm_init();
   drm_switch(0);
