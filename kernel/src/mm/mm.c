@@ -1,10 +1,11 @@
 #include "mm/mm.h"
 #include "boot/limine.h"
-#include "defines.h"
 #include "mm/hhtp.h"
 #include "types.h"
 #include "utils/memory/memory.h"
 #include "utils/memory/safety.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 static memseg_t *_first = NULL;
 static memseg_t *_last = NULL;
@@ -48,7 +49,7 @@ static void _insert_page(void *page) {
   }
 }
 
-BOOL mm_init(struct limine_memmap_response *mmap) {
+bool mm_init(struct limine_memmap_response *mmap) {
   i32 usable = 0;
   for (u64 i = 0; i < mmap->entry_count; i++) {
     if (mmap->entries[i]->type == LIMINE_MEMMAP_USABLE) {

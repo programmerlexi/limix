@@ -1,11 +1,12 @@
 #include "mm/heap.h"
 #include "config.h"
-#include "defines.h"
 #include "kernel.h"
 #include "mm/mm.h"
 #include "types.h"
 #include "utils/memory/memory.h"
 #include "utils/memory/safety.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 static heapseg_t *_heap_first;
 static heapseg_t *_heap_last;
@@ -19,7 +20,7 @@ void heap_init() {
   _heap_first->next = NULL;
   _heap_first->prev = NULL;
   _heap_first->size = (CONFIG_HEAP_INITIAL_PAGES * 0x1000) - sizeof(heapseg_t);
-  _heap_first->used = FALSE;
+  _heap_first->used = false;
 }
 
 static void _heap_combine_forward(heapseg_t *seg) {
@@ -51,7 +52,7 @@ void expand_heap(usz size) {
   usz pages = size / 0x1000;
   heapseg_t *new_seg = (heapseg_t *)request_page_block(pages);
   nullsafe_error(new_seg, "No more heap space");
-  new_seg->used = FALSE;
+  new_seg->used = false;
   new_seg->prev = _heap_last;
   _heap_last->next = new_seg;
   _heap_last = new_seg;
@@ -84,7 +85,7 @@ static heapseg_t *_heap_split(heapseg_t *seg, usz size) {
 void kfree(void *addr) {
   nullsafe(addr);
   heapseg_t *seg = (heapseg_t *)addr - 1;
-  seg->used = FALSE;
+  seg->used = false;
   _heap_combine_forward(seg);
   _heap_combine_backward(seg);
 }
@@ -97,15 +98,15 @@ void *kmalloc(usz size) {
   if (size == 0)
     return NULL;
   heapseg_t *seg = _heap_first;
-  while (TRUE) {
+  while (true) {
     if (!seg->used) {
       if (seg->size > (size + sizeof(heapseg_t))) {
         _heap_split(seg, size);
-        seg->used = TRUE;
+        seg->used = true;
         return (void *)((usz)seg + sizeof(heapseg_t));
       }
       if (seg->size >= size) {
-        seg->used = TRUE;
+        seg->used = true;
         return (void *)((usz)seg + sizeof(heapseg_t));
       }
     }

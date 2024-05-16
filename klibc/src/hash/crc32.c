@@ -1,10 +1,11 @@
 #include "hash/crc32.h"
 #include "types.h"
+#include <stdbool.h>
 
 static u32 _crc32_poly(u8 i) {
   u32 r = (u32)i;
   for (i32 j = 0; j < 8; j++) {
-    BOOL l = r & 1;
+    bool l = r & 1;
     r >>= 1;
     if (l)
       r ^= 0xEDB88320;

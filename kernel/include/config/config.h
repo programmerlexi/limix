@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include <stdbool.h>
 
 #define config_get_or(path, def, accessfunc)                                   \
   (config_has(path) ? accessfunc(path) : def)
@@ -41,4 +42,4 @@ void config_set_string(config_path_t path, char *v);
 void config_set_integer(config_path_t path, u64 i);
 void config_set_char(config_path_t path, char c);
 
-BOOL config_has(config_path_t path);
+bool config_has(config_path_t path);

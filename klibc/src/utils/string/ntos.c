@@ -1,9 +1,9 @@
-#include "defines.h"
 #include "types.h"
 #include "utils/memory/memory.h"
 #include "utils/strings/strings.h"
+#include <stddef.h>
 
-i32 ntos(char *buf, isz i, u8 base, usz length, BOOL unsign, BOOL pad) {
+i32 ntos(char *buf, isz i, u8 base, usz length, bool unsign, bool pad) {
   if (!length || buf == NULL)
     return STR_NOBUF;
 

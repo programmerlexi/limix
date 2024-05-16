@@ -2,12 +2,13 @@
 
 #include "gfx/vt/vt.h"
 #include "types.h"
+#include <stdbool.h>
 
 enum ANSI_STATE { C1, CSI_CMD, ARG, SEMICOLON };
 
 typedef struct ansi_state {
   u8 args[8];
-  BOOL working;
+  bool working;
   enum ANSI_STATE as;
   vt_graphic_rendition_t gr;
 } ansi_state_t;

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "types.h"
+#include <stdbool.h>
 
-static inline BOOL are_interrupts_enabled() {
+static inline bool are_interrupts_enabled() {
   unsigned long flags;
   asm volatile("pushf\n\t"
                "pop %0"

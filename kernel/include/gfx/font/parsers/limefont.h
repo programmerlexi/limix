@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include <stdbool.h>
 
 #define LIMEFONT_MAGIC "LIMEFONT"
 
@@ -18,4 +19,4 @@ typedef struct {
   u32 count;
 } limefont_relocation_t;
 
-BOOL limefont_parse(void *font);
+bool limefont_parse(void *font);

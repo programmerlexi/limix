@@ -1,25 +1,25 @@
 #include "gfx/font/parsers/limefont.h"
 #include "debug.h"
-#include "defines.h"
 #include "gfx/font/font.h"
 #include "mm/heap.h"
 #include "types.h"
 #include "utils/memory/memory.h"
 #include "utils/strings/strings.h"
+#include <stdbool.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "limefont"
 
-BOOL limefont_parse(void *font) {
+bool limefont_parse(void *font) {
   limefont_header_t *head = (limefont_header_t *)font;
   if (!kstrncmp(head->magic, LIMEFONT_MAGIC, 8)) {
     error("Font not loadable: Invalid magic");
-    return FALSE;
+    return false;
   }
   g_8x16_font = (u8 *)kmalloc(head->width * head->height * head->glyphs / 8);
   if (!g_8x16_font) {
     error("Font not loadable: Not enough memory");
-    return FALSE;
+    return false;
   }
   limefont_relocation_t *relocs =
       (limefont_relocation_t *)((u64)head + sizeof(limefont_header_t) +
@@ -33,5 +33,5 @@ BOOL limefont_parse(void *font) {
                      (r.source * head->width * head->height / 8)),
             r.count * (head->width * head->height / 8));
   }
-  return TRUE;
+  return true;
 }

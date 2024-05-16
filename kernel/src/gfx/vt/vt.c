@@ -1,6 +1,5 @@
 #include "gfx/vt/vt.h"
 #include "config.h"
-#include "defines.h"
 #include "gfx/drm.h"
 #include "gfx/vt/ansi.h"
 #include "kernel.h"
@@ -8,6 +7,8 @@
 #include "math/lib.h"
 #include "mm/mm.h"
 #include "utils/memory/memory.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 static vt_char_t *_vt_buffer;
 static u64 _vt_height;
@@ -17,20 +18,20 @@ static u64 _vt_y;
 
 static u64 _dirty_start;
 static u64 _dirty_end;
-static BOOL _dirty;
-static BOOL _full_redraw;
+static bool _dirty;
+static bool _full_redraw;
 
 static u32 _vt_lock;
 
 static ansi_state_t _state;
 
 static u64 _attached_drm;
-static BOOL _avail;
+static bool _avail;
 
 #define lock_vt spinlock(&_vt_lock)
 #define unlock_vt spinunlock(&_vt_lock)
 
-BOOL vt_is_available() { return _avail; }
+bool vt_is_available() { return _avail; }
 
 void vt_init(u64 attached_to_drm) {
   _attached_drm = attached_to_drm;
@@ -44,7 +45,7 @@ void vt_init(u64 attached_to_drm) {
   _state.gr.font_state = 0;
   _state.gr.bg_index = 0;
   _state.gr.fg_index = 7;
-  _avail = TRUE;
+  _avail = true;
   // vt_clear();
 }
 void vt_clear() {
@@ -52,7 +53,7 @@ void vt_clear() {
   _vt_x = 0;
   _vt_y = 0;
   kmemset(_vt_buffer, 0, _vt_height * _vt_width * sizeof(vt_char_t));
-  _full_redraw = TRUE;
+  _full_redraw = true;
   unlock_vt;
   vt_flush();
 }
@@ -74,8 +75,8 @@ void vt_flush() {
     for (u64 i = 0; i < (_vt_width * _vt_height); i++) {
       vt_draw_char(i);
     }
-    _full_redraw = FALSE;
-    _dirty = FALSE;
+    _full_redraw = false;
+    _dirty = false;
   }
   if (_dirty) {
     // drm_fill_rel_rect(attached_drm, 0, vt_y * 17, vt_width * 8, 34,
@@ -85,7 +86,7 @@ void vt_flush() {
         break;
       vt_draw_char(i);
     }
-    _dirty = FALSE;
+    _dirty = false;
   }
   _dirty_start = _vt_width * _vt_height;
   _dirty_end = 1;
@@ -93,13 +94,13 @@ void vt_flush() {
 }
 
 void vt_redraw() {
-  _full_redraw = TRUE;
+  _full_redraw = true;
   vt_flush();
 }
 
 void vt_advance_y() {
   _vt_y++;
-  _dirty = TRUE;
+  _dirty = true;
   if (_vt_y >= _vt_height) {
     _vt_y -= CONFIG_SCROLL_STEP;
     kmemmove(_vt_buffer,
@@ -110,7 +111,7 @@ void vt_advance_y() {
                      sizeof(vt_char_t) *
                          (_vt_width * (_vt_height - CONFIG_SCROLL_STEP))),
             0, _vt_width * sizeof(vt_char_t) * CONFIG_SCROLL_STEP);
-    _full_redraw = TRUE;
+    _full_redraw = true;
   }
   vt_flush();
 }
@@ -122,7 +123,7 @@ void vt_advance_x() {
   }
 }
 
-BOOL termcode = FALSE;
+bool termcode = false;
 
 void kprint(char *s) {
   lock_vt;
@@ -210,11 +211,11 @@ void kprintc(char c) {
       _state.gr.bg_index = 7;
       break;
     }
-    termcode = FALSE;
+    termcode = false;
   } else {
     switch (c) {
     case LF:
-      _dirty = TRUE;
+      _dirty = true;
       _dirty_start = min(_vt_y * _vt_width + _vt_x, _dirty_start);
       _dirty_end = max(_vt_y * _vt_width + _vt_x, _dirty_end);
       vt_flush();
@@ -236,11 +237,11 @@ void kprintc(char c) {
 #endif
       break;
     case ESC:
-      _state.working = TRUE;
+      _state.working = true;
       _state.as = C1;
       break;
     case BEL:
-      termcode = TRUE;
+      termcode = true;
       break;
     default:
       _dirty_start = min(_vt_y * _vt_width + _vt_x, _dirty_start);
@@ -250,7 +251,7 @@ void kprintc(char c) {
           ansi_convert_fg(_state.gr);
       _vt_buffer[_vt_y * _vt_width + _vt_x].bg.fb_color =
           ansi_convert_bg(_state.gr);
-      _dirty = TRUE;
+      _dirty = true;
       _dirty_start = min(_vt_y * _vt_width + _vt_x, _dirty_start);
       _dirty_end = max(_vt_y * _vt_width + _vt_x, _dirty_end);
       vt_advance_x();

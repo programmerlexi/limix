@@ -1,11 +1,12 @@
 #include "task/async.h"
 #include "config.h"
 #include "debug.h"
-#include "defines.h"
 #include "mm/mm.h"
 #include "utils/memory/safety.h"
 #include "utils/results.h"
 #include "utils/variety.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "async"
@@ -51,7 +52,7 @@ static void _async_wrapper(result_t (*func)(variety_t), variety_t arg) {
   _current->res = func(arg);
   _current->state = ASYNC_DONE;
   _count--;
-  while (TRUE)
+  while (true)
     _fire(_threads); // Invoke first thread
 }
 

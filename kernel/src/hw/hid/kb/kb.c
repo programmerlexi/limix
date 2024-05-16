@@ -1,20 +1,21 @@
 #include "hw/hid/kb/kb.h"
 #include "debug.h"
 #include "utils/memory/memory.h"
+#include <stdbool.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "kb"
 
-static BOOL _key_state[256];
-static BOOL _caps_lock;
-static BOOL _num_lock;
-static BOOL _scroll_lock;
+static bool _key_state[256];
+static bool _caps_lock;
+static bool _num_lock;
+static bool _scroll_lock;
 
 void kb_init() {
   log(LOGLEVEL_ANALYZE, "Zeroing keyboard state");
   kmemset(_key_state, 0, 256);
 }
-BOOL kb_get_key(u8 k) { return _key_state[k]; }
+bool kb_get_key(u8 k) { return _key_state[k]; }
 u16 kb_get_mods() {
   u16 s = 0;
   if (_caps_lock)
@@ -38,4 +39,4 @@ u16 kb_get_mods() {
   return s;
 }
 
-void kb_internal_set_key(u8 key, BOOL state) { _key_state[key] = state; }
+void kb_internal_set_key(u8 key, bool state) { _key_state[key] = state; }

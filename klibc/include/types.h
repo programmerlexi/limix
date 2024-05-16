@@ -14,5 +14,3 @@ typedef int i32;
 typedef long long i64;
 
 typedef unsigned long uptr;
-
-typedef char BOOL;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types.h"
+#include <stdbool.h>
 
 /* Reliable ports */
 #define COM1 0x3f8
@@ -84,8 +84,8 @@
 #define COM_MODEM_STATUS_DCD 128
 
 void serial_early_init();
-BOOL serial_received();
+bool serial_received();
 char serial_read();
-BOOL serial_can_send();
+bool serial_can_send();
 void serial_write(char c);
 void serial_writes(char *str);

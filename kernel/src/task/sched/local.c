@@ -1,11 +1,11 @@
 #include "task/sched/local.h"
 #include "debug.h"
-#include "defines.h"
 #include "kipc/spinlock.h"
 #include "mm/heap.h"
 #include "task/sched/common.h"
 #include "task/sched/global.h"
 #include "task/thread/thread.h"
+#include <stdbool.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "local_sched"
@@ -34,7 +34,7 @@ void sched_local_tick(local_scheduler_t *ls) {
   proc_switch(ls->frames->frame->proc, ls->frames->next->frame->proc);
   thread_t *org = ls->frames->frame->thread;
   thread_t *next = ls->frames->next->frame->thread;
-  ls->frames->frame->assigned = FALSE;
+  ls->frames->frame->assigned = false;
   ls->frames = ls->frames->next;
   spinunlock(&ls->shed_lock);
 

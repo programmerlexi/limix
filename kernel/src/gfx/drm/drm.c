@@ -1,6 +1,5 @@
 #include "gfx/drm.h"
 #include "config.h"
-#include "defines.h"
 #include "fs/devfs.h"
 #include "gfx/font/font.h"
 #include "gfx/framebuffer.h"
@@ -12,6 +11,8 @@
 #include "utils/errors.h"
 #include "utils/memory/memory.h"
 #include "utils/memory/safety.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 static drm_t _drms[MAX_DRMS];
 static u64 _active_drm;
@@ -273,7 +274,7 @@ void drm_plot_char_solid(u64 drm, u64 x, u64 y, u32 ch, u32 c, u32 b) {
 u64 drm_width(u64 drm) { return _drms[drm].width; }
 u64 drm_height(u64 drm) { return _drms[drm].height; }
 
-BOOL drm_is_attached_to_process(u64 drm) {
+bool drm_is_attached_to_process(u64 drm) {
   return _drms[drm].flags & DRM_ATTACHED_TO_PROCESS;
 }
 

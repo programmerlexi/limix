@@ -1,6 +1,6 @@
 #include "config/config.h"
-#include "defines.h"
 #include "mm/heap.h"
+#include <stddef.h>
 
 static config_module_t *_modules;
 
@@ -131,7 +131,7 @@ void config_set_char(config_path_t path, char c) {
   v->value.character = c;
 }
 
-BOOL config_has(config_path_t path) { return _config_resolve(path) != NULL; }
+bool config_has(config_path_t path) { return _config_resolve(path) != NULL; }
 
 void config_init() {
   _modules = kmalloc(sizeof(config_module_t));

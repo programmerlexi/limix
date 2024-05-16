@@ -1,18 +1,19 @@
 #include "mm/vmm.h"
 #include "asm_inline.h"
-#include "defines.h"
 #include "kernel.h"
 #include "mm/hhtp.h"
 #include "mm/mm.h"
 #include "mm/pmi.h"
 #include "utils/memory/memory.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 static virtual_address_space_t _kas;
 
 void init_kernel_vas() {
   _kas.pml4 = (pml4_t)read_cr4();
-  _kas.exists = TRUE;
-  _kas.allow_kas_changes = TRUE;
+  _kas.exists = true;
+  _kas.allow_kas_changes = true;
 }
 virtual_address_space_t init_new_vas() {
   virtual_address_space_t vas;
@@ -20,8 +21,8 @@ virtual_address_space_t init_new_vas() {
   if (!vas.pml4)
     return vas;
   kmemset(vas.pml4, 0, 0x1000);
-  vas.exists = FALSE;
-  vas.allow_kas_changes = FALSE;
+  vas.exists = false;
+  vas.allow_kas_changes = false;
   vas.pml4[511] = _kas.pml4[511];
   return vas;
 }
@@ -55,24 +56,24 @@ virtual_address_space_t clone_vas(virtual_address_space_t o) {
   return n;
 }
 
-BOOL kmmap(vaddr_t v, paddr_t p) { return mmap(_kas, v, p); }
-BOOL is_kmapped(vaddr_t v) { return is_mapped(_kas, v); }
-BOOL kunmap(vaddr_t v) { return munmap(_kas, v); }
+bool kmmap(vaddr_t v, paddr_t p) { return mmap(_kas, v, p); }
+bool is_kmapped(vaddr_t v) { return is_mapped(_kas, v); }
+bool kunmap(vaddr_t v) { return munmap(_kas, v); }
 paddr_t kmapping(vaddr_t v) { return mapping(_kas, v); }
 
-BOOL mmap(virtual_address_space_t as, vaddr_t v, paddr_t p) {
+bool mmap(virtual_address_space_t as, vaddr_t v, paddr_t p) {
   if (!as.exists)
-    return FALSE;
-  pmi_t idx = get_pmi((uintptr_t)v);
+    return false;
+  pmi_t idx = get_pmi((uptr)v);
 
   pml4e_t pml4e = as.pml4[idx.pdp_i];
   pdp_t pdp;
   if (!(pml4e & PTE_PRESENT)) {
     pdp = request_page();
     if (!pdp)
-      return FALSE;
+      return false;
     kmemset(pdp, 0, 0x1000);
-    pml4e = PTE_PRESENT | PTE_WRITABLE | PTE_ADDR(PHY((uintptr_t)pdp));
+    pml4e = PTE_PRESENT | PTE_WRITABLE | PTE_ADDR(PHY((uptr)pdp));
     as.pml4[idx.pdp_i] = pml4e;
   } else {
     pdp = (pdp_t)HHDM(PTE_ADDR(pml4e));
@@ -83,9 +84,9 @@ BOOL mmap(virtual_address_space_t as, vaddr_t v, paddr_t p) {
   if (!(pdpe & PTE_PRESENT)) {
     pd = request_page();
     if (!pd)
-      return FALSE;
+      return false;
     kmemset(pd, 0, 0x1000);
-    pdpe = PTE_PRESENT | PTE_WRITABLE | PTE_ADDR(PHY((uintptr_t)pd));
+    pdpe = PTE_PRESENT | PTE_WRITABLE | PTE_ADDR(PHY((uptr)pd));
     pdp[idx.pd_i] = pdpe;
   } else {
     pd = (pdp_t)HHDM(PTE_ADDR(pdpe));
@@ -96,27 +97,27 @@ BOOL mmap(virtual_address_space_t as, vaddr_t v, paddr_t p) {
   if (!(pde & PTE_PRESENT)) {
     pt = request_page();
     if (!pt)
-      return FALSE;
+      return false;
     kmemset(pt, 0, 0x1000);
-    pde = PTE_PRESENT | PTE_WRITABLE | PTE_ADDR(PHY((uintptr_t)pt));
+    pde = PTE_PRESENT | PTE_WRITABLE | PTE_ADDR(PHY((uptr)pt));
     pd[idx.pt_i] = pde;
   } else {
     pt = (pdp_t)HHDM(PTE_ADDR(pde));
   }
 
   pte_t pte = pt[idx.p_i];
-  pte = PTE_ADDR((uintptr_t)PHY(p)) | PTE_PRESENT | PTE_WRITABLE;
+  pte = PTE_ADDR((uptr)PHY(p)) | PTE_PRESENT | PTE_WRITABLE;
   pt[idx.p_i] = pte;
 
-  return TRUE;
+  return true;
 }
-BOOL is_mapped(virtual_address_space_t s, vaddr_t v) {
+bool is_mapped(virtual_address_space_t s, vaddr_t v) {
   return mapping(s, v) != NULL;
 }
-BOOL munmap(virtual_address_space_t as, vaddr_t v) {
+bool munmap(virtual_address_space_t as, vaddr_t v) {
   if (!as.exists)
     return NULL;
-  pmi_t idx = get_pmi((uintptr_t)v);
+  pmi_t idx = get_pmi((uptr)v);
 
   pml4e_t pml4e = as.pml4[idx.pdp_i];
   pdp_t pdp;
@@ -146,13 +147,13 @@ BOOL munmap(virtual_address_space_t as, vaddr_t v) {
   pte = 0;
   pt[idx.p_i] = pte;
 
-  return TRUE;
+  return true;
 }
 paddr_t mapping(virtual_address_space_t as, vaddr_t v) {
   if (!as.exists)
     return NULL;
-  uintptr_t o = (uintptr_t)v % 0x1000;
-  pmi_t idx = get_pmi((uintptr_t)v);
+  uptr o = (uptr)v % 0x1000;
+  pmi_t idx = get_pmi((uptr)v);
 
   pml4e_t pml4e = as.pml4[idx.pdp_i];
   pdp_t pdp;

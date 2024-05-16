@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include <stdbool.h>
 
 typedef u64 pml4e_t;
 typedef u64 pdpe_t;
@@ -30,8 +31,8 @@ typedef void *paddr_t;
 #define PTE_NX 1 << 63
 
 typedef struct virtual_address_space {
-  BOOL allow_kas_changes;
-  BOOL exists;
+  bool allow_kas_changes;
+  bool exists;
   pml4_t pml4;
 } virtual_address_space_t;
 
@@ -39,12 +40,12 @@ void init_kernel_vas();
 virtual_address_space_t init_new_vas();
 virtual_address_space_t clone_vas(virtual_address_space_t vas);
 
-BOOL kmmap(vaddr_t virt, paddr_t phys);
-BOOL is_kmapped(vaddr_t virt);
-BOOL kunmap(vaddr_t virt);
+bool kmmap(vaddr_t virt, paddr_t phys);
+bool is_kmapped(vaddr_t virt);
+bool kunmap(vaddr_t virt);
 paddr_t kmapping(vaddr_t virt);
 
-BOOL mmap(virtual_address_space_t vas, vaddr_t virt, paddr_t phys);
-BOOL is_mapped(virtual_address_space_t vas, vaddr_t virt);
-BOOL munmap(virtual_address_space_t vas, vaddr_t virt);
+bool mmap(virtual_address_space_t vas, vaddr_t virt, paddr_t phys);
+bool is_mapped(virtual_address_space_t vas, vaddr_t virt);
+bool munmap(virtual_address_space_t vas, vaddr_t virt);
 paddr_t mapping(virtual_address_space_t vas, vaddr_t virt);
