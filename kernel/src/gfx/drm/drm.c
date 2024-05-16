@@ -31,8 +31,8 @@ void drm_init() {
   for (i32 i = 0; i < MAX_DRMS; i++) {
     _drms[i].width = g_fb->width;
     _drms[i].height = g_fb->height;
-    _drms[i].framebuffer =
-        request_page_block(((g_fb->width * g_fb->height * 4) + 4095) / 4096);
+    _drms[i].framebuffer = (u32 *)request_page_block(
+        ((g_fb->width * g_fb->height * 4) + 4095) / 4096);
     _drms[i].flags = 0;
     if (_drms[i].framebuffer == NULL) {
       kernel_panic_error("DRM init failed");
@@ -278,7 +278,7 @@ BOOL drm_is_attached_to_process(u64 drm) {
 }
 
 static i32 _drm_write(void *d, u64 o, u64 s, char *b) {
-  drm_number_t *dn = d;
+  drm_number_t *dn = (drm_number_t *)d;
   if (o > drm_width(*dn) * drm_height(*dn))
     return E_OUTOFBOUNDS;
   if (o + s > drm_width(*dn) * drm_height(*dn))
@@ -291,7 +291,7 @@ static i32 _drm_write(void *d, u64 o, u64 s, char *b) {
 }
 
 static i32 _drm_read(void *d, u64 o, u64 s, char *b) {
-  drm_number_t *dn = d;
+  drm_number_t *dn = (drm_number_t *)d;
   if (o > drm_width(*dn) * drm_height(*dn))
     return E_OUTOFBOUNDS;
   if (o + s > drm_width(*dn) * drm_height(*dn))
@@ -307,9 +307,9 @@ static i32 _drm_read(void *d, u64 o, u64 s, char *b) {
 
 void drm_register_vfs() {
   for (u64 i = 0; i < MAX_DRMS; i++) {
-    drm_number_t *dn = kmalloc(sizeof(drm_number_t));
+    drm_number_t *dn = (drm_number_t *)kmalloc(sizeof(drm_number_t));
     nullsafe_error(dn, "Out of memory");
-    char *devname = kmalloc(4);
+    char *devname = (char *)kmalloc(4);
     nullsafe_error(devname, "Out of memory");
     kmemcpy(devname, "drm", 3);
     devname[3] = 'a' + i;

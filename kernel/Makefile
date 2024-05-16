@@ -38,6 +38,7 @@ override CFLAGS += \
 		-Wno-unused-function \
 		-Wno-implicit-fallthrough \
 		-Wno-multichar \
+		-Wno-write-strings \
 		-std=gnu2x \
     -ffreestanding \
     -fno-stack-protector \
