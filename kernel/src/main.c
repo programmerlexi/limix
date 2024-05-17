@@ -2,6 +2,7 @@
 #include "boot/requests.h"
 #include "config.h"
 #include "config/config.h"
+#include "debug.h"
 #include "fs/devfs.h"
 #include "fs/vfs.h"
 #include "gdt/gdt.h"
@@ -71,8 +72,8 @@ void _start(void) {
 
   font_parse();
 
-  kprint("Welcome to limix " xstr(KERNEL_MAJ) "." xstr(KERNEL_MIN) "." xstr(
-      KERNEL_PATCH) "\n\r");
+  log(LOGLEVEL_INFO, "Welcome to limix " xstr(KERNEL_MAJ) "." xstr(
+                         KERNEL_MIN) "." xstr(KERNEL_PATCH));
 
   async_init();
 
