@@ -1,4 +1,4 @@
-#include "hash/crc32.h"
+#include "crypt/crc32.h"
 #include "types.h"
 #include <stdbool.h>
 
