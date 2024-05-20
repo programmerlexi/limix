@@ -79,7 +79,7 @@ all: bin/libk.a
  
 # Link rules for the final kernel executable.
 bin/libk.a: Makefile $(OBJ)
-	@echo "[AR] Packing klibc"
+	@echo "[AR] Packing libk"
 	@mkdir -p "$$(dirname $@)"
 	@rm -f $@
 	@$(AR) $(ARFLAGS) $@ $(OBJ)
@@ -89,19 +89,19 @@ bin/libk.a: Makefile $(OBJ)
  
 # Compilation rules for *.c files.
 obj/%.c.o: src/%.c Makefile
-	@echo "[CC] Building klibc component $@"
+	@echo "[CC] Building libk component $@"
 	@mkdir -p "$$(dirname $@)"
 	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
  
 # Compilation rules for *.S files.
 obj/%.S.o: src/%.S Makefile
-	@echo "[CC] Building klibc component $@"
+	@echo "[CC] Building libk component $@"
 	@mkdir -p "$$(dirname $@)"
 	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
  
 # Compilation rules for *.asm (nasm) files.
 obj/%.asm.o: src/%.asm Makefile
-	@echo "[CC] Building klibc component $@"
+	@echo "[CC] Building libk component $@"
 	@mkdir -p "$$(dirname $@)"
 	@nasm $(NASMFLAGS) $< -o $@
  
