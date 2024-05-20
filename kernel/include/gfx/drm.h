@@ -1,7 +1,7 @@
 #pragma once
 
-#include "gfx/gfx.h"
-#include "types.h"
+#include "kernel/gfx/gfx.h"
+#include "libk/types.h"
 #include <stdbool.h>
 
 #define DRM_ATTACHED_TO_SCREEN 1

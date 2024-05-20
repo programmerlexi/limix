@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types.h"
+#include "libk/types.h"
 #include <stdbool.h>
 
 static inline bool are_interrupts_enabled() {

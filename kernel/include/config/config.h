@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types.h"
+#include "libk/types.h"
 #include <stdbool.h>
 
 #define config_get_or(path, def, accessfunc)                                   \

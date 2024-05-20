@@ -1,5 +1,5 @@
-#include "hw/sound/pcspk.h"
-#include "io/pio.h"
+#include "kernel/hw/sound/pcspk.h"
+#include "kernel/io/pio.h"
 
 void play_sound(u32 freq) {
   u32 div;

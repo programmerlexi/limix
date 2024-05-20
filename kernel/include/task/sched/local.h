@@ -1,6 +1,6 @@
 #pragma once
 
-#include "task/sched/common.h"
+#include "kernel/task/sched/common.h"
 
 typedef struct frame_container {
   sched_frame_t *frame;

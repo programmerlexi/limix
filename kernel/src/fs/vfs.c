@@ -1,13 +1,13 @@
-#include "fs/vfs.h"
-#include "config.h"
-#include "debug.h"
-#include "math/lib.h"
-#include "mm/heap.h"
-#include "utils/errors.h"
-#include "utils/memory/heap_wrap.h"
-#include "utils/memory/safety.h"
-#include "utils/strings/strings.h"
-#include "utils/strings/xstr.h"
+#include "kernel/fs/vfs.h"
+#include "kernel/config.h"
+#include "kernel/debug.h"
+#include "kernel/mm/heap.h"
+#include "libk/math/lib.h"
+#include "libk/utils/errors.h"
+#include "libk/utils/memory/heap_wrap.h"
+#include "libk/utils/memory/safety.h"
+#include "libk/utils/strings/strings.h"
+#include "libk/utils/strings/xstr.h"
 #include <stdbool.h>
 
 #undef DEBUG_MODULE

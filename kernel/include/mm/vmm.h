@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types.h"
+#include "libk/types.h"
 #include <stdbool.h>
 
 typedef u64 pml4e_t;

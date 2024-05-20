@@ -55,8 +55,7 @@ override CFLAGS += \
 
 # Internal C preprocessor flags that should not be changed by the user.
 override CPPFLAGS := \
-    -I include \
-	-I ../klibc/include \
+		-I ../include \
     $(CPPFLAGS) \
     -MMD \
     -MP
@@ -103,7 +102,7 @@ bin/$(KERNEL).a: Makefile $(OBJ)
 bin/$(KERNEL): Makefile linker.ld bin/$(KERNEL).a
 	@echo "[LD] Linking kernel"
 	@mkdir -p "$$(dirname $@)"
-	@$(LD) obj/main.c.o $@.a ../klibc/bin/klibc.a $(LDFLAGS) -o $@
+	@$(LD) obj/main.c.o $@.a ../libk/bin/libk.a $(LDFLAGS) -o $@
 
 bin/$(KERNEL).gz: bin/$(KERNEL)
 	@echo "[GZIP] Compressing kernel"

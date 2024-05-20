@@ -1,10 +1,10 @@
-#include "task/sched/local.h"
-#include "debug.h"
-#include "kipc/spinlock.h"
-#include "mm/heap.h"
-#include "task/sched/common.h"
-#include "task/sched/global.h"
-#include "task/thread/thread.h"
+#include "kernel/task/sched/local.h"
+#include "kernel/debug.h"
+#include "kernel/mm/heap.h"
+#include "kernel/task/sched/common.h"
+#include "kernel/task/sched/global.h"
+#include "kernel/task/thread/thread.h"
+#include "libk/ipc/spinlock.h"
 #include <stdbool.h>
 
 #undef DEBUG_MODULE

@@ -1,10 +1,10 @@
-#include "smp.h"
-#include "boot/limine.h"
-#include "boot/requests.h"
-#include "debug.h"
-#include "kernel.h"
-#include "kipc/semaphore.h"
-#include "task/sched/local.h"
+#include "kernel/smp.h"
+#include "kernel/boot/requests.h"
+#include "kernel/debug.h"
+#include "kernel/kernel.h"
+#include "kernel/task/sched/local.h"
+#include "libk/ipc/semaphore.h"
+#include "limine.h"
 #include <stdbool.h>
 #include <stddef.h>
 

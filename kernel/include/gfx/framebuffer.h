@@ -1,7 +1,7 @@
 #pragma once
 
-#include "boot/limine.h"
-#include "gfx/gfx.h"
+#include "kernel/gfx/gfx.h"
+#include "limine.h"
 
 extern struct limine_framebuffer *g_fb;
 

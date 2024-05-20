@@ -1,6 +1,6 @@
-#include "task/proc/proc.h"
-#include "asm_inline.h"
-#include "mm/heap.h"
+#include "kernel/task/proc/proc.h"
+#include "kernel/asm_inline.h"
+#include "kernel/mm/heap.h"
 
 process_t *proc_create() {
   process_t *p = (process_t *)kmalloc(sizeof(process_t));

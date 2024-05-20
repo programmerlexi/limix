@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types.h"
+#include "libk/types.h"
 #include <stdbool.h>
 
 #define PS2_PORT_DATA 0x60

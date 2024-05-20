@@ -1,13 +1,19 @@
-JOBS=$(shell nproc)
-
 COMMON_QEMU_FLAGS=-m 4G -smp 4 -serial stdio -usb -device qemu-xhci
+
+INCLUDES=$(shell find kernel/include -type f) $(shell find libk/include -type f) limine/limine.h
 
 all: hdd iso
 
-base: limine
-	@ln -sf $(shell pwd)/limine/limine.h kernel/include/boot
-	@make -j$(JOBS) -C klibc
-	@make -j$(JOBS) -C kernel
+include: $(INCLUDES) limine
+	@rm -rf include
+	@mkdir -p include
+	@cp -r kernel/include include/kernel
+	@cp -r libk/include include/libk
+	@cp limine/limine.h include
+
+base: include
+	@make -j -C libk
+	@make -j -C kernel
 	@make -C util bin/font.lime
 
 hdd: image.hdd
@@ -66,9 +72,10 @@ run-hdd-uefi: image.hdd
 
 clean:
 	@make -C kernel clean
-	@make -C klibc clean
+	@make -C libk clean
 	@make -C util clean
 	@rm -rf image.* iso_root build
+	@rm -rf include
 
 cleanAll: clean
 	@rm -rf limine compile_commands.json

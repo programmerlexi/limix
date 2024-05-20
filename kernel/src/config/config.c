@@ -1,5 +1,5 @@
-#include "config/config.h"
-#include "mm/heap.h"
+#include "kernel/config/config.h"
+#include "kernel/mm/heap.h"
 #include <stddef.h>
 
 static config_module_t *_modules;

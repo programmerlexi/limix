@@ -1,5 +1,5 @@
-#include "hw/pci/pci.h"
-#include "types.h"
+#include "kernel/hw/pci/pci.h"
+#include "libk/types.h"
 
 static const char *_device_class_names[] = {
     "Unclassified",           "Mass Storage Controller",

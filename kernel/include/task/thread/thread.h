@@ -1,7 +1,7 @@
 #pragma once
 
-#include "types.h"
-#include "utils/strings/xstr.h"
+#include "libk/types.h"
+#include "libk/utils/strings/xstr.h"
 
 enum thread_state {
   THREAD_IDLE,

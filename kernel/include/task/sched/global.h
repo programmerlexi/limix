@@ -1,6 +1,6 @@
 #pragma once
 
-#include "task/sched/local.h"
+#include "kernel/task/sched/local.h"
 
 void sched_glob_init();
 

@@ -1,10 +1,10 @@
-#include "task/async.h"
-#include "config.h"
-#include "debug.h"
-#include "mm/mm.h"
-#include "utils/memory/safety.h"
-#include "utils/results.h"
-#include "utils/variety.h"
+#include "kernel/task/async.h"
+#include "kernel/config.h"
+#include "kernel/debug.h"
+#include "kernel/mm/mm.h"
+#include "libk/utils/memory/safety.h"
+#include "libk/utils/results.h"
+#include "libk/utils/variety.h"
 #include <stdbool.h>
 #include <stddef.h>
 

@@ -1,9 +1,9 @@
-#include "int/idt.h"
-#include "int/syscall.h"
-#include "io/serial/serial.h"
-#include "kernel.h"
-#include "utils/memory/memory.h"
-#include "utils/strings/strings.h"
+#include "kernel/int/idt.h"
+#include "kernel/int/syscall.h"
+#include "kernel/io/serial/serial.h"
+#include "kernel/kernel.h"
+#include "libk/utils/memory/memory.h"
+#include "libk/utils/strings/strings.h"
 
 idt_gate_t g_idt[256];
 static inline void _lidt(void *base, u16 size) {

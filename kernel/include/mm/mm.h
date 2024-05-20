@@ -1,6 +1,6 @@
 #pragma once
-#include "boot/limine.h"
-#include "types.h"
+#include "libk/types.h"
+#include "limine.h"
 #include <stdbool.h>
 
 typedef struct memseg {

@@ -1,5 +1,5 @@
-#include "int/syscall.h"
-#include "debug.h"
+#include "kernel/int/syscall.h"
+#include "kernel/debug.h"
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "syscall"

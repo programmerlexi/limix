@@ -1,5 +1,5 @@
 #pragma once
-#include "gfx/vt/vt.h"
+#include "kernel/gfx/vt/vt.h"
 
 typedef u8 loglevel_t;
 

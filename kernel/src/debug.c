@@ -1,7 +1,7 @@
-#include "debug.h"
-#include "config.h"
-#include "gfx/vt/vt.h"
-#include "printing.h"
+#include "kernel/debug.h"
+#include "kernel/config.h"
+#include "kernel/gfx/vt/vt.h"
+#include "libk/printing.h"
 #include <stdarg.h>
 
 static loglevel_t _current_loglevel = LOGLEVEL;

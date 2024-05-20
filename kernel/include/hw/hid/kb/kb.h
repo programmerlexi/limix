@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types.h"
+#include "libk/types.h"
 #include <stdbool.h>
 
 #define KB_MOD_SHIFT 1 << 0

@@ -1,9 +1,9 @@
-#include "mm/mm.h"
-#include "boot/limine.h"
-#include "mm/hhtp.h"
-#include "types.h"
-#include "utils/memory/memory.h"
-#include "utils/memory/safety.h"
+#include "kernel/mm/mm.h"
+#include "kernel/mm/hhtp.h"
+#include "libk/types.h"
+#include "libk/utils/memory/memory.h"
+#include "libk/utils/memory/safety.h"
+#include "limine.h"
 #include <stdbool.h>
 #include <stddef.h>
 

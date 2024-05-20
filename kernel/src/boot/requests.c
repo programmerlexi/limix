@@ -1,5 +1,5 @@
-#include "boot/limine.h"
-#include "config.h"
+#include "kernel/config.h"
+#include "limine.h"
 #include <stddef.h>
 
 volatile LIMINE_BASE_REVISION(1);

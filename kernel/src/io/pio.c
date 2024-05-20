@@ -1,4 +1,4 @@
-#include "io/pio.h"
+#include "kernel/io/pio.h"
 
 void outb(u16 port, u8 val) {
   asm volatile("outb %b0, %w1" : : "a"(val), "Nd"(port) : "memory");

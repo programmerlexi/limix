@@ -4,12 +4,12 @@ limine/
 kernel/obj/
 kernel/bin/
 kernel/linker.map
-klibc/obj/
-klibc/bin/
+libk/obj/
+libk/bin/
 util/bin/
+/include
 image.*
 compile_commands.json
 .cache/
 .clangd
-kernel/include/boot/limine.h
 TODO

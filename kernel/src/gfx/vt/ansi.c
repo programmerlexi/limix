@@ -1,5 +1,5 @@
-#include "gfx/vt/ansi.h"
-#include "gfx/vt/vt.h"
+#include "kernel/gfx/vt/ansi.h"
+#include "kernel/gfx/vt/vt.h"
 
 static u32 _normal_colors[] = {0x000000, 0xd32f2f, 0xafb42b, 0xfbc02d,
                                0x512da8, 0x7b1fa2, 0xfbc02d, 0xeeeeee};

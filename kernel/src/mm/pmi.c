@@ -1,4 +1,4 @@
-#include "mm/pmi.h"
+#include "kernel/mm/pmi.h"
 
 pmi_t get_pmi(u64 a) {
   pmi_t pmi = {.p_i = (a >> (12 + 0)) & 0x1ff,

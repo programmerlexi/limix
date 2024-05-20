@@ -1,5 +1,5 @@
-#include "hw/pci/pci.h"
-#include "io/pio.h"
+#include "kernel/hw/pci/pci.h"
+#include "kernel/io/pio.h"
 
 u16 pci_config_read_word(u8 bus, u8 device, u8 func, u8 offset) {
   u32 addr;

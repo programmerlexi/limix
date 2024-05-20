@@ -1,6 +1,6 @@
-#include "io/serial/serial.h"
-#include "config.h"
-#include "io/pio.h"
+#include "kernel/io/serial/serial.h"
+#include "kernel/config.h"
+#include "kernel/io/pio.h"
 #include <stdbool.h>
 #include <stddef.h>
 

@@ -1,6 +1,6 @@
-#include "hw/ps2.h"
-#include "debug.h"
-#include "io/pio.h"
+#include "kernel/hw/ps2.h"
+#include "kernel/debug.h"
+#include "kernel/io/pio.h"
 #include <stdbool.h>
 
 #undef DEBUG_MODULE

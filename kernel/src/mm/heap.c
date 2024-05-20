@@ -1,10 +1,10 @@
-#include "mm/heap.h"
-#include "config.h"
-#include "kernel.h"
-#include "mm/mm.h"
-#include "types.h"
-#include "utils/memory/memory.h"
-#include "utils/memory/safety.h"
+#include "kernel/mm/heap.h"
+#include "kernel/config.h"
+#include "kernel/kernel.h"
+#include "kernel/mm/mm.h"
+#include "libk/types.h"
+#include "libk/utils/memory/memory.h"
+#include "libk/utils/memory/safety.h"
 #include <stdbool.h>
 #include <stddef.h>
 

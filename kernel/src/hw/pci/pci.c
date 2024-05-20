@@ -1,4 +1,4 @@
-#include "hw/pci/pci.h"
+#include "kernel/hw/pci/pci.h"
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "pci"

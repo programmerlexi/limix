@@ -1,9 +1,9 @@
 #pragma once
 
-#include "boot/limine.h"
-#include "config/config.h"
-#include "debug.h"
-#include "io/serial/serial.h"
+#include "kernel/config/config.h"
+#include "kernel/debug.h"
+#include "kernel/io/serial/serial.h"
+#include "limine.h"
 
 /* This is the kernel config */
 

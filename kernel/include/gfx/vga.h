@@ -1,7 +1,7 @@
 #pragma once
 
-#include "gfx/gfx.h"
-#include "types.h"
+#include "kernel/gfx/gfx.h"
+#include "libk/types.h"
 
 enum ellipse_type { E_FULL = 0xf, E_1 = 1, E_2 = 2, E_3 = 4, E_4 = 8 };
 

@@ -1,11 +1,11 @@
-#include "fs/devfs.h"
-#include "debug.h"
-#include "fs/vfs.h"
-#include "mm/heap.h"
-#include "utils/errors.h"
-#include "utils/memory/memory.h"
-#include "utils/memory/safety.h"
-#include "utils/strings/xstr.h"
+#include "kernel/fs/devfs.h"
+#include "kernel/debug.h"
+#include "kernel/fs/vfs.h"
+#include "kernel/mm/heap.h"
+#include "libk/utils/errors.h"
+#include "libk/utils/memory/memory.h"
+#include "libk/utils/memory/safety.h"
+#include "libk/utils/strings/xstr.h"
 #include <stddef.h>
 
 #undef DEBUG_MODULE

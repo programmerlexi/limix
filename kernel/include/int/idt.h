@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types.h"
+#include "libk/types.h"
 
 #define IDT_FLAGS_GATE_TYPE_INT 0xe
 #define IDT_FLAGS_GATE_TYPE_TRAP 0xf

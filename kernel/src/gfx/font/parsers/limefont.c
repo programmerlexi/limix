@@ -1,10 +1,10 @@
-#include "gfx/font/parsers/limefont.h"
-#include "debug.h"
-#include "gfx/font/font.h"
-#include "mm/heap.h"
-#include "types.h"
-#include "utils/memory/memory.h"
-#include "utils/strings/strings.h"
+#include "kernel/gfx/font/parsers/limefont.h"
+#include "kernel/debug.h"
+#include "kernel/gfx/font/font.h"
+#include "kernel/mm/heap.h"
+#include "libk/types.h"
+#include "libk/utils/memory/memory.h"
+#include "libk/utils/strings/strings.h"
 #include <stdbool.h>
 
 #undef DEBUG_MODULE

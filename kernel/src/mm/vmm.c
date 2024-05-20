@@ -1,10 +1,10 @@
-#include "mm/vmm.h"
-#include "asm_inline.h"
-#include "kernel.h"
-#include "mm/hhtp.h"
-#include "mm/mm.h"
-#include "mm/pmi.h"
-#include "utils/memory/memory.h"
+#include "kernel/mm/vmm.h"
+#include "kernel/asm_inline.h"
+#include "kernel/kernel.h"
+#include "kernel/mm/hhtp.h"
+#include "kernel/mm/mm.h"
+#include "kernel/mm/pmi.h"
+#include "libk/utils/memory/memory.h"
 #include <stdbool.h>
 #include <stddef.h>
 

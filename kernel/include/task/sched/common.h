@@ -1,7 +1,7 @@
 #pragma once
 
-#include "task/proc/proc.h"
-#include "task/thread/thread.h"
+#include "kernel/task/proc/proc.h"
+#include "kernel/task/thread/thread.h"
 #include <stdbool.h>
 
 typedef struct sched_frame {
