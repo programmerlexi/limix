@@ -2,6 +2,7 @@
 #include "kernel/int/syscall.h"
 #include "kernel/io/serial/serial.h"
 #include "kernel/kernel.h"
+#include "kernel/mm/hhtp.h"
 #include "libk/utils/memory/memory.h"
 #include "libk/utils/strings/strings.h"
 
@@ -48,7 +49,7 @@ void idt_init() {
                   IDT_FLAGS_DPL3 | IDT_FLAGS_PRESENT | IDT_FLAGS_GATE_TYPE_INT,
                   0);
 
-  _lidt((void *)g_idt, sizeof(g_idt) - 1);
+  _lidt((void *)((uptr)g_idt - 0xffffffff80000000), sizeof(g_idt) - 1);
   asm volatile("sti" ::: "memory");
 }
 void idt_add_handler(u8 id, void *handler, u8 flags, u8 ist) {

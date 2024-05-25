@@ -11,7 +11,7 @@
 static virtual_address_space_t _kas;
 
 void init_kernel_vas() {
-  _kas.pml4 = (pml4_t)read_cr4();
+  _kas.pml4 = (pml4_t)read_cr3();
   _kas.exists = true;
   _kas.allow_kas_changes = true;
 }
@@ -66,7 +66,7 @@ bool mmap(virtual_address_space_t as, vaddr_t v, paddr_t p) {
     return false;
   pmi_t idx = get_pmi((uptr)v);
 
-  pml4e_t pml4e = as.pml4[idx.pdp_i];
+  pml4e_t pml4e = ((pml4_t)HHDM(as.pml4))[idx.pdp_i];
   pdp_t pdp;
   if (!(pml4e & PTE_PRESENT)) {
     pdp = request_page();
@@ -152,10 +152,10 @@ bool munmap(virtual_address_space_t as, vaddr_t v) {
 paddr_t mapping(virtual_address_space_t as, vaddr_t v) {
   if (!as.exists)
     return NULL;
-  uptr o = (uptr)v % 0x1000;
+  uptr o = (uptr)v & 0xfff;
   pmi_t idx = get_pmi((uptr)v);
 
-  pml4e_t pml4e = as.pml4[idx.pdp_i];
+  pml4e_t pml4e = ((pml4_t)HHDM(as.pml4))[idx.pdp_i];
   pdp_t pdp;
   if (!(pml4e & PTE_PRESENT)) {
     return NULL;

@@ -1,5 +1,6 @@
 #include "kernel/gdt/gdt.h"
 #include "kernel/mm/hhtp.h"
+#include "libk/types.h"
 
 __attribute__((aligned(0x1000))) gdt_t g_gdt = {
     {0, 0, 0, 0x00, 0x00, 0}, // null
@@ -27,6 +28,6 @@ __attribute__((aligned(0x1000))) gdt_t g_gdt = {
 void gdt_init(void) {
   gdt_descriptor_t gdt_desc;
   gdt_desc.size = sizeof(gdt_t) - 1;
-  gdt_desc.offset = PHY((u64)&g_gdt);
+  gdt_desc.offset = (uptr)&g_gdt;
   load_gdt(&gdt_desc);
 }

@@ -1,5 +1,6 @@
 #include "kernel/boot/requests.h"
 #include "kernel/config.h"
+#include "kernel/debug.h"
 #include "kernel/fs/devfs.h"
 #include "kernel/fs/vfs.h"
 #include "kernel/gdt/gdt.h"
@@ -14,6 +15,7 @@
 #include "kernel/io/serial/serial.h"
 #include "kernel/kernel.h"
 #include "kernel/mm/heap.h"
+#include "kernel/mm/hhtp.h"
 #include "kernel/mm/mm.h"
 #include "kernel/mm/vmm.h"
 #include "kernel/smp.h"
@@ -41,12 +43,12 @@ void _start(void) {
 
   fb_init(g_framebuffer_request.response->framebuffers[0]);
 
-  gdt_init();
-  idt_init();
-
   if (g_paging_request.response->mode != USED_PAGING_MODE) {
     kernel_panic_error("Paging mode isn't matching!");
   }
+
+  gdt_init();
+  idt_init();
 
   g_hhaddr = g_hhdm_request.response->offset;
 
