@@ -40,5 +40,6 @@ typedef u8 loglevel_t;
 #define errorf(s, f...) logf(LOGLEVEL_CRITICAL, s, f)
 
 void set_loglevel(loglevel_t ll);
+void set_serial_loglevel(loglevel_t ll);
 void _log(loglevel_t ll, char *s);
 void _logf(loglevel_t ll, char *s, ...);
