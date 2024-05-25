@@ -4,7 +4,9 @@ INCLUDES=$(shell find kernel/include -type f) $(shell find libk/include -type f)
 
 all: hdd iso
 
-include: $(INCLUDES) limine
+limine/limine.h: limine
+
+include: $(INCLUDES)
 	@rm -rf include
 	@mkdir -p include
 	@cp -r kernel/include include/kernel
