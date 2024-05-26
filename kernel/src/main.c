@@ -38,7 +38,7 @@ void _start() {
   g_physical_base = g_kernel_address_request.response->physical_base;
   if (!mm_init(g_mmap_request.response))
     kernel_panic_error("MM init failed");
-  gdt_init();
+  // gdt_init();
   idt_init();
   init_kernel_vas();
   heap_init();

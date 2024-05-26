@@ -28,7 +28,7 @@ typedef struct {
 struct regs {
   u64 int_no, err_code;             /* our 'push byte #' and ecodes do this */
   u64 rip, cs, rflags, userrsp, ss; /* pushed by the processor automatically */
-};
+} __attribute__((packed));
 
 void idt_init();
 void idt_add_handler(u8 id, void *handler, u8 flags, u8 ist);
