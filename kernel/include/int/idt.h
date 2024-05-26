@@ -19,26 +19,19 @@ typedef struct {
   u32 offset_high;
   u32 reserved;
 } __attribute__((packed)) idt_gate_t;
+
 typedef struct {
   u16 size;
   u64 addr;
 } __attribute__((packed)) idt_desc_t;
-typedef struct {
-  u64 err_code;
-  u64 rip;
-  u32 cs;
-  u64 rflags;
-  u64 rsp;
-  u32 ss;
-} __attribute__((packed)) interrupt_frame_t;
-typedef struct {
-  u64 rip;
-  u32 cs;
-  u64 rflags;
-  u64 rsp;
-  u32 ss;
-} __attribute__((packed)) interrupt_frame_noerr_t;
+
+struct regs {
+  u64 int_no, err_code;             /* our 'push byte #' and ecodes do this */
+  u64 rip, cs, rflags, userrsp, ss; /* pushed by the processor automatically */
+};
 
 void idt_init();
 void idt_add_handler(u8 id, void *handler, u8 flags, u8 ist);
-extern idt_gate_t g_idt[256];
+void isr_init();
+
+extern idt_gate_t *g_idt;

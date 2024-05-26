@@ -19,6 +19,8 @@
 #include <stddef.h>
 
 uint64_t g_hhaddr;
+uint64_t g_virtual_base;
+uint64_t g_physical_base;
 
 long long main();
 
@@ -32,10 +34,12 @@ void _start() {
   if (g_paging_request.response->mode != USED_PAGING_MODE)
     kernel_panic_error("Paging mode doesn't match");
   g_hhaddr = g_hhdm_request.response->offset;
-  gdt_init();
-  idt_init();
+  g_virtual_base = g_kernel_address_request.response->virtual_base;
+  g_physical_base = g_kernel_address_request.response->physical_base;
   if (!mm_init(g_mmap_request.response))
     kernel_panic_error("MM init failed");
+  gdt_init();
+  idt_init();
   init_kernel_vas();
   heap_init();
   config_init();

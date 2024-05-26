@@ -24,3 +24,6 @@ volatile struct limine_memmap_request g_mmap_request = {
 
 volatile struct limine_module_request g_module_request = {
     .id = LIMINE_MODULE_REQUEST, .revision = 0, .response = NULL};
+
+volatile struct limine_kernel_address_request g_kernel_address_request = {
+    .id = LIMINE_KERNEL_ADDRESS_REQUEST, .revision = 0, .response = NULL};
