@@ -12,3 +12,5 @@ typedef struct sched_frame {
 
   struct sched_frame *next;
 } sched_frame_t;
+
+void sched_create(void(*start));

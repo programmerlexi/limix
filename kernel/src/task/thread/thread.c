@@ -17,5 +17,5 @@ extern void exec_thread_switch(u64 *prev, u64 *next);
 void thread_switch(thread_t *t, thread_t *p) {
   p->state = THREAD_IDLE;
   t->state = THREAD_RUNNING;
-  exec_thread_switch(&p->rsp, &t->rsp);
+  exec_thread_switch(&(p->rsp), &(t->rsp));
 }

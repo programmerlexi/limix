@@ -1,6 +1,8 @@
 #include "kernel/task/sched/local.h"
+#include "kernel/asm_inline.h"
 #include "kernel/debug.h"
 #include "kernel/mm/heap.h"
+#include "kernel/task/proc/proc.h"
 #include "kernel/task/sched/common.h"
 #include "kernel/task/sched/global.h"
 #include "kernel/task/thread/thread.h"
@@ -27,16 +29,25 @@ local_scheduler_t *sched_local_init(u64 cpu) {
 
 void sched_local_tick(local_scheduler_t *ls) {
   spinlock(&ls->shed_lock);
+  debug("Ticking local");
   if (!ls->frames) {
     spinunlock(&ls->shed_lock);
     return;
   }
-  proc_switch(ls->frames->frame->proc, ls->frames->next->frame->proc);
-  thread_t *org = ls->frames->frame->thread;
-  thread_t *next = ls->frames->next->frame->thread;
-  ls->frames->frame->assigned = false;
-  ls->frames = ls->frames->next;
+  thread_t *org, *next;
+  if (ls->frames->next) {
+    debug("Switching process");
+    proc_switch(ls->frames->frame->proc, ls->frames->next->frame->proc);
+    org = ls->frames->frame->thread;
+    next = ls->frames->next->frame->thread;
+    ls->frames->frame->assigned = false;
+    ls->frames = ls->frames->next;
+  } else {
+    org = ls->frames->frame->thread;
+    next = org;
+  }
   spinunlock(&ls->shed_lock);
 
-  thread_switch(org, next);
+  debug("Switching thread");
+  thread_switch(next, org);
 }

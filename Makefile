@@ -72,6 +72,9 @@ run-iso-uefi: image.iso
 run-hdd-uefi: image.hdd
 	qemu-system-x86_64 -bios /usr/share/edk2/x64/OVMF.fd -hda image.hdd $(COMMON_QEMU_FLAGS)
 
+run-debug: image.iso
+	qemu-system-x86_64 -cdrom image.iso $(COMMON_QEMU_FLAGS) -s -S
+
 clean:
 	@make -C kernel clean
 	@make -C libk clean

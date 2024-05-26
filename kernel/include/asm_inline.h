@@ -3,6 +3,14 @@
 #include "libk/types.h"
 #include <stdbool.h>
 
+static inline u64 read_flags() {
+  unsigned long flags;
+  asm volatile("pushf\n\t"
+               "pop %0"
+               : "=g"(flags));
+  return flags;
+}
+
 static inline bool are_interrupts_enabled() {
   unsigned long flags;
   asm volatile("pushf\n\t"
@@ -55,6 +63,10 @@ static inline unsigned long read_cr4(void) {
   unsigned long val;
   asm volatile("mov %%cr4, %0" : "=r"(val));
   return val;
+}
+
+static inline void write_cr3(u64 cr3) {
+  asm volatile("mov %0, %%cr3" ::"r"(cr3));
 }
 
 static inline void write_cr4(u64 cr4) {

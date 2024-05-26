@@ -107,7 +107,7 @@ bin/$(KERNEL): Makefile linker.ld bin/$(KERNEL).a
 bin/$(KERNEL).gz: bin/$(KERNEL)
 	@echo "[GZIP] Compressing kernel"
 	@rm -f $@
-	@gzip $<
+	@gzip -k $<
 
 # Include header dependencies.
 -include $(HEADER_DEPS)

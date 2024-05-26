@@ -16,7 +16,7 @@ typedef struct process {
 
   u64 cpu;
 
-  u64 cr4;
+  u64 cr3;
 
   xstr_t name;
 

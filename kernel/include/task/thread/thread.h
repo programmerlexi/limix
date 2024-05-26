@@ -21,7 +21,7 @@ typedef struct thread {
   struct thread *next;
 } thread_t;
 
-void thread_switch(thread_t *prev, thread_t *next);
+void thread_switch(thread_t *next, thread_t *prev);
 
 thread_t *thread_create();
 void thread_destroy(thread_t *thread);
