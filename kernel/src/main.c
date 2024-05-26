@@ -32,8 +32,8 @@ void _start() {
   if (g_paging_request.response->mode != USED_PAGING_MODE)
     kernel_panic_error("Paging mode doesn't match");
   g_hhaddr = g_hhdm_request.response->offset;
-  /*gdt_init();
-  idt_init();*/
+  gdt_init();
+  idt_init();
   if (!mm_init(g_mmap_request.response))
     kernel_panic_error("MM init failed");
   init_kernel_vas();
@@ -44,7 +44,7 @@ void _start() {
   drm_switch(0);
   vt_init(0);
   font_parse();
-  // async_init();
+  async_init();
   sched_glob_init();
   logf(LOGLEVEL_FATAL, "Kernel exit code: %i", main());
   log(LOGLEVEL_FATAL, "The kernel stopped executing (this should not happend)");

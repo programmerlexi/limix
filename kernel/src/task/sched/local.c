@@ -1,5 +1,4 @@
 #include "kernel/task/sched/local.h"
-#include "kernel/asm_inline.h"
 #include "kernel/debug.h"
 #include "kernel/kernel.h"
 #include "kernel/mm/heap.h"
