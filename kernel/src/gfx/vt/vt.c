@@ -236,10 +236,6 @@ void kprintc(char c) {
       serial_write(c);
 #endif
       break;
-    case ESC:
-      _state.working = true;
-      _state.as = C1;
-      break;
     case BEL:
       termcode = true;
       break;

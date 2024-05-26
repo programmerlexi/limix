@@ -57,7 +57,9 @@ void sched_local_tick(local_scheduler_t *ls) {
       kernel_panic_error("There seem to be a slight problem");
     next = ls->frames->next->frame->thread;
     ls->frames->frame->assigned = false;
+    frame_container_t *old_frame = ls->frames;
     ls->frames = ls->frames->next;
+    kfree(old_frame);
   } else {
     log(LOGLEVEL_ANALYZE, "Switching to kernel");
     ls->from_core = true;

@@ -78,5 +78,6 @@ bool config_has(config_path_t path) { return _config_resolve(path) != NULL; }
 
 void config_init() {
   _variables = kmalloc(sizeof(config_variable_t));
-  config_set_integer(CONFIG_VT_SCROLL, 16);
+  _variables->path = CONFIG_KERNEL_NONE;
+  _variables->type = -1;
 }

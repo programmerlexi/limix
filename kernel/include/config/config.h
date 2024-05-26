@@ -7,6 +7,7 @@
   (config_has(path) ? accessfunc(path) : def)
 
 enum config_path {
+  CONFIG_KERNEL_NONE,
   CONFIG_VT_SCROLL,
   CONFIG_VFS_PATHSEP,
 };

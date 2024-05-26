@@ -23,7 +23,7 @@
 #define CONFIG_HEAP_INITIAL_PAGES 16
 
 #define CONFIG_SCROLL_STEP                                                     \
-  config_get_or(CONFIG_VT_SCROLL, 1, config_get_integer)
+  config_get_or(CONFIG_VT_SCROLL, 4, config_get_integer)
 
 #define PATHSEP config_get_or(CONFIG_VFS_PATHSEP, '/', config_get_char)
 

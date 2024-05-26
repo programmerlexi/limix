@@ -53,8 +53,10 @@ long long main() {
 
   sched_glob_list_processes();
 
-  sched_glob_tick();
-  sched_local_tick(ls);
+  while (1) {
+    sched_glob_tick();
+    sched_local_tick(ls);
+  }
 
   return 0;
 }
