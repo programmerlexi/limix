@@ -75,6 +75,9 @@ run-hdd-uefi: image.hdd
 run-debug: image.iso
 	qemu-system-x86_64 -cdrom image.iso $(COMMON_QEMU_FLAGS) -s -S
 
+debug:
+	gdb -s kernel/bin/limix -ex "target remote localhost:1234"
+
 clean:
 	@make -C kernel clean
 	@make -C libk clean

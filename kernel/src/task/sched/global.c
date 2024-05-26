@@ -11,6 +11,7 @@
 #include "libk/ipc/spinlock.h"
 #include "libk/utils/strings/xstr.h"
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #undef DEBUG_MODULE
@@ -67,9 +68,13 @@ void sched_glob_tick() {
         debug("Handling frame");
         if (!cf->assigned) {
           if (cf->proc->cpu == c->cpu) {
+            debug("Inserting frame");
             frame_container_t *nfc = kmalloc(sizeof(frame_container_t));
-            nfc->next = c->frames;
-            c->frames = nfc;
+            frame_container_t **cfc = &c->frames;
+            while (*cfc) {
+              cfc = &((*cfc)->next);
+            }
+            *cfc = nfc;
             nfc->frame = cf;
             cf->assigned = true;
           }
@@ -164,12 +169,8 @@ void sched_register_cpu(local_scheduler_t *ls) {
   proc->next = _procs->next;
   log(LOGLEVEL_ANALYZE, "Inserting process (Stage 2)");
   _procs->next = proc;
-  log(LOGLEVEL_ANALYZE, "Inserting frame");
-  frame->next = _frames->next;
-  log(LOGLEVEL_ANALYZE, "Inserting frame (Stage 2)");
-  _frames->next = frame;
-  ls->frames = kmalloc(sizeof(*ls->frames));
-  ls->frames->frame = frame;
+  ls->frames = NULL;
+  ls->core_process = proc;
 
   ls->next = _scheds;
   _scheds = ls;

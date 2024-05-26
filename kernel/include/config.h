@@ -28,7 +28,7 @@
 #define PATHSEP config_get_or(CONFIG_VFS_PATHSEP, '/', config_get_char)
 
 #define LOGLEVEL LOGLEVEL_INFO
-#define LOGLEVEL_SERIAL LOGLEVEL_ANALYZE
+#define LOGLEVEL_SERIAL LOGLEVEL_WARN0
 
 // #define LOG_SERIAL
 

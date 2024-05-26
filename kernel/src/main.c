@@ -47,5 +47,6 @@ void _start() {
   // async_init();
   sched_glob_init();
   logf(LOGLEVEL_FATAL, "Kernel exit code: %i", main());
+  log(LOGLEVEL_FATAL, "The kernel stopped executing (this should not happend)");
   hcf();
 }

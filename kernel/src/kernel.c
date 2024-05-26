@@ -17,21 +17,19 @@ void unlock_lschedi();
 
 void a(void) {
   while (1) {
-    info("A");
-    sched_glob_tick();
+    kprintc('A');
     sched_local_tick(ls);
   }
 }
 void b(void) {
   while (1) {
-    info("B");
-    sched_glob_tick();
+    kprintc('B');
     sched_local_tick(ls);
   }
 }
 
 long long main() {
-  /*vfs_init();
+  vfs_init();
   devfs_init();
   devfs_bind(vfs_make("dev"));
   devfs_reload();
@@ -39,8 +37,8 @@ long long main() {
   pci_init();
   ps2_init();
   kb_init();
-  kb_init_polling();*/
-  // smp_init();
+  kb_init_polling();
+  smp_init();
 
   log(LOGLEVEL_INFO, "Creating processes");
   sched_create(a);
@@ -53,9 +51,7 @@ long long main() {
   log(LOGLEVEL_ANALYZE, "Creating scheduler");
   ls = sched_local_init(0);
 
-  /*sched_glob_list_processes();*/
-  /**/
-  /*hcf();*/
+  sched_glob_list_processes();
 
   sched_glob_tick();
   sched_local_tick(ls);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "kernel/task/proc/proc.h"
 #include "kernel/task/sched/common.h"
 
 typedef struct frame_container {
@@ -9,6 +10,9 @@ typedef struct frame_container {
 
 typedef struct local_scheduler {
   frame_container_t *frames;
+
+  process_t *core_process;
+  bool from_core;
 
   u64 cpu;
   u32 shed_lock;
