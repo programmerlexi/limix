@@ -1,5 +1,7 @@
 [bits 64]
+
 load_gdt:
+  cli
   lgdt [rdi]
   push 0x08
   lea rax, [rel .reload_cs]
@@ -12,5 +14,6 @@ load_gdt:
   mov fs, ax
   mov gs, ax
   mov ss, ax
+  sti
   ret
 [global load_gdt]

@@ -2,6 +2,7 @@
 #include "kernel/boot/requests.h"
 #include "kernel/debug.h"
 #include "kernel/kernel.h"
+#include "kernel/task/sched/common.h"
 #include "kernel/task/sched/local.h"
 #include "libk/ipc/semaphore.h"
 #include "limine.h"
@@ -82,7 +83,7 @@ void _smp_start(struct limine_smp_info *cpu_info) {
   }
 }
 
-void smp_init() {
+u64 smp_init() {
   for (u64 i = 0; i < g_smp_request.response->cpu_count; i++) {
     if (g_smp_request.response->bsp_lapic_id ==
         g_smp_request.response->cpus[i]->lapic_id)
@@ -201,4 +202,5 @@ void smp_init() {
   unlock_lschedi();
 
   // putchar16(0, 0, 'P', 0x00ff00);
+  return g_smp_request.response->cpu_count;
 }

@@ -32,4 +32,4 @@ typedef union {
 } smp_cmd_t;
 
 void _smp_start(struct limine_smp_info *info_structure);
-void smp_init();
+u64 smp_init();

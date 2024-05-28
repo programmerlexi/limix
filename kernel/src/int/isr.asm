@@ -194,7 +194,9 @@ _isr31:
 isr_common_stub:
     mov rax, rsp
     push rax
-    call fault_handler
+    lea rax, [rel fault_handler]
+    call rax
+    pop rax
     add rsp, 16
     iretq
 

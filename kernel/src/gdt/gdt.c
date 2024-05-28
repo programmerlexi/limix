@@ -1,5 +1,4 @@
 #include "kernel/gdt/gdt.h"
-#include "kernel/mm/kat.h"
 #include "libk/types.h"
 
 __attribute__((aligned(0x1000))) gdt_t g_gdt = {
@@ -26,8 +25,8 @@ __attribute__((aligned(0x1000))) gdt_t g_gdt = {
 };
 
 void gdt_init(void) {
-  gdt_descriptor_t gdt_desc;
+  __attribute__((aligned(0x1000))) gdt_descriptor_t gdt_desc;
   gdt_desc.size = sizeof(gdt_t) - 1;
-  gdt_desc.offset = translate_to_phys((uptr)&g_gdt);
+  gdt_desc.offset = (uptr)&g_gdt;
   load_gdt(&gdt_desc);
 }

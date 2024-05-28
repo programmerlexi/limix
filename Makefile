@@ -73,7 +73,7 @@ run-hdd-uefi: image.hdd
 	qemu-system-x86_64 -bios /usr/share/edk2/x64/OVMF.fd -hda image.hdd $(COMMON_QEMU_FLAGS)
 
 run-debug: image.iso
-	qemu-system-x86_64 -cdrom image.iso $(COMMON_QEMU_FLAGS) -s -S
+	qemu-system-x86_64 -cdrom image.iso $(COMMON_QEMU_FLAGS) -s -S -no-reboot -d int,cpu_reset
 
 debug:
 	gdb -s kernel/bin/limix -ex "target remote localhost:1234"

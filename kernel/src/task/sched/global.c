@@ -90,7 +90,7 @@ void sched_glob_tick() {
 }
 
 static u64 latest_pid = 1;
-void sched_create(void(*start)) {
+void sched_create(void(*start), u64 cpu) {
   sched_glob_aquire();
   process_t *proc = proc_create();
   if (!proc)
@@ -106,12 +106,12 @@ void sched_create(void(*start)) {
   if (!proc->threads)
     kernel_panic_error("Out of memory");
   proc->name = to_xstr("process");
-  proc->cpu = 0;
+  proc->cpu = cpu;
   void *rbp = request_page();
   if (!rbp)
     kernel_panic_error("Out of memory");
   proc->threads->rsp = ((u64)rbp + 0x1000) - (8 * 8);
-  logf(LOGLEVEL_INFO, "RBP: %x RSP: %x", rbp, proc->threads->rsp);
+  logf(LOGLEVEL_ANALYZE, "RBP: %x RSP: %x", rbp, proc->threads->rsp);
   ((uint64_t *)(proc->threads->rsp))[7] = (uptr)start;
   ((uint64_t *)(proc->threads->rsp))[6] = 0;
   ((uint64_t *)(proc->threads->rsp))[5] = read_flags();
