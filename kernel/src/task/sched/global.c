@@ -177,6 +177,7 @@ void sched_register_cpu(local_scheduler_t *ls) {
   log(LOGLEVEL_DEBUG, "Registered scheduler");
 
   sched_glob_release();
+  sched_glob_tick();
 }
 
 void sched_glob_list_processes() {
