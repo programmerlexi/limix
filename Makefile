@@ -7,11 +7,10 @@ all: hdd iso
 limine/limine.h: limine
 
 include: $(INCLUDES)
-	@rm -rf include
 	@mkdir -p include
-	@cp -r kernel/include include/kernel
-	@cp -r libk/include include/libk
 	@cp limine/limine.h include
+	$(foreach head,$?,cp $(head) $(patsubst kernel/include/%.h,include/kernel/%.h,$(patsubst libk/include/%,include/libk/%,$(head)));)
+	touch -m include
 
 base: include
 	@make -j -C libk
