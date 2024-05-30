@@ -13,6 +13,7 @@ typedef u8 loglevel_t;
 #define LOGLEVEL_ERROR 7
 #define LOGLEVEL_CRITICAL 8
 #define LOGLEVEL_FATAL 9
+#define LOGLEVEL_ALWAYS 10
 
 #define str(n) #n
 #define xstr(n) str(n)

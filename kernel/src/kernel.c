@@ -1,3 +1,4 @@
+#include "kernel/config.h"
 #include "kernel/debug.h"
 #include "kernel/fs/devfs.h"
 #include "kernel/fs/vfs.h"
@@ -20,6 +21,8 @@ void core_main() {
 }
 
 long long main() {
+  logf(LOGLEVEL_ALWAYS, "Starting limix v%u.%u.%u", KERNEL_MAJ, KERNEL_MIN,
+       KERNEL_PATCH);
   vfs_init();
   devfs_init();
   devfs_bind(vfs_make("dev"));

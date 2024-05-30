@@ -17,7 +17,8 @@ static char *_logcolors[] = {TERMCODE(TC_FG_BLACK) TERMCODE(TC_BOLD),
                              TERMCODE(TC_FG_YELLOW) TERMCODE(TC_DIM),
                              TERMCODE(TC_FG_RED) TERMCODE(TC_DIM),
                              TERMCODE(TC_FG_RED),
-                             TERMCODE(TC_FG_RED) TERMCODE(TC_BOLD)};
+                             TERMCODE(TC_FG_RED) TERMCODE(TC_BOLD),
+                             TERMCODE(TC_FG_WHITE) TERMCODE(TC_DIM)};
 
 void set_loglevel(loglevel_t ll) { _current_loglevel = ll; }
 void set_serial_loglevel(loglevel_t ll) { _current_serial_loglevel = ll; }
