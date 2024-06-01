@@ -9,7 +9,7 @@ limine/limine.h: limine
 include: $(INCLUDES)
 	@mkdir -p include
 	@cp limine/limine.h include
-	$(foreach head,$?,cp $(head) $(patsubst kernel/include/%.h,include/kernel/%.h,$(patsubst libk/include/%,include/libk/%,$(head)));)
+	$(foreach head,$?,mkdir -p $(dir $(patsubst kernel/include/%.h,include/kernel/%.h,$(patsubst libk/include/%,include/libk/%,$(head))));cp $(head) $(patsubst kernel/include/%.h,include/kernel/%.h,$(patsubst libk/include/%,include/libk/%,$(head)));)
 	touch -m include
 
 base: include
