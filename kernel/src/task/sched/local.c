@@ -20,6 +20,8 @@ local_scheduler_t *sched_local_init(u64 cpu) {
   spinlock(&_sched_initialize);
   log(LOGLEVEL_ANALYZE, "Creating local scheduler");
   local_scheduler_t *s = kmalloc(sizeof(local_scheduler_t));
+  if (!s)
+    kernel_panic_error("Out of memory");
   s->cpu = cpu;
   s->from_core = true;
   sched_register_cpu(s);

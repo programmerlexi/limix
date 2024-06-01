@@ -1,6 +1,7 @@
 #include "kernel/smp.h"
 #include "kernel/boot/requests.h"
 #include "kernel/debug.h"
+#include "kernel/io/pio.h"
 #include "kernel/kernel.h"
 #include "kernel/task/sched/common.h"
 #include "kernel/task/sched/local.h"
@@ -88,6 +89,11 @@ u64 smp_init() {
     if (g_smp_request.response->bsp_lapic_id ==
         g_smp_request.response->cpus[i]->lapic_id)
       continue;
+    log(LOGLEVEL_ANALYZE, "Setting entry");
+    io_wait();
+    io_wait();
+    io_wait();
+    g_smp_request.response->cpus[i]->extra_argument = 0;
     g_smp_request.response->cpus[i]->goto_address = _smp_start;
   }
   block_on_count(&_smp_cpu, g_smp_request.response->cpu_count - 1);
