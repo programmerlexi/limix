@@ -1,114 +1,98 @@
 #include "kernel/int/idt.h"
 #include "kernel/io/serial/serial.h"
 #include "kernel/kernel.h"
-
-extern void _isr0();
-extern void _isr1();
-extern void _isr2();
-extern void _isr3();
-extern void _isr4();
-extern void _isr5();
-extern void _isr6();
-extern void _isr7();
-extern void _isr8();
-extern void _isr9();
-extern void _isr10();
-extern void _isr11();
-extern void _isr12();
-extern void _isr13();
-extern void _isr14();
-extern void _isr15();
-extern void _isr16();
-extern void _isr17();
-extern void _isr18();
-extern void _isr19();
-extern void _isr20();
-extern void _isr21();
-extern void _isr22();
-extern void _isr23();
-extern void _isr24();
-extern void _isr25();
-extern void _isr26();
-extern void _isr27();
-extern void _isr28();
-extern void _isr29();
-extern void _isr30();
-extern void _isr31();
-
-void isr_init() {
-  idt_add_handler(0, (void *)_isr0, 0x8e, 0);
-  idt_add_handler(1, (void *)_isr1, 0x8e, 0);
-  idt_add_handler(2, (void *)_isr2, 0x8e, 0);
-  idt_add_handler(3, (void *)_isr3, 0x8e, 0);
-  idt_add_handler(4, (void *)_isr4, 0x8e, 0);
-  idt_add_handler(5, (void *)_isr5, 0x8e, 0);
-  idt_add_handler(6, (void *)_isr6, 0x8e, 0);
-  idt_add_handler(7, (void *)_isr7, 0x8e, 0);
-  idt_add_handler(8, (void *)_isr8, 0x8e, 0);
-  idt_add_handler(9, (void *)_isr9, 0x8e, 0);
-  idt_add_handler(10, (void *)_isr10, 0x8e, 0);
-  idt_add_handler(11, (void *)_isr11, 0x8e, 0);
-  idt_add_handler(12, (void *)_isr12, 0x8e, 0);
-  idt_add_handler(13, (void *)_isr13, 0x8e, 0);
-  idt_add_handler(14, (void *)_isr14, 0x8e, 0);
-  idt_add_handler(15, (void *)_isr15, 0x8e, 0);
-  idt_add_handler(16, (void *)_isr16, 0x8e, 0);
-  idt_add_handler(17, (void *)_isr17, 0x8e, 0);
-  idt_add_handler(18, (void *)_isr18, 0x8e, 0);
-  idt_add_handler(19, (void *)_isr19, 0x8e, 0);
-  idt_add_handler(20, (void *)_isr20, 0x8e, 0);
-  idt_add_handler(21, (void *)_isr21, 0x8e, 0);
-  idt_add_handler(22, (void *)_isr22, 0x8e, 0);
-  idt_add_handler(23, (void *)_isr23, 0x8e, 0);
-  idt_add_handler(24, (void *)_isr24, 0x8e, 0);
-  idt_add_handler(25, (void *)_isr25, 0x8e, 0);
-  idt_add_handler(26, (void *)_isr26, 0x8e, 0);
-  idt_add_handler(27, (void *)_isr27, 0x8e, 0);
-  idt_add_handler(28, (void *)_isr28, 0x8e, 0);
-  idt_add_handler(29, (void *)_isr29, 0x8e, 0);
-  idt_add_handler(30, (void *)_isr30, 0x8e, 0);
-  idt_add_handler(31, (void *)_isr31, 0x8e, 0);
-}
+#include "libk/utils/strings/strings.h"
 
 static const char *exception_messages[] = {
-    "Division By Zero Exeption.",
-    "Debug Exeption.",
-    "Non Maskable Interrupt Exeption.",
-    "Breakpoint Exeption.",
-    "Into Detected Overflow Exeption.",
-    "Out of Bounds Exeption.",
-    "Invalid Opcode Exeption.",
-    "No Coprocessor Exeption.",
-    "Double Fault Exeption.",
-    "Coprocessor Segment Overrun Exeption.",
-    "Bad TSS Exeption.",
-    "Segment Not Present Exeption.",
-    "Stack Fault Exeption.",
-    "General Protection Fault Exeption.",
-    "Page Fault Exeption.",
-    "Unknown Interrupt Exeption.",
-    "Coprocessor Fault Exeption.",
-    "Alignment Check Exeption.",
-    "Machine Check Exeption.",
-    "Reserved Exeption.",
-    "Reserved Exeption.",
-    "Reserved Exeption.",
-    "Reserved Exeption.",
-    "Reserved Exeption.",
-    "Reserved Exeption.",
-    "Reserved Exeption.",
-    "Reserved Exeption.",
-    "Reserved Exeption.",
-    "Reserved Exeption.",
-    "Reserved Exeption.",
-    "Reserved Exeption.",
-    "Reserved Exeption."};
+    "Division Exception",
+    "Debug",
+    "Non-Maskable Interrupt Exception",
+    "Breakpoint",
+    "Overflow",
+    "Bound Range Exceeded",
+    "Invalid Opcode",
+    "Device Not Available (No Coprocessor)",
+    "Double Fault",
+    "Coprocessor Segment Overrun",
+    "Invalid TSS",
+    "Segment Not Present",
+    "Stack-Segment Fault",
+    "General Protection Fault",
+    "Page Fault",
+    "Reserved (0x0f)",
+    "x87 Floating-Point Exception",
+    "Alignment Check",
+    "Machine Check",
+    "SIMD Floating Point Exception",
+    "Virtualization Exception",
+    "Control Protection Exception",
+    "Reserved (0x16)",
+    "Reserved (0x17)",
+    "Reserved (0x18)",
+    "Reserved (0x19)",
+    "Reserved (0x1a)",
+    "Reserved (0x1b)",
+    "Hypervisor Injection Exception",
+    "VMM Communication Exception",
+    "Security Exception",
+    "Reserved (0x1f)",
+};
 
-void fault_handler(struct regs *r) {
-  asm("cli");
-  if (r->int_no < 32) {
-    serial_writes((char *)exception_messages[r->int_no]);
-    kernel_panic_error(exception_messages[r->int_no]);
+void fault_handler(u64 int_no, u64 err_code, u64 rip) {
+  if (int_no < 32) {
+    serial_writes((char *)exception_messages[int_no]);
+    serial_writes(" 0x");
+    char b[16];
+    ntos(b, rip, 16, 16, true, true);
+    serial_writes(b);
+    serial_writes("\n\r");
+    kernel_panic_error(exception_messages[int_no]);
   }
+  kernel_panic_error("An exception has occured");
   hcf();
+}
+
+extern void isr_0();
+extern void isr_1();
+extern void isr_2();
+extern void isr_3();
+extern void isr_4();
+extern void isr_5();
+extern void isr_6();
+extern void isr_7();
+extern void isr_8();
+extern void isr_9();
+extern void isr_10();
+extern void isr_11();
+extern void isr_12();
+extern void isr_13();
+extern void isr_14();
+extern void isr_15();
+extern void isr_16();
+extern void isr_17();
+extern void isr_18();
+extern void isr_19();
+extern void isr_20();
+extern void isr_21();
+extern void isr_22();
+extern void isr_23();
+extern void isr_24();
+extern void isr_25();
+extern void isr_26();
+extern void isr_27();
+extern void isr_28();
+extern void isr_29();
+extern void isr_30();
+extern void isr_31();
+
+void(*isr_stub_table[32]) = {
+    isr_0,  isr_1,  isr_2,  isr_3,  isr_4,  isr_5,  isr_6,  isr_7,
+    isr_8,  isr_9,  isr_10, isr_11, isr_12, isr_13, isr_14, isr_15,
+    isr_16, isr_17, isr_18, isr_19, isr_20, isr_21, isr_22, isr_23,
+    isr_24, isr_25, isr_26, isr_27, isr_28, isr_29, isr_30, isr_31,
+};
+
+void isr_init() {
+  for (int i = 0; i < 32; i++)
+    idt_add_handler(i, (void *)isr_stub_table[i], 0x8e, 0);
 }

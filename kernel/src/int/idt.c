@@ -1,21 +1,28 @@
 #include "kernel/int/idt.h"
 #include "kernel/mm/hhtp.h"
 #include "kernel/mm/mm.h"
+#include "libk/utils/memory/memory.h"
 
-idt_gate_t *g_idt;
+__attribute__((aligned(0x10))) idt_gate_t g_idt[256];
 
-idt_desc_t IDTR;
+static idt_desc_t IDTR;
+
+void idt_load() {
+  asm("cli");
+  asm("lidt %0" ::"m"(IDTR));
+  asm("sti");
+}
 
 void idt_init() {
-  g_idt = request_page();
+  kmemset(&g_idt[0], 0, sizeof(g_idt));
   isr_init();
-  IDTR.addr = PHY((u64)g_idt);
-  IDTR.size = 4095;
-  asm("lidt %0" ::"m"(IDTR));
+  IDTR.addr = (u64)&g_idt[0];
+  IDTR.size = sizeof(g_idt) - 1;
+  idt_load();
 }
 void idt_add_handler(u8 id, void *handler, u8 flags, u8 ist) {
   g_idt[id] = (idt_gate_t){.ist = ist,
-                           .segment_selector = 0x28,
+                           .segment_selector = 0x08,
                            .flags = flags,
                            .offset_low = (u16)(u64)handler,
                            .offset_mid = (u16)((u64)handler >> 16),
