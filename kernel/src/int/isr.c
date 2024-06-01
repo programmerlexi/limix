@@ -2,6 +2,7 @@
 #include "kernel/io/serial/serial.h"
 #include "kernel/kernel.h"
 #include "libk/utils/strings/strings.h"
+#include <stdint.h>
 
 static const char *exception_messages[] = {
     "Division Exception",
@@ -38,12 +39,19 @@ static const char *exception_messages[] = {
     "Reserved (0x1f)",
 };
 
-void fault_handler(u64 int_no, u64 err_code, u64 rip) {
+void fault_handler(u64 int_no, u64 err_code, u64 rip, u64 rsp) {
   if (int_no < 32) {
     serial_writes((char *)exception_messages[int_no]);
     serial_writes(" 0x");
     char b[16];
     ntos(b, rip, 16, 16, true, true);
+    serial_writes(b);
+    serial_writes(" 0x");
+    ntos(b, rsp, 16, 16, true, true);
+    serial_writes(b);
+    serial_writes("\n\r");
+    serial_writes(" 0x");
+    ntos(b, *(uint64_t *)(rsp + 8), 16, 16, true, true);
     serial_writes(b);
     serial_writes("\n\r");
     kernel_panic_error(exception_messages[int_no]);

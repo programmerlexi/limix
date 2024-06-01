@@ -53,5 +53,6 @@ isr_noerr 31
 
 isr_common:
   mov rdx, [rsp]
+  mov rcx, [rsp+24]
   call fault_handler
   iretq
