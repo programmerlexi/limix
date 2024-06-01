@@ -25,8 +25,6 @@ u64 smp_init() {
       continue;
     log(LOGLEVEL_ANALYZE, "Setting entry");
     io_wait();
-    io_wait();
-    io_wait();
     g_smp_request.response->cpus[i]->extra_argument = 0;
     g_smp_request.response->cpus[i]->goto_address = _smp_start;
   }
