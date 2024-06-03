@@ -1,6 +1,5 @@
 #include "kernel/int/idt.h"
-#include "kernel/mm/hhtp.h"
-#include "kernel/mm/mm.h"
+#include "kernel/int/syscall.h"
 #include "libk/utils/memory/memory.h"
 
 __attribute__((aligned(0x10))) idt_gate_t g_idt[256];
@@ -16,6 +15,9 @@ void idt_load() {
 void idt_init() {
   kmemset(&g_idt[0], 0, sizeof(g_idt));
   isr_init();
+  idt_add_handler(0x80, _syscall,
+                  IDT_FLAGS_DPL3 | IDT_FLAGS_PRESENT | IDT_FLAGS_GATE_TYPE_INT,
+                  0);
   IDTR.addr = (u64)&g_idt[0];
   IDTR.size = sizeof(g_idt) - 1;
   idt_load();

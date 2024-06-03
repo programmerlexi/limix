@@ -18,6 +18,7 @@ _syscall:
   push r13
   push r14
   push r15
+  pushfq
 
   cld
 
@@ -29,6 +30,7 @@ _syscall:
 
   call syscall
   
+  popfq
   pop r15
   pop r14
   pop r13
@@ -45,7 +47,8 @@ _syscall:
   pop rcx
   pop rbx
   pop rax
-  iret
+  pop rbp
+  iretq
 
 [global _syscall]
 [extern syscall]
