@@ -2,19 +2,76 @@
 
 [extern fault_handler]
 
+discard: dq 0
+
+%macro isr_enter 0
+  push rbp
+  mov rbp, rsp
+  
+  push rax
+  push rbx
+  push rcx
+  push rdx
+
+  push rsi
+  push rdi
+
+  push r8
+  push r9
+  push r10
+  push r11
+  push r12
+  push r13
+  push r14
+  push r15
+
+  pushfq
+%endmacro
+
+%macro isr_exit 0
+  popfq
+  pop r15
+  pop r14
+  pop r13
+  pop r12
+  pop r11
+  pop r10
+  pop r9
+  pop r8
+  pop rdi
+  pop rsi
+  pop rdx
+  pop rcx
+  mov rax, [rbp]
+  mov rbx, [rbp+8]
+  mov [rbp+8], rax
+  mov [rbp], rbx
+  pop rbx
+  pop rax
+  pop rbp
+  pop rbp
+%endmacro
+
 %macro isr_err 1
   isr_%+%1:
-    pop rsi
-    mov rdi, %1
-    jmp isr_common
+    isr_enter
+    push %1
+    call isr_common
+    pop rax
+    isr_exit
+    iretq
   [global isr_%+%1]
 %endmacro
 
 %macro isr_noerr 1
   isr_%+%1:
-    mov rsi, 0
-    mov rdi, %1
-    jmp isr_common
+    push 0
+    isr_enter
+    push %1
+    call isr_common
+    pop rax
+    isr_exit
+    iretq
   [global isr_%+%1]
 %endmacro
 
@@ -50,9 +107,12 @@ isr_noerr 28
 isr_noerr 29
 isr_err    30
 isr_noerr 31
+isr_noerr 32
 
 isr_common:
-  mov rdx, [rsp]
-  mov rcx, [rsp+24]
+  mov rdi, [rsp+8]
+  mov rsi, [rbp+8]
+  mov rdx, [rbp+16]
+  mov rcx, [rbp+40]
   call fault_handler
-  iretq
+  ret
