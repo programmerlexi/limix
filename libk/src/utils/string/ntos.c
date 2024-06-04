@@ -13,6 +13,7 @@ i32 ntos(char *buf, isz i, u8 base, usz length, bool unsign, bool pad) {
   kmemset(buf, 0, length);
   if (pad)
     kmemset(buf, '0', length);
+  buf[length] = 0;
 
   if (i == 0) {
     buf[0] = '0';
