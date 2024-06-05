@@ -1,3 +1,5 @@
+#include "kernel/asm_inline.h"
+#include "kernel/debug.h"
 #include "kernel/int/idt.h"
 #include "kernel/io/serial/serial.h"
 #include "kernel/kernel.h"
@@ -41,6 +43,8 @@ static const char *exception_messages[] = {
 
 void fault_handler(u64 int_no, u64 err_code, u64 rip, u64 rsp) {
   if (int_no < 32) {
+    if (int_no == 0xe)
+      logf(LOGLEVEL_FATAL, "Page fault address: 0x%l", read_cr2());
     serial_writes((char *)exception_messages[int_no]);
     serial_writes(" 0x");
     char b[16];
