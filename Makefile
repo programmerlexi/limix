@@ -84,6 +84,10 @@ run-hdd-uefi: image.hdd
 run-kvm: image.iso
 	qemu-system-x86_64 -cdrom image.iso $(COMMON_QEMU_FLAGS) -enable-kvm
 
+run-kvm-uefi: image.iso
+	qemu-system-x86_64 -bios /usr/share/edk2/x64/OVMF.fd -cdrom image.iso $(COMMON_QEMU_FLAGS) -enable-kvm
+
+
 run-debug: image.iso
 	qemu-system-x86_64 -cdrom image.iso $(COMMON_QEMU_FLAGS) -s -S -no-reboot -d int,cpu_reset
 
