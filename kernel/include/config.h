@@ -1,6 +1,5 @@
 #pragma once
 
-#include "kernel/config/config.h"
 #include "kernel/debug.h"
 #include "kernel/io/serial/serial.h"
 #include "limine.h"
@@ -22,10 +21,15 @@
 
 #define CONFIG_HEAP_INITIAL_PAGES 16
 
+#ifdef CONFIG_DYNCONF
 #define CONFIG_SCROLL_STEP                                                     \
   config_get_or(CONFIG_VT_SCROLL, 4, config_get_integer)
 
 #define PATHSEP config_get_or(CONFIG_VFS_PATHSEP, '/', config_get_char)
+#else
+#define CONFIG_SCROLL_STEP 4
+#define PATHSEP '/'
+#endif
 
 #define LOGLEVEL LOGLEVEL_INFO
 #define LOGLEVEL_SERIAL LOGLEVEL_WARN0
