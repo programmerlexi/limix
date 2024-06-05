@@ -18,8 +18,10 @@ void syscall(int_frame_t *f) {
     break;
   case SYSCALL_YIELD:
     local_scheduler_t *ls = sched_get_local(cpu);
-    if (!ls)
+    if (!ls) {
+      log(LOGLEVEL_FATAL, "Received yield from non-existent cpu");
       kpanic();
+    }
     sched_local_tick(ls);
     break;
   default:
