@@ -1,4 +1,4 @@
-COMMON_QEMU_FLAGS=-m 4G -smp 4 -serial stdio -usb -device qemu-xhci
+COMMON_QEMU_FLAGS=-machine q35 -m 4G -smp 4 -serial stdio -usb -device qemu-xhci
 
 INCLUDES=$(shell find kernel/include -type f) $(shell find libk/include -type f) limine/limine.h
 
@@ -11,6 +11,7 @@ limine/limine.h: limine
 include: $(INCLUDES)
 	@mkdir -p include
 	@cp limine/limine.h include
+	touch -m include
 	$(foreach head,$?,mkdir -p $(dir $(patsubst kernel/include/%.h,include/kernel/%.h,$(patsubst libk/include/%,include/libk/%,$(head))));cp $(head) $(patsubst kernel/include/%.h,include/kernel/%.h,$(patsubst libk/include/%,include/libk/%,$(head)));)
 	touch -m include
 
