@@ -2,6 +2,8 @@ COMMON_QEMU_FLAGS=-m 4G -smp 4 -serial stdio -usb -device qemu-xhci
 
 INCLUDES=$(shell find kernel/include -type f) $(shell find libk/include -type f) limine/limine.h
 
+JOBS=$(shell nproc --all)
+
 all: hdd iso
 
 limine/limine.h: limine
@@ -12,10 +14,17 @@ include: $(INCLUDES)
 	$(foreach head,$?,mkdir -p $(dir $(patsubst kernel/include/%.h,include/kernel/%.h,$(patsubst libk/include/%,include/libk/%,$(head))));cp $(head) $(patsubst kernel/include/%.h,include/kernel/%.h,$(patsubst libk/include/%,include/libk/%,$(head)));)
 	touch -m include
 
-base: include
-	@make -j -C libk
-	@make -j -C kernel
-	@make -C util bin/font.lime
+.PHONY: libk kernel util
+libk: include
+	@make -j$(JOBS) -C libk
+
+kernel: libk include
+	@make -j$(JOBS) -C kernel
+
+util:
+	@make -j $(JOBS) -C util bin/font.lime
+
+base: kernel util
 
 hdd: image.hdd
 iso: image.iso
