@@ -41,7 +41,6 @@ long long main() {
 
   ls = sched_local_init(0);
 
-  // FIXME: Doesn't work, because process just keeps cpu forever.
   while (1) {
     sched_glob_tick();
     sched_local_tick(ls);
