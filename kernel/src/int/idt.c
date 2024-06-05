@@ -3,6 +3,7 @@
 #include "kernel/debug.h"
 #include "kernel/int/syscall.h"
 #include "kernel/panic.h"
+#include "libk/ipc/spinlock.h"
 #include "libk/utils/memory/memory.h"
 
 __attribute__((aligned(0x10))) idt_gate_t g_idt[256];
@@ -36,6 +37,8 @@ void panic_init() {
 }
 
 void panic_handle(int_frame_t *f) {
+  static u32 lock = 0;
+  spinlock(&lock);
   logf(LOGLEVEL_FATAL, "RAX: 0x%l RBX: 0x%l", f->rax, f->rbx);
   logf(LOGLEVEL_FATAL, "RCX: 0x%l RDX: 0x%l", f->rcx, f->rdx);
   logf(LOGLEVEL_FATAL, "R8:  0x%l R9:  0x%l", f->r8, f->r9);
@@ -50,6 +53,7 @@ void panic_handle(int_frame_t *f) {
   logf(LOGLEVEL_FATAL, "RSP: 0x%l RBP: 0x%l", f->rsp, f->rbp);
   logf(LOGLEVEL_FATAL, "CS:  0x%l RIP: 0x%l", f->cs, f->rip);
   log(LOGLEVEL_FATAL, "kernel panic -- halting!");
+  spinunlock(&lock);
 }
 
 void idt_add_handler(u8 id, void *handler, u8 flags, u8 ist) {
