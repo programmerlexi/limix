@@ -2,6 +2,7 @@
 
 #include "libk/types.h"
 #include <stdbool.h>
+#include <stdint.h>
 
 static inline u64 read_flags() {
   unsigned long flags;
@@ -27,10 +28,6 @@ static inline unsigned long save_irqdisable(void) {
 
 static inline void irqrestore(unsigned long flags) {
   asm("push %0\n\tpopf" : : "rm"(flags) : "memory", "cc");
-}
-
-static inline void cpuid(i32 code, u32 *a, u32 *d) {
-  asm volatile("cpuid" : "=a"(*a), "=d"(*d) : "0"(code) : "ebx", "ecx");
 }
 
 static inline u64 rdtsc(void) {
@@ -92,3 +89,13 @@ static inline u64 rdmsr(u64 msr) {
 }
 
 #define fence() __asm__ volatile("" ::: "memory")
+
+static inline void cpuid(int code, u32 *a, u32 *b, u32 *c, u32 *d) {
+  asm volatile("cpuid" : "=a"(*a), "=b"(*b), "=c"(*c), "=d"(*d) : "a"(code));
+}
+
+static inline u32 get_processor() {
+  u32 _, b;
+  cpuid(1, &_, &b, &_, &_);
+  return b >> 24;
+}
