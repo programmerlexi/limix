@@ -7,6 +7,7 @@
 #include "kernel/hw/hid/kb/poll.h"
 #include "kernel/hw/pci/pci.h"
 #include "kernel/hw/ps2.h"
+#include "kernel/int/syscall.h"
 #include "kernel/smp.h"
 #include "kernel/task/sched/common.h"
 #include "kernel/task/sched/global.h"
@@ -17,7 +18,7 @@ static local_scheduler_t *ls;
 void core_main() {
   log(LOGLEVEL_INFO, "Core main entered");
   for (;;)
-    ;
+    call_syscall(SYSCALL_YIELD);
 }
 
 long long main() {

@@ -188,3 +188,17 @@ void sched_glob_list_processes() {
     p = p->next;
   }
 }
+
+local_scheduler_t *sched_get_local(u64 cpu) {
+  sched_glob_aquire();
+  local_scheduler_t *l = _scheds;
+  while (l) {
+    if (l->cpu == cpu) {
+      sched_glob_release();
+      return l;
+    }
+    l = l->next;
+  }
+  sched_glob_release();
+  return NULL;
+}
