@@ -110,6 +110,20 @@ typedef struct acpi_fadt {
   acpi_gas_t x_gpe1_block;
 } __attribute__((packed)) acpi_fadt_t;
 
+typedef struct acpi_mcfg_csbaa {
+  u64 base_addr;
+  u16 pci_seg_group;
+  u8 start_bus;
+  u8 end_bus;
+  u32 reserved;
+} __attribute__((packed)) acpi_mcfg_csbaa_t;
+
+typedef struct acpi_mcfg {
+  acpi_table_t header;
+  u64 reserved;
+  acpi_mcfg_csbaa_t csbaas[];
+} __attribute__((packed)) acpi_mcfg_t;
+
 void acpi_init();
 acpi_table_t *acpi_get(char *id);
 bool acpi_check_table(acpi_table_t *table);
