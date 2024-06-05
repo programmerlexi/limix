@@ -18,19 +18,13 @@ _syscall:
   push r13
   push r14
   push r15
-  pushfq
 
   cld
 
-  mov rdi, [rbp-8*1]
-  mov rsi, [rbp-8*6]
-  mov rdx, [rbp-8*5]
-  mov rcx, [rbp-8*4]
-  mov r8, [rbp-8*3]
+  mov rdi, rsp
 
   call syscall
-  
-  popfq
+
   pop r15
   pop r14
   pop r13

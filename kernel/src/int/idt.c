@@ -35,12 +35,7 @@ void panic_init() {
                   0);
 }
 
-struct panic_frame {
-  u64 r15, r14, r13, r12, r11, r10, r9, r8, rdi, rsi, rdx, rcx, rbx, rax, rbp,
-      rip, cs, rflags, rsp;
-};
-
-void panic_handle(struct panic_frame *f) {
+void panic_handle(int_frame_t *f) {
   logf(LOGLEVEL_FATAL, "RAX: 0x%l RBX: 0x%l", f->rax, f->rbx);
   logf(LOGLEVEL_FATAL, "RCX: 0x%l RDX: 0x%l", f->rcx, f->rdx);
   logf(LOGLEVEL_FATAL, "R8:  0x%l R9:  0x%l", f->r8, f->r9);

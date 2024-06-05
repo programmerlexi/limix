@@ -25,6 +25,11 @@ typedef struct {
   u64 addr;
 } __attribute__((packed)) idt_desc_t;
 
+typedef struct {
+  u64 r15, r14, r13, r12, r11, r10, r9, r8, rdi, rsi, rdx, rcx, rbx, rax, rbp,
+      rip, cs, rflags, rsp;
+} int_frame_t;
+
 void idt_init();
 void idt_add_handler(u8 id, void *handler, u8 flags, u8 ist);
 void isr_init();

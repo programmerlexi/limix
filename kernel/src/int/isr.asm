@@ -24,12 +24,9 @@ discard: dq 0
   push r13
   push r14
   push r15
-
-  pushfq
 %endmacro
 
 %macro isr_exit 0
-  popfq
   pop r15
   pop r14
   pop r13
