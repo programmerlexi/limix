@@ -7,6 +7,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#undef DEBUG_MODULE
+#define DEBUG_MODULE "acpi"
+
 static bool initialized = false;
 static bool got_xsdt = false;
 static acpi_xsdt_t *xsdt;
