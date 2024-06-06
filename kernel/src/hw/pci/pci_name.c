@@ -1,4 +1,5 @@
 #include "kernel/hw/pci/pci.h"
+#include "kernel/hw/pcie/pcie.h"
 #include "libk/types.h"
 
 static const char *_device_class_names[] = {
@@ -16,7 +17,7 @@ static const char *_device_class_names[] = {
 static char *_get_vendor_name(u16 id) {
   switch (id) {
   case 0x8086:
-    return "Intel Corp";
+    return "Intel Corp.";
   case 0x1022:
     return "AMD";
   case 0x10DE:
@@ -40,6 +41,7 @@ static const char *_get_device_name(u16 vID, u16 dID) {
     case 0x2930:
       return "SMBus Controller";
     }
+    break;
   case 0x1B36:     // Red Hat, Inc.
     switch (dID) { // QEMU Device range (Sponsored by Red Hat, Inc.)
     case 0x0001:
@@ -73,8 +75,9 @@ static const char *_get_device_name(u16 vID, u16 dID) {
     case 0x0100:
       return "QXL paravirtual graphic card";
     }
+    break;
   }
-  return "";
+  return "-";
 }
 static const char *_mass_storage_subclass_name(u8 scID) {
   switch (scID) {
@@ -251,22 +254,57 @@ static const char *_get_progif_name(u8 cID, u8 scID, u8 prgIF) {
 }
 
 char *pci_get_classname(u8 bus, u8 slot, u8 func) {
-  u8 c = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_CLASS);
+  u8 c;
+  if (pcie_initialized()) {
+    pci_header_t *h = pcie_get_device(bus, slot, func);
+    if (!h)
+      return "-";
+    c = h->class_code;
+  } else {
+    c = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_CLASS);
+  }
   if (c < 0x40)
     return (char *)_device_class_names[c];
   return "-";
 }
 char *pci_get_subclassname(u8 bus, u8 slot, u8 func) {
-  u8 c = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_CLASS);
-  u8 sc = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_CLASS);
+  u8 c, sc;
+  if (pcie_initialized()) {
+    pci_header_t *h = pcie_get_device(bus, slot, func);
+    if (!h)
+      return "-";
+    c = h->class_code;
+    sc = h->subclass;
+  } else {
+    c = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_CLASS);
+    sc = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_CLASS);
+  }
   return (char *)_get_subclass_name(c, sc);
 }
 char *pci_get_device_name(u8 bus, u8 slot, u8 func) {
-  return (char *)_get_device_name(
-      pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_VENDOR),
-      pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_DEVICE));
+  u16 vendor, device;
+  if (pcie_initialized()) {
+    pci_header_t *h = pcie_get_device(bus, slot, func);
+    if (!h)
+      return "-";
+    vendor = h->vendor_id;
+    device = h->device_id;
+  } else {
+    vendor = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_VENDOR);
+    device = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_DEVICE);
+  }
+
+  return (char *)_get_device_name(vendor, device);
 }
 char *pci_get_vendor_name(u8 bus, u8 slot, u8 func) {
-  return (char *)_get_vendor_name(
-      pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_VENDOR));
+  u16 vendor;
+  if (pcie_initialized()) {
+    pci_header_t *h = pcie_get_device(bus, slot, func);
+    if (!h)
+      return "-";
+    vendor = h->vendor_id;
+  } else {
+    vendor = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_VENDOR);
+  }
+  return (char *)_get_vendor_name(vendor);
 }

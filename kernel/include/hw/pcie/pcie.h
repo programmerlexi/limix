@@ -12,3 +12,4 @@ typedef struct pcie_region {
 
 bool pcie_init();
 pci_header_t *pcie_get_device(u8 b, u8 s, u8 f);
+bool pcie_initialized();

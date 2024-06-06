@@ -11,6 +11,7 @@
 
 static u8 region_count;
 static pcie_region_t regions[256];
+static bool initialized = false;
 
 pci_header_t *pcie_get_device(u8 b, u8 s, u8 f) {
   pcie_region_t *r = NULL;
@@ -48,6 +49,7 @@ bool pcie_init() {
     regions[region_count].base = HHDM(mcfg->csbaas[i].base_addr);
     region_count++;
   }
+  initialized = true;
   for (u16 b = 0; b < 256; b++) {
     for (u8 s = 0; s < 32; s++) {
       for (u8 f = 0; f < 8; f++) {
@@ -58,10 +60,13 @@ bool pcie_init() {
           continue;
         if (!dev->device_id || dev->device_id == 0xffff)
           continue;
-        logf(LOGLEVEL_INFO, "Found PCIe device at %u/%u/%u %w %w", (u64)b,
-             (u64)s, (u64)f, (int)dev->vendor_id, (int)dev->device_id);
+        logf(LOGLEVEL_INFO, "PCIe device at %u/%u/%u: %w %w - %s %s", (u64)b,
+             (u64)s, (u64)f, (int)dev->vendor_id, (int)dev->device_id,
+             pci_get_vendor_name(b, s, f), pci_get_device_name(b, s, f));
       }
     }
   }
   return true;
 }
+
+bool pcie_initialized() { return initialized; }
