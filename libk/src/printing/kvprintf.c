@@ -44,6 +44,14 @@ void kvprintf(char *s, va_list args) {
         kprint(numbuf);
         format = false;
         break;
+      case 'w':
+        char numbuf1[5];
+        kmemset(numbuf1, 0, 5);
+        ntos(numbuf1, va_arg(args, int), 16, 4, true, true);
+        numbuf1[4] = 0;
+        kprint(numbuf1);
+        format = false;
+        break;
       case 's':
         kprint(va_arg(args, char *));
         format = false;
