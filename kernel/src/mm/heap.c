@@ -114,7 +114,7 @@ void *kmalloc(usz size) {
       break;
     seg = seg->next;
   }
-  expand_heap((size + sizeof(heapseg_t)) * 2);
+  expand_heap((size + sizeof(heapseg_t)) * 4);
   return kmalloc(size);
 }
 
