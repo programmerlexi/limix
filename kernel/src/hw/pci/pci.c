@@ -1,4 +1,5 @@
 #include "kernel/hw/pci/pci.h"
+#include "kernel/hw/pcie/pcie.h"
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "pci"
@@ -25,6 +26,8 @@ static void _pci_init_bus(u8 b) {
 }
 
 void pci_init() {
+  if (pcie_init())
+    return;
   u8 f;
   u8 b;
   u16 ht = pci_config_read_word(0, 0, 0, PCI_OFFSET_ALL_HEADER_TYPE);
