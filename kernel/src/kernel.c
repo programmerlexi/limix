@@ -4,7 +4,6 @@
 #include "kernel/fs/vfs.h"
 #include "kernel/gfx/drm.h"
 #include "kernel/hw/acpi/acpi.h"
-#include "kernel/hw/ahci/ahci.h"
 #include "kernel/hw/hid/kb/kb.h"
 #include "kernel/hw/hid/kb/poll.h"
 #include "kernel/hw/pci/pci.h"
