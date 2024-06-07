@@ -1,6 +1,7 @@
 #include "kernel/hw/pcie/pcie.h"
 #include "kernel/debug.h"
 #include "kernel/hw/acpi/acpi.h"
+#include "kernel/hw/ahci/ahci.h"
 #include "kernel/hw/pci/pci.h"
 #include "kernel/mm/hhtp.h"
 #include <stdbool.h>
@@ -63,6 +64,15 @@ bool pcie_init() {
         logf(LOGLEVEL_INFO, "PCIe device at %u/%u/%u: %w %w - %s %s", (u64)b,
              (u64)s, (u64)f, (int)dev->vendor_id, (int)dev->device_id,
              pci_get_vendor_name(b, s, f), pci_get_device_name(b, s, f));
+        switch (dev->vendor_id) {
+        case 0x8086:
+          switch (dev->device_id) {
+          case 0x2922:
+            ahci_init((pci_type0_t *)dev);
+            break;
+          }
+          break;
+        }
       }
     }
   }

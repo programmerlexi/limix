@@ -1,3 +1,4 @@
+#include "kernel/kernel.h"
 #include "kernel/config.h"
 #include "kernel/debug.h"
 #include "kernel/fs/devfs.h"
@@ -34,7 +35,7 @@ long long main() {
 
   acpi_init();
   pci_init();
-  ahci_init();
+
   ps2_init();
   kb_init();
   kb_init_polling();
