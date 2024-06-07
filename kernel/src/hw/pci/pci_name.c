@@ -40,6 +40,16 @@ static const char *_get_device_name(u16 vID, u16 dID) {
       return "6 port SATA Controller [AHCI mode]";
     case 0x2930:
       return "SMBus Controller";
+    case 0x10d3:
+      return "82574L Gigabit Network Connection";
+    case 0x2934:
+      return "82801I (ICH9 Family) USB UHCI Controller #1";
+    case 0x2935:
+      return "82801I (ICH9 Family) USB UHCI Controller #2";
+    case 0x2936:
+      return "82801I (ICH9 Family) USB UHCI Controller #3";
+    case 0x293a:
+      return "82801I (ICH9 Family) USB2 EHCI Controller #1";
     }
     break;
   case 0x1B36:     // Red Hat, Inc.
@@ -76,6 +86,11 @@ static const char *_get_device_name(u16 vID, u16 dID) {
       return "QXL paravirtual graphic card";
     }
     break;
+  case 0x1234:
+    switch (dID) {
+    case 0x1111:
+      return "QEMU stdvga";
+    }
   }
   return "-";
 }
