@@ -1,6 +1,7 @@
 #pragma once
 
 #include "libk/types.h"
+#include <stdbool.h>
 
 #define PCI_CONFIG_ADDRESS 0xCF8
 #define PCI_CONFIG_DATA 0xCFC
@@ -72,6 +73,13 @@ typedef struct {
   u8 bist;
 } pci_header_t;
 
+typedef struct {
+  u8 bus;
+  u8 slot;
+  u8 func;
+  bool exists;
+} pci_address_t;
+
 void pci_init();
 u16 pci_config_read_word(u8 bus, u8 slot, u8 func, u8 offset);
 u8 pci_config_read_byte(u8 bus, u8 slot, u8 func, u8 offset);
@@ -80,3 +88,5 @@ char *pci_get_classname(u8 bus, u8 slot, u8 func);
 char *pci_get_subclassname(u8 bus, u8 slot, u8 func);
 char *pci_get_device_name(u8 bus, u8 slot, u8 func);
 char *pci_get_vendor_name(u8 bus, u8 slot, u8 func);
+u16 pci_get_count(u16 vendor, u16 device);
+pci_address_t pci_search(u16 vendor, u16 device, u16 number);
