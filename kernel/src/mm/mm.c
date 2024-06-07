@@ -55,6 +55,8 @@ bool mm_init(struct limine_memmap_response *mmap) {
     if (mmap->entries[i]->type == LIMINE_MEMMAP_USABLE) {
       usable++;
       for (u64 j = 0; j < mmap->entries[i]->length; j += 0x1000) {
+        if ((mmap->entries[i]->base + j) > 0x100000000)
+          break;
         _insert_page((void *)(mmap->entries[i]->base + j));
       }
     }
