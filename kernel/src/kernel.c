@@ -4,6 +4,7 @@
 #include "kernel/fs/vfs.h"
 #include "kernel/gfx/drm.h"
 #include "kernel/hw/acpi/acpi.h"
+#include "kernel/hw/ahci/ahci.h"
 #include "kernel/hw/hid/kb/kb.h"
 #include "kernel/hw/hid/kb/poll.h"
 #include "kernel/hw/pci/pci.h"
@@ -33,6 +34,7 @@ long long main() {
 
   acpi_init();
   pci_init();
+  ahci_init();
   ps2_init();
   kb_init();
   kb_init_polling();
