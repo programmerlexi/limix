@@ -58,6 +58,8 @@
 
 #define PCI_BAR_IO_BASE_ADDR ~3
 
+typedef u32 pci_bar_t;
+
 typedef struct {
   u16 vendor_id;
   u16 device_id;
@@ -72,6 +74,26 @@ typedef struct {
   u8 header_type;
   u8 bist;
 } pci_header_t;
+
+typedef struct {
+  pci_header_t h;
+  pci_bar_t bar0;
+  pci_bar_t bar1;
+  pci_bar_t bar2;
+  pci_bar_t bar3;
+  pci_bar_t bar4;
+  pci_bar_t bar5;
+  u32 card_bus_cis_pointer;
+  u16 subsystem_vendor;
+  u16 subsystem;
+  u32 erom_base;
+  u8 capabilities_pointer;
+  u8 reserved[7];
+  u8 interrupt_line;
+  u8 interrupt_pin;
+  u8 min_grant;
+  u8 max_latency;
+} pci_type0_t;
 
 typedef struct {
   u8 bus;

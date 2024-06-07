@@ -4,6 +4,7 @@
 #include "kernel/fs/vfs.h"
 #include "kernel/gfx/drm.h"
 #include "kernel/hw/acpi/acpi.h"
+#include "kernel/hw/ahci/ahci.h"
 #include "kernel/hw/hid/kb/kb.h"
 #include "kernel/hw/hid/kb/poll.h"
 #include "kernel/hw/pci/pci.h"
@@ -30,6 +31,7 @@ long long main() {
   devfs_bind(vfs_make("dev"));
   devfs_reload();
   drm_register_vfs();
+
   acpi_init();
   pci_init();
   ps2_init();
