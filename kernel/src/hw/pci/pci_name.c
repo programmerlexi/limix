@@ -114,7 +114,7 @@ static const char *_get_device_name(u16 vID, u16 dID) {
     break;
   case 0x10de:
     switch (dID) {
-    case 0x123d:
+    case 0x134d:
       return "GM108M [GeForce 940MX]";
     }
     break;
