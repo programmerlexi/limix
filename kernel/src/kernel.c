@@ -5,11 +5,8 @@
 #include "kernel/fs/vfs.h"
 #include "kernel/gfx/drm.h"
 #include "kernel/hw/acpi/acpi.h"
-#include "kernel/hw/ahci/ahci.h"
 #include "kernel/hw/hid/kb/kb.h"
-#include "kernel/hw/hid/kb/poll.h"
 #include "kernel/hw/pci/pci.h"
-#include "kernel/hw/ps2.h"
 #include "kernel/int/syscall.h"
 #include "kernel/smp.h"
 #include "kernel/task/sched/common.h"
@@ -33,12 +30,10 @@ long long main() {
   devfs_reload();
   drm_register_vfs();
 
+  kb_init();
+
   acpi_init();
   pci_init();
-
-  ps2_init();
-  kb_init();
-  kb_init_polling();
 
   u64 cpus = smp_init();
 
