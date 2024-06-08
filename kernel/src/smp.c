@@ -1,9 +1,11 @@
 #include "kernel/smp.h"
+#include "kernel/asm_inline.h"
 #include "kernel/boot/requests.h"
 #include "kernel/debug.h"
 #include "kernel/gdt/gdt.h"
 #include "kernel/int/idt.h"
 #include "kernel/io/pio.h"
+#include "kernel/task/sched/common.h"
 #include "kernel/task/sched/local.h"
 #include "limine.h"
 
@@ -11,12 +13,14 @@
 #define DEBUG_MODULE "smp"
 
 void unlock_lschedi();
+void core_main();
 
 void _smp_start(struct limine_smp_info *cpu_info) {
-  logf(LOGLEVEL_DEBUG, "[CPU %u] Received startup", cpu_info->processor_id);
+  logf(LOGLEVEL_DEBUG, "[CPU %u] Received startup", get_processor());
   gdt_init();
   idt_load();
-  local_scheduler_t *ls = sched_local_init(cpu_info->processor_id);
+  sched_create(core_main, get_processor());
+  local_scheduler_t *ls = sched_local_init(get_processor());
   while (true) {
     sched_local_tick(ls);
   }

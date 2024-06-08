@@ -1,4 +1,5 @@
 #include "kernel/kernel.h"
+#include "kernel/asm_inline.h"
 #include "kernel/config.h"
 #include "kernel/debug.h"
 #include "kernel/fs/devfs.h"
@@ -35,10 +36,9 @@ long long main() {
   acpi_init();
   pci_init();
 
-  u64 cpus = smp_init();
+  smp_init();
 
-  for (u64 i = 0; i < cpus; i++)
-    sched_create(core_main, i);
+  sched_create(core_main, get_processor());
 
   ls = sched_local_init(0);
 
