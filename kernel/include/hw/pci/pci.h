@@ -108,6 +108,7 @@ u8 pci_config_read_byte(u8 bus, u8 slot, u8 func, u8 offset);
 u16 pci_check_vendor(u8 bus, u8 slot);
 char *pci_get_classname(u8 bus, u8 slot, u8 func);
 char *pci_get_subclassname(u8 bus, u8 slot, u8 func);
+char *pci_get_typename(u8 bus, u8 slot, u8 func);
 char *pci_get_device_name(u8 bus, u8 slot, u8 func);
 char *pci_get_vendor_name(u8 bus, u8 slot, u8 func);
 u16 pci_get_count(u16 vendor, u16 device);

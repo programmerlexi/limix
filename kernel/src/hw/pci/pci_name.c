@@ -1,3 +1,4 @@
+#include "kernel/hw/pci/codes.h"
 #include "kernel/hw/pci/pci.h"
 #include "kernel/hw/pcie/pcie.h"
 #include "libk/types.h"
@@ -152,15 +153,15 @@ static const char *_serial_bus_subclass_name(u8 scID) {
   case 0x00:
     return "FireWire (IEEE 1394) Controller";
   case 0x01:
-    return "ACCESS Bus";
+    return "ACCESS Bus Controller";
   case 0x02:
-    return "SSA";
+    return "SSA Controller";
   case 0x03:
     return "USB Controller";
   case 0x04:
     return "Fibre Channel";
   case 0x05:
-    return "SMBus";
+    return "SMBus Controller";
   case 0x06:
     return "Infiniband";
   case 0x07:
@@ -349,4 +350,56 @@ char *pci_get_vendor_name(u8 bus, u8 slot, u8 func) {
     vendor = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_VENDOR);
   }
   return (char *)_get_vendor_name(vendor);
+}
+
+char *pci_get_typename(u8 bus, u8 slot, u8 func) {
+  u8 c, sc, pi;
+  if (pcie_initialized()) {
+    pci_header_t *h = pcie_get_device(bus, slot, func);
+    if (!h)
+      return "-";
+    c = h->class_code;
+    sc = h->subclass;
+    pi = h->prog_if;
+  } else {
+    c = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_CLASS);
+    sc = pci_config_read_word(bus, slot, func, PCI_OFFSET_ALL_CLASS);
+    pi = pci_config_read_byte(bus, slot, func, PCI_OFFSET_ALL_PROG_IF);
+  }
+  switch (c) {
+  case PCI_CLASS_MASS_STORAGE:
+    switch (sc) {
+    case PCI_SUBCLASS_MASS_STORAGE_SATA:
+      static char *ms_sata_pis[] = {"SATA Controller [Vendor-specific]",
+                                    "SATA Controller [AHCI]",
+                                    "SATA Controller [Serial Storage Bus]"};
+      return ms_sata_pis[pi];
+      break;
+    default:
+      return "SATA Controller";
+    }
+    break;
+  case PCI_CLASS_DISPLAY:
+    switch (sc) {
+    case PCI_SUBCLASS_DISPLAY_VGA:
+      static char *disp_vga_pis[] = {"VGA Controller", "8514-compatible VGA"};
+      return disp_vga_pis[pi];
+    }
+    return pci_get_subclassname(bus, slot, func);
+    break;
+  case PCI_CLASS_BUS:
+    switch (sc) {
+    case PCI_SUBCLASS_BUS_USB:
+      static char *pis_usb[] = {"USB 1.0 (UHCI) Controller",
+                                "USB 1.0 (OHCI) Controller",
+                                "USB 2.0 Controller", "USB 3.0 Controller"};
+      pi >>= 4;
+      if (pi > 3)
+        return (char *)_get_progif_name(c, sc, pi << 4);
+      return pis_usb[pi];
+    default:
+      return (char *)_get_subclass_name(c, sc);
+    }
+  }
+  return pci_get_classname(bus, slot, func);
 }
