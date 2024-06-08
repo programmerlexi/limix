@@ -23,12 +23,12 @@ static char *_logcolors[] = {TERMCODE(TC_FG_BLACK) TERMCODE(TC_BOLD),
 void set_loglevel(loglevel_t ll) { _current_loglevel = ll; }
 void set_serial_loglevel(loglevel_t ll) { _current_serial_loglevel = ll; }
 void _log(loglevel_t ll, char *s) {
+  if (ll >= _current_serial_loglevel) {
+    serial_writes(s);
+  }
   if (ll >= _current_loglevel) {
     kprint(_logcolors[ll]);
     kprint(s);
-  }
-  if (ll >= _current_serial_loglevel) {
-    serial_writes(s);
   }
 }
 void _logf(loglevel_t ll, char *s, ...) {
