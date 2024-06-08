@@ -46,7 +46,7 @@ void vt_init(u64 attached_to_drm) {
   _state.gr.bg_index = 0;
   _state.gr.fg_index = 7;
   _avail = true;
-  // vt_clear();
+  vt_clear();
 }
 void vt_clear() {
   lock_vt;
