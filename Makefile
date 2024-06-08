@@ -1,4 +1,4 @@
-COMMON_QEMU_FLAGS=-machine q35 -m 4G -smp 4 -serial stdio -usb -device qemu-xhci
+COMMON_QEMU_FLAGS=-machine q35 -m 4G -smp 8 -serial stdio -usb -device qemu-xhci
 
 INCLUDES=$(shell find kernel/include -type f) $(shell find libk/include -type f) limine/limine.h
 
