@@ -1,7 +1,9 @@
 #include "kernel/mm/mm.h"
+#include "kernel/debug.h"
+#include "kernel/kernel.h"
 #include "kernel/mm/hhtp.h"
+#include "libk/ipc/spinlock.h"
 #include "libk/types.h"
-#include "libk/utils/memory/memory.h"
 #include "libk/utils/memory/safety.h"
 #include "limine.h"
 #include <stdbool.h>
@@ -9,44 +11,27 @@
 
 static memseg_t *_first = NULL;
 static memseg_t *_last = NULL;
+static u32 page_lock = 0;
 
-static void _insert_page(void *page) {
-  nullsafe(page);
-  memseg_t *seg = (memseg_t *)HHDM(page);
-  if (_first == NULL) {
-    seg->prev = NULL;
-    seg->next = NULL;
-    _first = seg;
+#define lock spinlock(&page_lock);
+#define unlock spinunlock(&page_lock);
+
+static void _mm_combine_forward(memseg_t *seg) {
+  nullsafe(seg);
+  nullsafe(seg->next);
+  if ((uintptr_t)(seg->next) != ((uintptr_t)seg + (seg->pages << 12)))
+    return;
+  if (seg->next == _last)
     _last = seg;
-  } else if ((uintptr_t)seg < (uintptr_t)_first) {
-    seg->next = _first;
-    _first->prev = seg;
-    seg->prev = NULL;
-    _first = seg;
-  } else if ((uintptr_t)seg > (uintptr_t)_last) {
-    seg->next = NULL;
-    seg->prev = _last;
-    _last->next = seg;
-    _last = seg;
-  } else {
-    memseg_t *c = _first->next;
-    memseg_t *p = _first;
-    while (c != NULL) {
-      if ((uintptr_t)p == (uintptr_t)seg)
-        return;
-      if ((uintptr_t)p < (uintptr_t)seg) {
-        if ((uintptr_t)c > (uintptr_t)seg) {
-          p->next = seg;
-          c->prev = seg;
-          seg->prev = p;
-          seg->next = c;
-          break;
-        }
-      }
-      p = c;
-      c = c->next;
-    }
-  }
+  if (seg->next->next != NULL)
+    seg->next->next->prev = seg;
+  seg->pages += seg->next->pages;
+  seg->next = seg->next->next;
+}
+
+static void _mm_combine_backward(memseg_t *seg) {
+  nullsafe(seg);
+  _mm_combine_forward(seg->prev);
 }
 
 bool mm_init(struct limine_memmap_response *mmap) {
@@ -54,65 +39,125 @@ bool mm_init(struct limine_memmap_response *mmap) {
   for (u64 i = 0; i < mmap->entry_count; i++) {
     if (mmap->entries[i]->type == LIMINE_MEMMAP_USABLE) {
       usable++;
-      for (u64 j = 0; j < mmap->entries[i]->length; j += 0x1000) {
-        if ((mmap->entries[i]->base + j) > 0x100000000)
-          break;
-        _insert_page((void *)(mmap->entries[i]->base + j));
-      }
+      free_page_block((void *)HHDM(mmap->entries[i]->base),
+                      mmap->entries[i]->length >> 12);
     }
   }
   return usable != 0;
 }
 
-void *request_page() {
-  if (_first == NULL)
-    return NULL;
-  memseg_t *s = _first;
-  if (_last == _first) {
-    _last = NULL;
-  }
-  _first = _first->next;
-  kmemset(s, 0, 0x1000);
-  return s;
-}
+void *request_page() { return request_page_block(1); }
 
 void *request_page_block(usz n) {
-  if (_first == NULL)
+  if (!PHY(_first)) {
+    kernel_panic_error("No memory");
     return NULL;
-  usz cl = 0;
-  memseg_t *c = _first->next;
-  memseg_t *p = _first;
-  memseg_t *s = p;
-  while (cl != n && c != NULL) {
-    if (((uintptr_t)p + 0x1000) != (uintptr_t)c) {
-      cl = 0;
-      s = c;
-    }
-    p = c;
-    c = c->next;
-    cl++;
   }
-  if (cl != n)
-    return NULL;
-  s->next = c;
-  c->prev = s;
-  if (s == _first)
-    _first = c;
-  if (s == _last)
-    _last = s->prev;
-  kmemset(s, 0, 0x1000 * n);
-  return s;
+
+  lock;
+
+  memseg_t *s = _first;
+  while (PHY(s)) {
+    if (s->pages >= n) {
+      if (s->pages > n) {
+        memseg_t *ns = (memseg_t *)((uptr)s + (n << 12));
+        ns->prev = s->prev;
+        ns->next = s->next;
+        ns->pages = s->pages - n;
+        if (ns->prev)
+          ns->prev->next = ns;
+        if (ns->next)
+          ns->next->prev = ns;
+        if (s == _last)
+          _last = ns;
+        if (s == _first)
+          _first = ns;
+        unlock;
+        return s;
+      }
+      if (s->prev)
+        s->prev->next = s->next;
+      if (s->next)
+        s->next->prev = s->prev;
+      if (s == _last)
+        _last = s->prev;
+      if (s == _first)
+        _first = s->next;
+      unlock;
+      return s;
+    }
+    s = s->next;
+  }
+  kernel_panic_error("Out of memory");
+  return NULL;
 }
 
-void free_page(void *p) {
-  nullsafe(p);
-  kmemset(p, 0, 0x1000);
-  _insert_page(p);
-}
+void free_page(void *p) { free_page_block(p, 1); }
 
 void free_page_block(void *p, usz n) {
   nullsafe(p);
-  for (usz i = 0; i < n; i++) {
-    free_page((void *)((uintptr_t)p + n * 0x1000));
+  nullsafe(n);
+  lock;
+  if (!_first) {
+    _first = p;
+    _first->next = NULL;
+    _first->prev = NULL;
+    _first->pages = n;
+    unlock;
+    return;
   }
+  uptr is = (uptr)p;
+  uptr ie = (uptr)p + (n << 12);
+  memseg_t *np = NULL;
+  memseg_t *nn = NULL;
+  memseg_t *s = _first;
+  while (s) {
+    uptr ss = (uptr)s;
+    uptr se = (uptr)s + (s->pages << 12);
+    bool skip = false;
+    if (is >= ss && ie <= se) {
+      unlock;
+      return; // Block is completely inside other block
+    }
+    if (is >= ss && is <= se) { // Block is partially inside other block
+      is = se;
+      if (ie <= is) {
+        unlock;
+        return;
+      }
+    }
+    if (is <= ss) {
+      if (ie >= se) { // Other block is inside block
+        if (s->prev)
+          s->prev->next = s->next;
+        if (s->next)
+          s->next->prev = s->prev;
+        skip = true;
+      } else { // Block partially inside other block
+        ie = ss;
+      }
+    }
+    if (!skip) {
+      if (ie <= ss)
+        nn = s;
+      if (is >= se)
+        np = s;
+    }
+    s = s->next;
+  }
+  memseg_t *ns = (memseg_t *)is;
+  ns->pages = (ie - is) >> 12;
+  ns->next = nn;
+  ns->prev = np;
+  if (nn)
+    nn->prev = ns;
+  if (np)
+    np->next = ns;
+  if (is > (uptr)_last)
+    _last = ns;
+  if (is < (uptr)_first)
+    _first = ns;
+  _mm_combine_forward(ns);
+  _mm_combine_backward(ns);
+  unlock;
 }

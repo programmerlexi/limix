@@ -6,6 +6,7 @@
 typedef struct memseg {
   struct memseg *prev;
   struct memseg *next;
+  usz pages;
 } memseg_t;
 
 bool mm_init(struct limine_memmap_response *);
