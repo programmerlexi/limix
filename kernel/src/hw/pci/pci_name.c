@@ -24,6 +24,8 @@ static char *_get_vendor_name(u16 id) {
     return "NVIDIA Corporation";
   case 0x1B36:
     return "Red Hat, Inc.";
+  case 0x10EC:
+    return "Realtek Semiconductor Co., Ltd.";
   }
   return "-";
 }
@@ -50,6 +52,18 @@ static const char *_get_device_name(u16 vID, u16 dID) {
       return "82801I (ICH9 Family) USB UHCI Controller #3";
     case 0x293a:
       return "82801I (ICH9 Family) USB2 EHCI Controller #1";
+    case 0x1910:
+      return "Xeon E3-1200 v5/E3-1500 v5/6th Gen Core Processor Host "
+             "Bridge/DRAM Registers";
+    case 0x1901:
+      return "6th-10th Gen Core Processor PCIe Controller (x16)";
+    case 0x1909:
+      return "Xeon E3-1200 v5/E3-1500 v5/6th Gen Core Processor PCIe "
+             "Controller (x4)";
+    case 0x191b:
+      return "HD Graphics 530";
+    case 0xa12f:
+      return "100 Series/C230 Series Chipset Family USB 3.0 xHCI Controller";
     }
     break;
   case 0x1B36:     // Red Hat, Inc.
@@ -91,6 +105,19 @@ static const char *_get_device_name(u16 vID, u16 dID) {
     case 0x1111:
       return "QEMU stdvga";
     }
+    break;
+  case 0x10ec:
+    switch (dID) {
+    case 0x522a:
+      return "RTS522A PCI Express Card Reader";
+    }
+    break;
+  case 0x10de:
+    switch (dID) {
+    case 0x123d:
+      return "GM108M [GeForce 940MX]";
+    }
+    break;
   }
   return "-";
 }
