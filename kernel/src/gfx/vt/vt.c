@@ -239,6 +239,10 @@ void kprintc(char c) {
     case BEL:
       termcode = true;
       break;
+    case '\t':
+      for (i32 i = 0; i < 8; i++)
+        vt_advance_x();
+      break;
     default:
       _dirty_start = min(_vt_y * _vt_width + _vt_x, _dirty_start);
       _dirty_end = max(_vt_y * _vt_width + _vt_x, _dirty_end);
