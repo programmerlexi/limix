@@ -25,7 +25,7 @@ static const char *_device_class_names[] = {
 static char *_get_vendor_name(u16 id) {
   switch (id) {
   case 0x8086:
-    return "Intel Corp.";
+    return "Intel Corporation";
   case 0x1022:
     return "AMD";
   case 0x10DE:
