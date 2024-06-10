@@ -18,7 +18,7 @@ $(eval $(call DEFAULT_VAR,CC,$(DEFAULT_CC)))
 override DEFAULT_LD := x86_64-elf-ld
 $(eval $(call DEFAULT_VAR,LD,$(DEFAULT_LD)))
  
-override DEFAULT_CFLAGS := -g -O2 -pipe
+override DEFAULT_CFLAGS := -g -Os -pipe
 $(eval $(call DEFAULT_VAR,CFLAGS,$(DEFAULT_CFLAGS)))
  
 override DEFAULT_CPPFLAGS :=
