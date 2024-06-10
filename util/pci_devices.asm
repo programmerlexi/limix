@@ -1,12 +1,4 @@
 [bits 64]
-%macro device 3
-device_%+%1+%+%2:
-  dw %1
-  dw %2
-  dw .end-device_%+%1+%+%2
-  db %3
-  .end:
-%endmacro
 
 device_80862922:
 .start:
