@@ -22,18 +22,40 @@ static const char *_device_class_names[] = {
     "Encryption Controller",  "Signal Processing Controller",
     "Processing Accelerator", "Non Essential Instrumentation"};
 
+struct pci_vendor_register {
+  u16 vID;
+  u16 size;
+  char name[];
+} __attribute__((packed));
+
+static struct limine_file *pci_vendor_registry = NULL;
+static bool found_vendor_registry = false;
+
 static char *_get_vendor_name(u16 id) {
-  switch (id) {
-  case 0x8086:
-    return "Intel Corporation";
-  case 0x1022:
-    return "AMD";
-  case 0x10DE:
-    return "NVIDIA Corporation";
-  case 0x1B36:
-    return "Red Hat, Inc.";
-  case 0x10EC:
-    return "Realtek Semiconductor Co., Ltd.";
+  if (!found_vendor_registry) {
+    for (u64 i = 0; i < g_module_request.response->module_count; i++) {
+      struct limine_file *mod = g_module_request.response->modules[i];
+      if (kstrncmp("pci_vendors", mod->cmdline, 11)) {
+        found_vendor_registry = true;
+        pci_vendor_registry = mod;
+        break;
+      }
+    }
+    if (!found_vendor_registry)
+      return "-";
+  }
+  struct pci_vendor_register *registry =
+      (void *)HHDM(pci_vendor_registry->address);
+  u64 offset = 0;
+  while (offset < pci_vendor_registry->size) {
+    if (registry->vID == id) {
+      u16 strs = registry->size - 4;
+      char *ns = kmalloc(strs + 1);
+      kmemcpy(ns, &registry->name, strs);
+      return ns;
+    }
+    offset += registry->size;
+    registry = (void *)((uptr)registry + registry->size);
   }
   return "-";
 }
@@ -45,25 +67,26 @@ struct pci_device_register {
   char name[];
 } __attribute__((packed));
 
-static struct limine_file *pci_registry = NULL;
-static bool found = false;
+static struct limine_file *pci_device_registry = NULL;
+static bool found_device_registry = false;
 
 static const char *_get_device_name(u16 vID, u16 dID) {
-  if (!found) {
+  if (!found_device_registry) {
     for (u64 i = 0; i < g_module_request.response->module_count; i++) {
       struct limine_file *mod = g_module_request.response->modules[i];
       if (kstrncmp("pci_devices", mod->cmdline, 11)) {
-        found = true;
-        pci_registry = mod;
+        found_device_registry = true;
+        pci_device_registry = mod;
         break;
       }
     }
-    if (!found)
+    if (!found_device_registry)
       return "-";
   }
-  struct pci_device_register *registry = (void *)HHDM(pci_registry->address);
+  struct pci_device_register *registry =
+      (void *)HHDM(pci_device_registry->address);
   u64 offset = 0;
-  while (offset < pci_registry->size) {
+  while (offset < pci_device_registry->size) {
     if (registry->vID == vID) {
       if (registry->dID == dID) {
         u16 strs = registry->size - 6;

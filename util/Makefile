@@ -14,5 +14,11 @@ bin/pci_devices.reg: pci_devices.asm generate_device_db.py pci.ids Makefile
 	@nasm -f bin -o bin/pci_devices_w.reg pci_devices.asm
 	@cat bin/pci_devices_gen.reg bin/pci_devices_w.reg > bin/pci_devices.reg
 
+bin/pci_vendors.reg: generate_vendor_db.py pci.ids Makefile
+	@echo "Creating PCI vendor table"
+	@mkdir -p bin
+	@python generate_vendor_db.py pci.ids > pci_vendors.asm
+	@nasm -f bin -o bin/pci_vendors.reg pci_vendors.asm
+
 clean:
 	@rm -rf bin

@@ -13,13 +13,13 @@ for line in lines:
     if len(line.strip()) == 0:
         continue
     if line.startswith("\t") and not line.startswith("\t"*2):
-        dID = line.strip().split(" ")[0]
-        dN = " ".join(line.strip().split(" ")[2:]).replace("\"", "'")
-        print("device_" + vID + dID + ":")
-        print(".start:")
-        print("dw 0x" + vID + ", 0x" + dID)
-        print("dw .end-.start")
-        print("db \""+dN+"\"")
-        print(".end:")
+        continue
     elif not line.startswith("\t"*2):
         vID = line.strip().split(" ")[0]
+        vN = " ".join(line.strip().split(" ")[2:]).replace("\"", "'")
+        print("vendor_" + vID + ":")
+        print(".start:")
+        print("dw 0x" + vID)
+        print("dw .end-.start")
+        print("db \""+vN+"\"")
+        print(".end:")
