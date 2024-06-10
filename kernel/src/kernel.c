@@ -1,4 +1,3 @@
-#include "kernel/kernel.h"
 #include "kernel/asm_inline.h"
 #include "kernel/config.h"
 #include "kernel/debug.h"
