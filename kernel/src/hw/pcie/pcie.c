@@ -6,6 +6,7 @@
 #include "kernel/hw/pci/codes.h"
 #include "kernel/hw/pci/pci.h"
 #include "kernel/mm/hhtp.h"
+#include "libk/printing.h"
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -63,13 +64,14 @@ bool pcie_init() {
           continue;
         if (!dev->device_id || dev->device_id == 0xffff)
           continue;
-        logf(LOGLEVEL_INFO,
-             "PCIe device at %u/%u/%u:\n\r\t%w %w "
-             "- " TERMCODE(TC_FG_PURPLE)
-                 TERMCODE(TC_BOLD) "%s " TERMCODE(TC_FG_GREEN)
-                     TERMCODE(TC_DIM) "%s",
-             (u64)b, (u64)s, (u64)f, (int)dev->vendor_id, (int)dev->device_id,
-             pci_get_vendor_name(b, s, f), pci_get_device_name(b, s, f));
+        kprintf(
+            "PCIe device at " TERMCODE(TC_DIM) "%u/%u/%u: " TERMCODE(TC_NO_DIM)
+                TERMCODE(TC_BOLD) TERMCODE(TC_FG_BLUE) "%w %w " TERMCODE(
+                    TC_NO_BOLD) "- " TERMCODE(TC_FG_PURPLE)
+                    TERMCODE(TC_BOLD) "%s " TERMCODE(TC_FG_GREEN)
+                        TERMCODE(TC_DIM) "%s\n\r" TERMCODE(TC_RESET),
+            (u64)b, (u64)s, (u64)f, (int)dev->vendor_id, (int)dev->device_id,
+            pci_get_vendor_name(b, s, f), pci_get_device_name(b, s, f));
         switch (dev->class_code) {
         case PCI_CLASS_MASS_STORAGE:
           switch (dev->subclass) {
