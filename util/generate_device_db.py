@@ -12,7 +12,7 @@ for line in lines:
         break
     if line.startswith("\t") and not line.startswith("\t"*2):
         dID = line.strip().split(" ")[0]
-        dN = line.strip().split(" ")[2]
+        dN = " ".join(line.strip().split(" ")[2:]).replace("\"", "'")
         print("device_" + vID + dID + ":")
         print(".start:")
         print("dw 0x" + vID + ", 0x" + dID)
