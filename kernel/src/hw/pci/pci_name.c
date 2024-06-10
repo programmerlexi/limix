@@ -1,7 +1,14 @@
+#include "kernel/boot/requests.h"
 #include "kernel/hw/pci/codes.h"
 #include "kernel/hw/pci/pci.h"
 #include "kernel/hw/pcie/pcie.h"
+#include "kernel/mm/heap.h"
+#include "kernel/mm/hhtp.h"
 #include "libk/types.h"
+#include "libk/utils/memory/memory.h"
+#include "libk/utils/strings/strings.h"
+#include "limine.h"
+#include <stddef.h>
 
 static const char *_device_class_names[] = {
     "Unclassified",           "Mass Storage Controller",
@@ -31,97 +38,46 @@ static char *_get_vendor_name(u16 id) {
   return "-";
 }
 
+struct pci_device_register {
+  u16 vID;
+  u16 dID;
+  u16 size;
+  char name[];
+} __attribute__((packed));
+
+static struct limine_file *pci_registry = NULL;
+static bool found = false;
+
 static const char *_get_device_name(u16 vID, u16 dID) {
-  switch (vID) {
-  case 0x8086: // Intel
-    switch (dID) {
-    case 0x29C0:
-      return "Express DRAM Controller";
-    case 0x2918:
-      return "LPC Interface Controller";
-    case 0x2922:
-      return "6 port SATA Controller [AHCI mode]";
-    case 0x2930:
-      return "SMBus Controller";
-    case 0x10d3:
-      return "82574L Gigabit Network Connection";
-    case 0x2934:
-      return "82801I (ICH9 Family) USB UHCI Controller #1";
-    case 0x2935:
-      return "82801I (ICH9 Family) USB UHCI Controller #2";
-    case 0x2936:
-      return "82801I (ICH9 Family) USB UHCI Controller #3";
-    case 0x293a:
-      return "82801I (ICH9 Family) USB2 EHCI Controller #1";
-    case 0x1910:
-      return "Xeon E3-1200 v5/E3-1500 v5/6th Gen Core Processor Host "
-             "Bridge/DRAM Registers";
-    case 0x1901:
-      return "6th-10th Gen Core Processor PCIe Controller (x16)";
-    case 0x1909:
-      return "Xeon E3-1200 v5/E3-1500 v5/6th Gen Core Processor PCIe "
-             "Controller (x4)";
-    case 0x191b:
-      return "HD Graphics 530";
-    case 0xa12f:
-      return "100 Series/C230 Series Chipset Family USB 3.0 xHCI Controller";
+  if (!found) {
+    for (u64 i = 0; i < g_module_request.response->module_count; i++) {
+      struct limine_file *mod = g_module_request.response->modules[i];
+      if (kstrncmp("pci_devices", mod->cmdline, 11)) {
+        found = true;
+        pci_registry = mod;
+        break;
+      }
     }
-    break;
-  case 0x1B36:     // Red Hat, Inc.
-    switch (dID) { // QEMU Device range (Sponsored by Red Hat, Inc.)
-    case 0x0001:
-      return "QEMU PCI-PCI Bridge";
-    case 0x0002:
-      return "QEMU PCI 16550A Adapter";
-    case 0x0003:
-      return "QEMU PCI Dual-Port 16550A Adapter";
-    case 0x0004:
-      return "QEMU PCI Quad-Port 16550A Adapter";
-    case 0x0005:
-      return "QEMU PCI Test Device";
-    case 0x0006:
-      return "PCI Rocker Ethernet switch device";
-    case 0x0007:
-      return "PCI SD Card Host Controller Interface";
-    case 0x0008:
-      return "QEMU PCIe Host bridge";
-    case 0x0009:
-      return "QEMU PCI Expander bridge";
-    case 0x000A:
-      return "PCI-PCI bridge (multiseat)";
-    case 0x000B:
-      return "QEMU PCIe Expander bridge";
-    case 0x000C:
-      return "QEMU PCIe Root port";
-    case 0x000D:
-      return "QEMU XHCI Host Controller";
-    case 0x0010:
-      return "QEMU NVM Express Controller";
-    case 0x0100:
-      return "QXL paravirtual graphic card";
+    if (!found)
+      return "-";
+  }
+  struct pci_device_register *registry = (void *)HHDM(pci_registry->address);
+  u64 offset = 0;
+  while (offset < pci_registry->size) {
+    if (registry->vID == vID) {
+      if (registry->dID == dID) {
+        u16 strs = registry->size - 6;
+        char *ns = kmalloc(strs + 1);
+        kmemcpy(ns, &registry->name, strs);
+        return ns;
+      }
     }
-    break;
-  case 0x1234:
-    switch (dID) {
-    case 0x1111:
-      return "QEMU stdvga";
-    }
-    break;
-  case 0x10ec:
-    switch (dID) {
-    case 0x522a:
-      return "RTS522A PCI Express Card Reader";
-    }
-    break;
-  case 0x10de:
-    switch (dID) {
-    case 0x134d:
-      return "GM108M [GeForce 940MX]";
-    }
-    break;
+    offset += registry->size;
+    registry = (void *)((uptr)registry + registry->size);
   }
   return "-";
 }
+
 static const char *_mass_storage_subclass_name(u8 scID) {
   switch (scID) {
   case 0x00:

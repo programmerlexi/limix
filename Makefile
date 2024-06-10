@@ -23,7 +23,7 @@ kernel: libk include
 	@make -j$(JOBS) -C kernel
 
 util:
-	@make -j $(JOBS) -C util bin/font.lime
+	@make -j $(JOBS) -C util bin/font.lime bin/pci_devices.reg
 
 base: kernel util
 
@@ -39,7 +39,7 @@ image.hdd: base limine
 	@./limine/limine bios-install image.hdd
 	@mformat -i image.hdd@@1M
 	@mmd -i image.hdd@@1M ::/boot
-	@mcopy -i image.hdd@@1M kernel/bin/limix.gz util/bin/font.lime ::/boot
+	@mcopy -i image.hdd@@1M kernel/bin/limix.gz util/bin/font.lime util/bin/pci_devices.reg ::/boot
 	@mmd -i image.hdd@@1M ::/boot/limine
 	@mcopy -i image.hdd@@1M boot/limine.cfg limine/limine-bios.sys ::/boot/limine
 	@mmd -i image.hdd@@1M ::/EFI
@@ -51,7 +51,7 @@ image.iso: base limine
 	@echo "Making image.iso"
 	@mkdir -p iso_root
 	@mkdir -p iso_root/boot
-	@cp -v kernel/bin/limix.gz util/bin/font.lime iso_root/boot/
+	@cp -v kernel/bin/limix.gz util/bin/font.lime util/bin/pci_devices.reg iso_root/boot/
 	@mkdir -p iso_root/boot/limine
 	@cp -v boot/limine.cfg limine/limine-bios.sys limine/limine-bios-cd.bin \
 		limine/limine-uefi-cd.bin iso_root/boot/limine/
