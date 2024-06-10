@@ -11,8 +11,10 @@ typedef struct {
   u32 *framebuffer;
   u64 width;
   u64 height;
+  u8 bpp;
   u8 flags;
   u32 lock;
+  u64 pitch;
 } drm_t;
 
 typedef u64 drm_number_t;

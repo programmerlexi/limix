@@ -32,9 +32,11 @@ void drm_init() {
   for (i32 i = 0; i < MAX_DRMS; i++) {
     _drms[i].width = g_fb->width;
     _drms[i].height = g_fb->height;
-    _drms[i].framebuffer = (u32 *)request_page_block(
-        ((g_fb->width * g_fb->height * 4) + 4095) / 4096);
+    _drms[i].framebuffer =
+        (u32 *)request_page_block(((g_fb->width * g_fb->pitch) + 4095) / 4096);
     _drms[i].flags = 0;
+    _drms[i].bpp = g_fb->bpp;
+    _drms[i].pitch = g_fb->pitch;
     if (_drms[i].framebuffer == NULL) {
       kernel_panic_error("DRM init failed");
     }
@@ -43,13 +45,13 @@ void drm_init() {
 }
 static void _drm_sync_real() {
   drm_t ad = _drms[_active_drm];
-  kmemcpy(g_fb->address, ad.framebuffer, ad.width * ad.height * 4);
+  kmemcpy(g_fb->address, ad.framebuffer, ad.pitch * ad.height);
 }
 void drm_switch(u64 drm) {
   if (drm >= MAX_DRMS)
     return;
   kmemcpy(_drms[_active_drm].framebuffer, g_fb->address,
-          _drms[_active_drm].width * _drms[_active_drm].height * 4);
+          _drms[_active_drm].pitch * _drms[_active_drm].height);
   spinlock(&_drm_sys_lock);
   _active_drm = drm;
   _drm_sync_real();
@@ -74,10 +76,12 @@ void drm_plot(u64 drm, u64 x, u64 y, u32 c) {
 #else
   if (_active_drm == drm) {
     spinlock(&_drm_sys_lock);
-    ((u32 *)g_fb->address)[_drms[drm].width * y + x] = c;
+    *(u32 *)((uptr)g_fb->address +
+             (_drms[drm].pitch * y + x * _drms[drm].bpp / 8)) = c;
     spinunlock(&_drm_sys_lock);
   } else
-    _drms[drm].framebuffer[_drms[drm].width * y + x] = c;
+    *(u32 *)((uptr)_drms[drm].framebuffer +
+             (_drms[drm].pitch * y + x * _drms[drm].bpp / 8)) = c;
 #endif
   spinunlock(&_drms[drm].lock);
 }
@@ -179,7 +183,8 @@ void drm_fill_rel_rect(u64 drm, u64 x0, u64 y0, u64 w, u64 h, u32 c) {
 }
 void drm_clear(u64 drm) {
   spinlock(&_drm_sys_lock);
-  kmemset(_drms[drm].framebuffer, 0, _drms[drm].width * _drms[drm].height * 4);
+  kmemset(_drms[drm].framebuffer, 0,
+          _drms[drm].width * _drms[drm].height * _drms[drm].bpp / 8);
   spinunlock(&_drm_sys_lock);
   drm_sync();
 }
