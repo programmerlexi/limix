@@ -7,6 +7,7 @@ kernel/linker.map
 libk/obj/
 libk/bin/
 util/bin/
+util/pci_devices_gen.asm
 /include
 image.*
 compile_commands.json
