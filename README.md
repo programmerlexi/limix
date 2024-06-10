@@ -1,3 +1,3 @@
 # limix
 
-A very basic kernel
+A basic kernel
