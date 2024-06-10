@@ -8,6 +8,7 @@ libk/obj/
 libk/bin/
 util/bin/
 util/pci_devices_gen.asm
+util/pci.ids
 /include
 image.*
 compile_commands.json
