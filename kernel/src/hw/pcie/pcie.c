@@ -62,8 +62,8 @@ bool pcie_init() {
           continue;
         if (!dev->device_id || dev->device_id == 0xffff)
           continue;
-        logf(LOGLEVEL_INFO, "PCIe device at %u/%u/%u: %w %w - %s %s", (u64)b,
-             (u64)s, (u64)f, (int)dev->vendor_id, (int)dev->device_id,
+        logf(LOGLEVEL_INFO, "PCIe device at %u/%u/%u:\n\r\t%w %w - %s %s",
+             (u64)b, (u64)s, (u64)f, (int)dev->vendor_id, (int)dev->device_id,
              pci_get_vendor_name(b, s, f), pci_get_device_name(b, s, f));
         switch (dev->class_code) {
         case PCI_CLASS_MASS_STORAGE:
