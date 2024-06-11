@@ -1,5 +1,6 @@
 #include "kernel/hw/ahci/ahci.h"
 #include "kernel/debug.h"
+#include "kernel/hw/ide/ide.h"
 #include "kernel/hw/pci/pci.h"
 #include "kernel/io/pio.h"
 #include "kernel/mm/heap.h"
@@ -18,9 +19,15 @@ ahci_t *ahci_init(pci_type0_t *h) {
       (ahci->ahci_device->bar5 & (uptr)PCI_BAR_MEM_BASE_ADDR));
   logf(LOGLEVEL_DEBUG, "Got AHCI ABAR: 0x%l", ahci->abar);
   ahci_probe(ahci);
-  for (u32 i = 0; i < ahci->port_count; i++)
+  for (u32 i = 0; i < ahci->port_count; i++) {
     ahci_port_configure(ahci->ports[i]);
+    void *buf = request_page();
+    if (!ahci_port_read(ahci->ports[i], 0, 4, buf))
+      log(LOGLEVEL_ERROR, "AHCI read failed");
+    free_page(buf);
+  }
   log(LOGLEVEL_INFO, "Initialized AHCI");
+
   return ahci;
 }
 
@@ -117,4 +124,57 @@ void ahci_port_configure(ahci_port_t *p) {
   }
   ahci_port_start_cmd(p);
   log(LOGLEVEL_INFO, "Configured AHCI port");
+}
+
+bool ahci_port_read(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
+  u32 sector_low = (u32)sector;
+  u32 sector_high = (u32)(sector >> 32);
+
+  u64 spin = 0;
+  while ((p->hba_port->task_file_data & (ATA_SR_BSY | ATA_SR_DRQ)) &&
+         spin < 1000000)
+    spin++;
+  if (spin == 1000000)
+    return false;
+
+  p->hba_port->interrupt_status = (u32)-1;
+
+  ahci_hba_command_header_t *cmd_header = (ahci_hba_command_header_t *)HHDM(
+      ((u64)p->hba_port->command_list_base |
+       ((u64)p->hba_port->command_list_base_upper << 32)));
+  cmd_header->command_fis_length = sizeof(ahci_fis_h2d_t) / sizeof(u32);
+  cmd_header->write = 0;
+  cmd_header->prdt_length = 1;
+  ahci_hba_command_table_t *cmd_table = (ahci_hba_command_table_t *)HHDM(
+      (cmd_header->command_table_base_address |
+       ((u64)cmd_header->command_table_base_address_upper << 32)));
+  kmemset(cmd_table, 0,
+          sizeof(ahci_hba_command_table_t) +
+              ((cmd_header->prdt_length - 1) * sizeof(ahci_hba_prdt_entry_t)));
+  cmd_table->prdt_entry[0].data_base[0] = (u32)PHY(buffer);
+  cmd_table->prdt_entry[0].data_base[1] = (u32)(PHY(buffer) >> 32);
+  cmd_table->prdt_entry[0].byte_count = (count << 9) - 1;
+  cmd_table->prdt_entry[0].interrupt_on_completion = 1;
+
+  ahci_fis_h2d_t *cmd_fis = (ahci_fis_h2d_t *)(&cmd_table->command_fis);
+  cmd_fis->fis_type = AHCI_FIS_TYPE_REG_H2D;
+  cmd_fis->cmd_control = 1;
+  cmd_fis->cmd = ATA_CMD_READ_DMA_EXT;
+  cmd_fis->lba_low[0] = (u8)sector_low;
+  cmd_fis->lba_low[1] = (u8)(sector_low >> 8);
+  cmd_fis->lba_low[2] = (u8)(sector_low >> 16);
+  cmd_fis->lba_high[0] = (u8)(sector_low >> 24);
+  cmd_fis->lba_high[1] = (u8)sector_high;
+  cmd_fis->lba_high[2] = (u8)(sector_high >> 8);
+  cmd_fis->device_register = 1 << 6; // LBA mode
+  cmd_fis->count[0] = count & 0xff;
+  cmd_fis->count[1] = (count >> 8) & 0xff;
+  p->hba_port->command_issue = 1;
+  while (1) {
+    if (p->hba_port->command_issue == 0)
+      break;
+    if (p->hba_port->interrupt_status & HBA_PxIS_TFES)
+      return false;
+  }
+  return true;
 }

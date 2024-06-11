@@ -14,6 +14,16 @@
 #define HBA_PxCMD_FRE 0x0010
 #define HBA_PxCMD_ST 0x0001
 #define HBA_PxCMD_FR 0x4000
+#define HBA_PxIS_TFES (1 << 30)
+
+#define AHCI_FIS_TYPE_REG_H2D 0x27
+#define AHCI_FIS_TYPE_REG_D2H 0x34
+#define AHCI_FIS_TYPE_DMA_ACT 0x39
+#define AHCI_FIS_TYPE_DMA_SETUP 0x41
+#define AHCI_FIS_TYPE_DATA 0x46
+#define AHCI_FIS_TYPE_BIST 0x58
+#define AHCI_FIS_TYPE_PIO_SETUP 0x5f
+#define AHCI_FIS_TYPE_DEV_BITS 0xa1
 
 typedef enum ahci_port_type {
   NONE = 0,
@@ -43,7 +53,7 @@ typedef struct ahci_hba_port {
   u32 fis_switch_control;
   u32 rsv1[11];
   u32 vendor[4];
-} ahci_hba_port_t;
+} __attribute__((packed)) ahci_hba_port_t;
 
 typedef struct ahci_hba_memory {
   u32 host_capability;
@@ -60,7 +70,7 @@ typedef struct ahci_hba_memory {
   u8 rsv0[0x74];
   u8 vendor[0x60];
   ahci_hba_port_t ports[1];
-} ahci_hba_memory_t;
+} __attribute__((packed)) ahci_hba_memory_t;
 
 typedef struct ahci_hba_command_header {
   u8 command_fis_length : 5;
@@ -79,7 +89,39 @@ typedef struct ahci_hba_command_header {
   u32 command_table_base_address;
   u32 command_table_base_address_upper;
   u32 rsv1[4];
-} ahci_hba_command_header_t;
+} __attribute__((packed)) ahci_hba_command_header_t;
+
+typedef struct ahci_fis_h2d {
+  u8 fis_type;
+  u8 port_multiplier : 4;
+  u8 reserved0 : 3;
+  u8 cmd_control : 1;
+  u8 cmd;
+  u8 feature_low;
+  u8 lba_low[3];
+  u8 device_register;
+  u8 lba_high[3];
+  u8 feature_high;
+  u8 count[2];
+  u8 iso_command_completion;
+  u8 control;
+  u8 reserved1[4];
+} __attribute__((packed)) ahci_fis_h2d_t;
+
+typedef struct ahci_hba_prdt_entry {
+  u32 data_base[2];
+  u32 reserved0;
+  u32 byte_count : 22;
+  u32 reserved1 : 9;
+  u32 interrupt_on_completion : 1;
+} __attribute__((packed)) ahci_hba_prdt_entry_t;
+
+typedef struct ahci_hba_command_table {
+  u8 command_fis[64];
+  u8 atapi_cmd[16];
+  u8 reserved0[48];
+  ahci_hba_prdt_entry_t prdt_entry[];
+} __attribute__((packed)) ahci_hba_command_table_t;
 
 typedef struct ahci_port {
   ahci_hba_port_t *hba_port;
@@ -102,3 +144,4 @@ ahci_port_type_t ahci_check_port_type(ahci_hba_port_t *port);
 void ahci_port_configure(ahci_port_t *p);
 void ahci_port_start_cmd(ahci_port_t *p);
 void ahci_port_stop_cmd(ahci_port_t *p);
+bool ahci_port_read(ahci_port_t *p, u64 sector, u32 count, void *buffer);
