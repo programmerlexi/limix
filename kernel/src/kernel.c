@@ -1,3 +1,4 @@
+#include "kernel/kernel.h"
 #include "kernel/asm_inline.h"
 #include "kernel/config.h"
 #include "kernel/debug.h"
@@ -7,7 +8,6 @@
 #include "kernel/hw/acpi/acpi.h"
 #include "kernel/hw/hid/kb/kb.h"
 #include "kernel/hw/pci/pci.h"
-#include "kernel/int/syscall.h"
 #include "kernel/smp.h"
 #include "kernel/task/sched/common.h"
 #include "kernel/task/sched/global.h"
@@ -17,8 +17,7 @@ static local_scheduler_t *ls;
 
 void core_main() {
   log(LOGLEVEL_INFO, "Core main entered");
-  for (;;)
-    call_syscall(SYSCALL_YIELD);
+  hcf();
 }
 
 long long main() {
