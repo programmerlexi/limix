@@ -40,6 +40,9 @@ typedef struct {
 typedef struct {
   pci_type0_t *nvme_device;
   nvme_registers_t *bar0;
+  nvme_submission_queue_entry_t *admin_submission_queue;
+  nvme_completion_queue_entry_t *admin_completion_queue;
 } nvme_t;
 
 nvme_t *nvme_init(pci_type0_t *h);
+void nvme_probe(nvme_t *nvme);
