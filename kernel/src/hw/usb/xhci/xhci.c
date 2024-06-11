@@ -14,6 +14,7 @@ xhci_t *xhci_init(pci_type0_t *h) {
   if ((h->bar0 & PCI_BAR_MEM_TYPE) == 2)
     phy_addr |= (u64)(h->bar1 & PCI_BAR_MEM_BASE_ADDR) << 32;
   xhci->cap = (void *)HHDM(phy_addr);
-  log(LOGLEVEL_INFO, "Initialized XHCI");
+  logf(LOGLEVEL_INFO, "Initialized XHCI %l %u", xhci->cap,
+       (u64)xhci->cap->cap_length);
   return xhci;
 }

@@ -28,16 +28,16 @@ void kvprintf(char *s, va_list args) {
           sign = false;
         char numbuf[129];
         kmemset(numbuf, 0, 129);
-        u64 l = 17;
+        u64 l = 16;
         switch (base) {
         case 2:
-          l = 129;
+          l = 128;
           break;
         case 8:
-          l = 33;
+          l = 32;
           break;
         case 10:
-          l = 31;
+          l = 30;
           break;
         }
         ntos(numbuf, va_arg(args, i64), base, l, !sign, pad);
