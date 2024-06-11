@@ -88,8 +88,15 @@ typedef struct ahci_port {
   u8 port_number;
 } ahci_port_t;
 
-void ahci_init(pci_type0_t *h);
-void ahci_probe();
+typedef struct {
+  pci_type0_t *ahci_device;
+  ahci_hba_memory_t *abar;
+  ahci_port_t *ports[32];
+  u32 port_count;
+} ahci_t;
+
+ahci_t *ahci_init(pci_type0_t *h);
+void ahci_probe(ahci_t *driver);
 ahci_port_type_t ahci_check_port_type(ahci_hba_port_t *port);
 
 void ahci_port_configure(ahci_port_t *p);

@@ -11,35 +11,32 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "ahci"
 
-static ahci_hba_memory_t *abar;
-static pci_type0_t *ahci_device;
-static i32 port_count;
-static ahci_port_t *ports[32];
-
-void ahci_init(pci_type0_t *h) {
-  ahci_device = h;
-  abar = (ahci_hba_memory_t *)HHDM(ahci_device->bar5);
-  logf(LOGLEVEL_DEBUG, "Got AHCI ABAR: 0x%l", abar);
-  ahci_probe();
-  for (i32 i = 0; i < port_count; i++)
-    ahci_port_configure(ports[i]);
+ahci_t *ahci_init(pci_type0_t *h) {
+  ahci_t *ahci = kmalloc(sizeof(*ahci));
+  ahci->ahci_device = h;
+  ahci->abar = (ahci_hba_memory_t *)HHDM(ahci->ahci_device->bar5);
+  logf(LOGLEVEL_DEBUG, "Got AHCI ABAR: 0x%l", ahci->abar);
+  ahci_probe(ahci);
+  for (u32 i = 0; i < ahci->port_count; i++)
+    ahci_port_configure(ahci->ports[i]);
   log(LOGLEVEL_INFO, "Initialized AHCI");
+  return ahci;
 }
 
-void ahci_probe() {
-  u32 ports_implemented = abar->ports_implemented;
+void ahci_probe(ahci_t *ahci) {
+  u32 ports_implemented = ahci->abar->ports_implemented;
   for (i32 i = 0; i < 32; i++) {
     if (!(ports_implemented & (1 << i)))
       continue;
-    ahci_port_type_t type = ahci_check_port_type(&abar->ports[i]);
+    ahci_port_type_t type = ahci_check_port_type(&ahci->abar->ports[i]);
     if (type == SATA || type == SATAPI) {
       logf(LOGLEVEL_INFO, "Found SATA/SATAPI device attached at port %u",
            (u64)i);
-      ports[port_count] = kmalloc(sizeof(ahci_port_t));
-      ports[port_count]->port_type = type;
-      ports[port_count]->hba_port = &abar->ports[i];
-      ports[port_count]->port_number = i;
-      port_count++;
+      ahci->ports[ahci->port_count] = kmalloc(sizeof(ahci_port_t));
+      ahci->ports[ahci->port_count]->port_type = type;
+      ahci->ports[ahci->port_count]->hba_port = &ahci->abar->ports[i];
+      ahci->ports[ahci->port_count]->port_number = i;
+      ahci->port_count++;
     }
   }
 }
