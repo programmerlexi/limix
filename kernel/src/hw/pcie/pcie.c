@@ -7,6 +7,7 @@
 #include "kernel/hw/nvme/nvme.h"
 #include "kernel/hw/pci/codes.h"
 #include "kernel/hw/pci/pci.h"
+#include "kernel/hw/usb/xhci/xhci.h"
 #include "kernel/mm/hhtp.h"
 #include "libk/printing.h"
 #include <stdbool.h>
@@ -89,6 +90,17 @@ bool pcie_init() {
             break;
           case PCI_SUBCLASS_MASS_STORAGE_IDE:
             ide_init((pci_type0_t *)dev);
+            break;
+          }
+          break;
+        case PCI_CLASS_BUS:
+          switch (dev->subclass) {
+          case PCI_SUBCLASS_BUS_USB:
+            switch (dev->prog_if) {
+            case 0x30:
+              xhci_init((pci_type0_t *)dev);
+              break;
+            }
             break;
           }
           break;
