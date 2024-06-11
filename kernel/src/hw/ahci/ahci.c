@@ -14,7 +14,8 @@
 ahci_t *ahci_init(pci_type0_t *h) {
   ahci_t *ahci = kmalloc(sizeof(*ahci));
   ahci->ahci_device = h;
-  ahci->abar = (ahci_hba_memory_t *)HHDM(ahci->ahci_device->bar5);
+  ahci->abar = (ahci_hba_memory_t *)HHDM(
+      (ahci->ahci_device->bar5 & (uptr)PCI_BAR_MEM_BASE_ADDR));
   logf(LOGLEVEL_DEBUG, "Got AHCI ABAR: 0x%l", ahci->abar);
   ahci_probe(ahci);
   for (u32 i = 0; i < ahci->port_count; i++)

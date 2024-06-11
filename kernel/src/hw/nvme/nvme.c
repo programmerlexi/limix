@@ -9,7 +9,7 @@
 nvme_t *nvme_init(pci_type0_t *h) {
   nvme_t *nvme = kmalloc(sizeof(*nvme));
   nvme->nvme_device = h;
-  nvme->bar0 = (void *)HHDM(h->bar0);
+  nvme->bar0 = (void *)HHDM((h->bar0 & PCI_BAR_MEM_BASE_ADDR));
   nvme->admin_submission_queue =
       (void *)HHDM(nvme->bar0->admin_submission_queue);
   nvme->admin_completion_queue =
