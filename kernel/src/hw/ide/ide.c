@@ -3,6 +3,9 @@
 #include "kernel/hw/pci/pci.h"
 #include "kernel/mm/heap.h"
 
+#undef DEBUG_MODULE
+#define DEBUG_MODULE "ide"
+
 ide_t *ide_init(pci_type0_t *h) {
   ide_t *ide = kmalloc(sizeof(*ide));
   ide->ide_device = h;
