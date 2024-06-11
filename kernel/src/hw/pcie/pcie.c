@@ -3,6 +3,7 @@
 #include "kernel/gfx/vt/vt.h"
 #include "kernel/hw/acpi/acpi.h"
 #include "kernel/hw/ahci/ahci.h"
+#include "kernel/hw/nvme/nvme.h"
 #include "kernel/hw/pci/codes.h"
 #include "kernel/hw/pci/pci.h"
 #include "kernel/mm/hhtp.h"
@@ -81,6 +82,9 @@ bool pcie_init() {
               ahci_init((pci_type0_t *)dev);
               break;
             }
+            break;
+          case PCI_SUBCLASS_MASS_STORAGE_NVM:
+            nvme_init((pci_type0_t *)dev);
             break;
           }
           break;
