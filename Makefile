@@ -5,7 +5,8 @@ INCLUDES=$(shell find kernel/include -type f) $(shell find libk/include -type f)
 JOBS=$(shell nproc --all)
 
 OVMFDIR=/usr/share/edk2-ovmf/x64
-UEFI_OPTIONS=-drive if=pflash,format=raw,unit=0,file="$(OVMFDIR)/OVMF_CODE.fd",readonly=on
+UEFI_OPTIONS=-drive if=pflash,format=raw,unit=0,file="$(OVMFDIR)/OVMF_CODE.fd",readonly=on \
+						 -drive if=pflash,format=raw,unit=1,file=OVMF_VARS.fd
 
 all: hdd iso
 
@@ -72,22 +73,25 @@ limine:
 	@git clone https://github.com/limine-bootloader/limine.git --branch=v7.x-binary --depth=1
 	@make -j$(JOBS) -C limine
 
+OVMF_VARS.fd:
+	cp $(OVMFDIR)/OVMF_VARS.fd .
+
 run-hdd: image.hdd
 	qemu-system-x86_64 -hda image.hdd $(COMMON_QEMU_FLAGS)
 
 run-iso: image.iso
 	qemu-system-x86_64 -cdrom image.iso $(COMMON_QEMU_FLAGS)
 
-run-iso-uefi: image.iso
+run-iso-uefi: image.iso OVMF_VARS.fd
 	qemu-system-x86_64 $(UEFI_OPTIONS) -cdrom image.iso $(COMMON_QEMU_FLAGS)
 
-run-hdd-uefi: image.hdd
+run-hdd-uefi: image.hdd OVMF_VARS.fd
 	qemu-system-x86_64 $(UEFI_OPTIONS) -hda image.hdd $(COMMON_QEMU_FLAGS)
 
 run-kvm: image.iso
 	qemu-system-x86_64 -cdrom image.iso $(COMMON_QEMU_FLAGS) -enable-kvm
 
-run-kvm-uefi: image.iso
+run-kvm-uefi: image.iso OVMF_VARS.fd
 	qemu-system-x86_64 $(UEFI_OPTIONS) -cdrom image.iso $(COMMON_QEMU_FLAGS) -enable-kvm
 
 
