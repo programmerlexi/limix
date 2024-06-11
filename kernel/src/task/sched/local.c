@@ -25,7 +25,7 @@ local_scheduler_t *sched_local_init(u64 cpu) {
   s->cpu = cpu;
   s->from_core = true;
   sched_register_cpu(s);
-  log(LOGLEVEL_INFO, "Local scheduler initialized");
+  log(LOGLEVEL_DEBUG, "Local scheduler initialized");
   spinunlock(&_sched_initialize);
   return s;
 }
