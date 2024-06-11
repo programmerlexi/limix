@@ -30,7 +30,7 @@ typedef u8 loglevel_t;
 #define log(l, s) _log(l, debug_str s debug_end)
 
 // The debug macros will eventually be removed
-#define debug(s) log(LOGLEVEL_DEBUG, s)
+#define debug(s) log(LOGLEVEL_ANALYZE, s)
 #define info(s) log(LOGLEVEL_NORMAL, s)
 #define warn(s) log(LOGLEVEL_WARN0, s)
 #define error(s) log(LOGLEVEL_CRITICAL, s)
