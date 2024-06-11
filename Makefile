@@ -4,6 +4,9 @@ INCLUDES=$(shell find kernel/include -type f) $(shell find libk/include -type f)
 
 JOBS=$(shell nproc --all)
 
+OVMFDIR=/usr/share/edk2-ovmf/x64
+UEFI_OPTIONS=-drive if=pflash,format=raw,unit=0,file="$(OVMFDIR)/OVMF_CODE.fd",readonly=on
+
 all: hdd iso
 
 limine/limine.h: limine
@@ -76,16 +79,16 @@ run-iso: image.iso
 	qemu-system-x86_64 -cdrom image.iso $(COMMON_QEMU_FLAGS)
 
 run-iso-uefi: image.iso
-	qemu-system-x86_64 -bios /usr/share/edk2/x64/OVMF.fd -cdrom image.iso $(COMMON_QEMU_FLAGS)
+	qemu-system-x86_64 $(UEFI_OPTIONS) -cdrom image.iso $(COMMON_QEMU_FLAGS)
 
 run-hdd-uefi: image.hdd
-	qemu-system-x86_64 -bios /usr/share/edk2/x64/OVMF.fd -hda image.hdd $(COMMON_QEMU_FLAGS)
+	qemu-system-x86_64 $(UEFI_OPTIONS) -hda image.hdd $(COMMON_QEMU_FLAGS)
 
 run-kvm: image.iso
 	qemu-system-x86_64 -cdrom image.iso $(COMMON_QEMU_FLAGS) -enable-kvm
 
 run-kvm-uefi: image.iso
-	qemu-system-x86_64 -bios /usr/share/edk2/x64/OVMF.fd -cdrom image.iso $(COMMON_QEMU_FLAGS) -enable-kvm
+	qemu-system-x86_64 $(UEFI_OPTIONS) -cdrom image.iso $(COMMON_QEMU_FLAGS) -enable-kvm
 
 
 run-debug: image.iso
