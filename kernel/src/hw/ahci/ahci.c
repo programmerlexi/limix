@@ -1,4 +1,5 @@
 #include "kernel/hw/ahci/ahci.h"
+#include "kernel/asm_inline.h"
 #include "kernel/debug.h"
 #include "kernel/hw/ide/ide.h"
 #include "kernel/hw/pci/pci.h"
@@ -24,11 +25,11 @@ ahci_t *ahci_init(pci_type0_t *h) {
     ahci_port_configure(ahci->ports[i]);
     void *buf = request_page();
     kmemset(buf, 0, 512);
-    if (!ahci_port_read(ahci->ports[i], 0, 8, buf))
+    if (!ahci_port_read(ahci->ports[i], 0, 4, buf))
       log(LOGLEVEL_ERROR, "AHCI read failed");
-    for (u16 j = 0; j < 256; j++) {
-      kprintf("%w ", ((u16 *)buf)[j]);
-    }
+    else
+      for (u16 j = 0; j < 256; j++)
+        kprintf("%w ", ((u16 *)buf)[j]);
     free_page(buf);
   }
   log(LOGLEVEL_INFO, "Initialized AHCI");
@@ -135,14 +136,14 @@ bool _ahci_port_read_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
   u32 sector_low = (u32)sector;
   u32 sector_high = (u32)(sector >> 32);
 
+  p->hba_port->interrupt_status = (u32)-1;
+
   u64 spin = 0;
   while ((p->hba_port->task_file_data & (ATA_SR_BSY | ATA_SR_DRQ)) &&
          spin < 1000000)
     spin++;
   if (spin == 1000000)
     return false;
-
-  p->hba_port->interrupt_status = (u32)-1;
 
   ahci_hba_command_header_t *cmd_header = (ahci_hba_command_header_t *)HHDM(
       ((u64)p->hba_port->command_list_base |
@@ -161,7 +162,7 @@ bool _ahci_port_read_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
   cmd_table->prdt_entry[0].byte_count = (count << 9) - 1;
   cmd_table->prdt_entry[0].interrupt_on_completion = 1;
 
-  ahci_fis_h2d_t *cmd_fis = (ahci_fis_h2d_t *)(&cmd_table->command_fis);
+  ahci_fis_h2d_t *cmd_fis = (ahci_fis_h2d_t *)HHDM(&cmd_table->command_fis);
   cmd_fis->fis_type = AHCI_FIS_TYPE_REG_H2D;
   cmd_fis->cmd_control = 1;
   cmd_fis->cmd = ATA_CMD_READ_DMA_EXT;
@@ -174,13 +175,27 @@ bool _ahci_port_read_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
   cmd_fis->device_register = 1 << 6; // LBA mode
   cmd_fis->count[0] = count & 0xff;
   cmd_fis->count[1] = (count >> 8) & 0xff;
+  io_wait();
   p->hba_port->command_issue = 1;
-  while (1) {
+  spin = 0;
+  while (spin < 500000) {
+    io_wait();
     if ((p->hba_port->command_issue & 1))
       break;
     if (p->hba_port->interrupt_status & HBA_PxIS_TFES)
       return false;
+    spin++;
   }
+  if (spin == 500000) {
+    log(LOGLEVEL_ERROR, "AHCI seems to be quite slow today");
+    return false;
+  }
+  io_wait();
+  if (p->hba_port->interrupt_status & HBA_PxIS_TFES)
+    return false;
+  io_wait();
+  invlpg(buffer);
+  io_wait();
   return true;
 }
 
