@@ -1,5 +1,4 @@
 #include "kernel/mm/mm.h"
-#include "kernel/debug.h"
 #include "kernel/kernel.h"
 #include "kernel/mm/hhtp.h"
 #include "libk/ipc/spinlock.h"

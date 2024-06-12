@@ -134,8 +134,6 @@ void ahci_port_configure(ahci_port_t *p) {
 
 bool _ahci_port_read_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
   invlpg(buffer);
-  u32 sector_low = (u32)sector;
-  u32 sector_high = (u32)(sector >> 32);
 
   p->hba_port->interrupt_status = (u32)-1;
 
@@ -154,6 +152,7 @@ bool _ahci_port_read_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
   cmd_header->command_fis_length = sizeof(ahci_fis_h2d_t) / sizeof(u32);
   cmd_header->write = 0;
   cmd_header->prdt_length = 1;
+  invlpg(cmd_header);
   ahci_hba_command_table_t *cmd_table = (ahci_hba_command_table_t *)HHDM(
       (cmd_header->command_table_base_address |
        ((u64)cmd_header->command_table_base_address_upper << 32)));
@@ -164,25 +163,26 @@ bool _ahci_port_read_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
   cmd_table->prdt_entry[0].data_base[1] = (u32)(PHY(buffer) >> 32);
   cmd_table->prdt_entry[0].byte_count = (count << 9) - 1;
   cmd_table->prdt_entry[0].interrupt_on_completion = 1;
+  invlpg(cmd_table);
 
   ahci_fis_h2d_t *cmd_fis = (ahci_fis_h2d_t *)HHDM(&cmd_table->command_fis);
   cmd_fis->fis_type = AHCI_FIS_TYPE_REG_H2D;
   cmd_fis->cmd_control = 1;
   cmd_fis->cmd = ATA_CMD_READ_DMA_EXT;
-  cmd_fis->lba_low[0] = (u8)sector_low;
-  cmd_fis->lba_low[1] = (u8)(sector_low >> 8);
-  cmd_fis->lba_low[2] = (u8)(sector_low >> 16);
-  cmd_fis->lba_high[0] = (u8)(sector_low >> 24);
-  cmd_fis->lba_high[1] = (u8)sector_high;
-  cmd_fis->lba_high[2] = (u8)(sector_high >> 8);
+  cmd_fis->lba_low[0] = (u8)sector;
+  cmd_fis->lba_low[1] = (u8)(sector >> 8);
+  cmd_fis->lba_low[2] = (u8)(sector >> 16);
+  cmd_fis->lba_high[0] = (u8)(sector >> 24);
+  cmd_fis->lba_high[1] = (u8)(sector >> 32);
+  cmd_fis->lba_high[2] = (u8)(sector >> 40);
   cmd_fis->device_register = 1 << 6; // LBA mode
   cmd_fis->count[0] = count & 0xff;
   cmd_fis->count[1] = (count >> 8) & 0xff;
-  io_wait();
+  invlpg(cmd_fis);
   p->hba_port->command_issue = 1;
+  invlpg(p->hba_port);
   spin = 0;
   while (spin < 500000) {
-    io_wait();
     invlpg(p->hba_port);
     if ((p->hba_port->command_issue & 1))
       break;
@@ -194,12 +194,9 @@ bool _ahci_port_read_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
     log(LOGLEVEL_ERROR, "AHCI seems to be quite slow today");
     return false;
   }
-  io_wait();
   if (p->hba_port->interrupt_status & HBA_PxIS_TFES)
     return false;
-  io_wait();
   invlpg(buffer);
-  io_wait();
   return true;
 }
 
