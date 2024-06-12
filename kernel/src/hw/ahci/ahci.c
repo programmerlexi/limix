@@ -133,6 +133,7 @@ void ahci_port_configure(ahci_port_t *p) {
 }
 
 bool _ahci_port_read_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
+  invlpg(buffer);
   u32 sector_low = (u32)sector;
   u32 sector_high = (u32)(sector >> 32);
 
@@ -140,8 +141,10 @@ bool _ahci_port_read_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
 
   u64 spin = 0;
   while ((p->hba_port->task_file_data & (ATA_SR_BSY | ATA_SR_DRQ)) &&
-         spin < 1000000)
+         spin < 1000000) {
+    invlpg(p->hba_port);
     spin++;
+  }
   if (spin == 1000000)
     return false;
 
@@ -180,6 +183,7 @@ bool _ahci_port_read_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
   spin = 0;
   while (spin < 500000) {
     io_wait();
+    invlpg(p->hba_port);
     if ((p->hba_port->command_issue & 1))
       break;
     if (p->hba_port->interrupt_status & HBA_PxIS_TFES)
