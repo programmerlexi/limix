@@ -6,6 +6,7 @@
 #include "kernel/mm/heap.h"
 #include "kernel/mm/hhtp.h"
 #include "kernel/mm/mm.h"
+#include "libk/printing.h"
 #include "libk/types.h"
 #include "libk/utils/memory/memory.h"
 
@@ -22,8 +23,12 @@ ahci_t *ahci_init(pci_type0_t *h) {
   for (u32 i = 0; i < ahci->port_count; i++) {
     ahci_port_configure(ahci->ports[i]);
     void *buf = request_page();
-    if (!ahci_port_read(ahci->ports[i], 0, 4, buf))
+    kmemset(buf, 0, 512);
+    if (!ahci_port_read(ahci->ports[i], 0, 8, buf))
       log(LOGLEVEL_ERROR, "AHCI read failed");
+    for (u16 j = 0; j < 256; j++) {
+      kprintf("%w ", ((u16 *)buf)[j]);
+    }
     free_page(buf);
   }
   log(LOGLEVEL_INFO, "Initialized AHCI");
@@ -126,7 +131,7 @@ void ahci_port_configure(ahci_port_t *p) {
   log(LOGLEVEL_INFO, "Configured AHCI port");
 }
 
-bool ahci_port_read(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
+bool _ahci_port_read_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
   u32 sector_low = (u32)sector;
   u32 sector_high = (u32)(sector >> 32);
 
@@ -171,10 +176,17 @@ bool ahci_port_read(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
   cmd_fis->count[1] = (count >> 8) & 0xff;
   p->hba_port->command_issue = 1;
   while (1) {
-    if (p->hba_port->command_issue == 0)
+    if ((p->hba_port->command_issue & 1))
       break;
     if (p->hba_port->interrupt_status & HBA_PxIS_TFES)
       return false;
   }
   return true;
+}
+
+bool ahci_port_read(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
+  if (p->port_type == SATA)
+    return _ahci_port_read_sata(p, sector, count, buffer);
+  else
+    return false;
 }
