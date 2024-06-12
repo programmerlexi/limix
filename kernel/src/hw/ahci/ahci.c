@@ -7,7 +7,6 @@
 #include "kernel/mm/heap.h"
 #include "kernel/mm/hhtp.h"
 #include "kernel/mm/mm.h"
-#include "libk/printing.h"
 #include "libk/types.h"
 #include "libk/utils/memory/memory.h"
 
@@ -21,17 +20,8 @@ ahci_t *ahci_init(pci_type0_t *h) {
       (ahci->ahci_device->bar5 & (uptr)PCI_BAR_MEM_BASE_ADDR));
   logf(LOGLEVEL_DEBUG, "Got AHCI ABAR: 0x%l", ahci->abar);
   ahci_probe(ahci);
-  for (u32 i = 0; i < ahci->port_count; i++) {
+  for (u32 i = 0; i < ahci->port_count; i++)
     ahci_port_configure(ahci->ports[i]);
-    void *buf = request_page();
-    kmemset(buf, 0, 512);
-    if (!ahci_port_read(ahci->ports[i], 0, 1, buf))
-      log(LOGLEVEL_ERROR, "AHCI read failed");
-    else
-      for (u16 j = 0; j < 256; j++)
-        kprintf("%w ", ((u16 *)buf)[j]);
-    free_page(buf);
-  }
   log(LOGLEVEL_INFO, "Initialized AHCI");
 
   return ahci;
