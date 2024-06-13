@@ -33,9 +33,8 @@ void ahci_probe(ahci_t *ahci) {
     if (!(ports_implemented & (1 << i)))
       continue;
     ahci_port_type_t type = ahci_check_port_type(&ahci->abar->ports[i]);
-    if (type == SATA || type == SATAPI) {
-      logf(LOGLEVEL_INFO, "Found SATA/SATAPI device attached at port %u",
-           (u64)i);
+    if (type == SATA) {
+      logf(LOGLEVEL_INFO, "Found SATA device attached at port %u", (u64)i);
       ahci->ports[ahci->port_count] = kmalloc(sizeof(ahci_port_t));
       ahci->ports[ahci->port_count]->port_type = type;
       ahci->ports[ahci->port_count]->hba_port = &ahci->abar->ports[i];
