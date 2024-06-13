@@ -8,6 +8,7 @@
 #include "kernel/hw/acpi/acpi.h"
 #include "kernel/hw/hid/kb/kb.h"
 #include "kernel/hw/pci/pci.h"
+#include "kernel/hw/pic/irq.h"
 #include "kernel/hw/pic/pic.h"
 #include "kernel/smp.h"
 #include "kernel/task/sched/common.h"
@@ -31,6 +32,7 @@ long long main() {
   drm_register_vfs();
 
   pic_init();
+  irq_init();
 
   kb_init();
 
