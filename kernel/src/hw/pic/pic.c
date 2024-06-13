@@ -2,8 +2,10 @@
 #include "kernel/io/pio.h"
 
 void pic_init() {
-  pic_remap(0x20, 0x28);
+  asm("cli");
   pic_disable();
+  pic_remap(0x20, 0x28);
+  asm("sti");
 }
 
 void pic_remap(i32 offset0, i32 offset1) {
