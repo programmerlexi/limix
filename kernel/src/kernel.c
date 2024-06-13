@@ -8,6 +8,7 @@
 #include "kernel/hw/acpi/acpi.h"
 #include "kernel/hw/hid/kb/kb.h"
 #include "kernel/hw/pci/pci.h"
+#include "kernel/hw/pic/pic.h"
 #include "kernel/smp.h"
 #include "kernel/task/sched/common.h"
 #include "kernel/task/sched/global.h"
@@ -28,6 +29,8 @@ long long main() {
   devfs_bind(vfs_make("dev"));
   devfs_reload();
   drm_register_vfs();
+
+  pic_init();
 
   kb_init();
 
