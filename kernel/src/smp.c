@@ -3,6 +3,7 @@
 #include "kernel/boot/requests.h"
 #include "kernel/debug.h"
 #include "kernel/gdt/gdt.h"
+#include "kernel/hw/pic/pic.h"
 #include "kernel/int/idt.h"
 #include "kernel/io/pio.h"
 #include "kernel/task/sched/common.h"
@@ -19,6 +20,7 @@ void _smp_start(struct limine_smp_info *cpu_info) {
   logf(LOGLEVEL_DEBUG, "[CPU %u] Received startup", get_processor());
   gdt_init();
   idt_load();
+  pic_init();
   sched_create(core_main, get_processor());
   local_scheduler_t *ls = sched_local_init(get_processor());
   while (true) {
