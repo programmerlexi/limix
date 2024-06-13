@@ -95,7 +95,7 @@ run-debug: image.iso
 	qemu-system-x86_64 -cdrom image.iso $(UEFI_OPTIONS) $(COMMON_QEMU_FLAGS) -s -S -no-reboot -d int,cpu_reset
 
 run-debug-kvm: image.iso
-	qemu-system-x86_64 -cdrom image.iso $(COMMON_QEMU_FLAGS) -enable-kvm -s -S -no-reboot
+	qemu-system-x86_64 -cdrom image.iso $(UEFI_OPTIONS) $(COMMON_QEMU_FLAGS) -enable-kvm -s -S -no-reboot
 
 debug:
 	gdb -s kernel/bin/limix -ex "target remote localhost:1234"
