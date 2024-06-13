@@ -92,7 +92,7 @@ run-kvm-uefi: image.hdd image.iso
 
 
 run-debug: image.iso
-	qemu-system-x86_64 -cdrom image.iso $(COMMON_QEMU_FLAGS) -s -S -no-reboot -d int,cpu_reset
+	qemu-system-x86_64 -cdrom image.iso $(UEFI_OPTIONS) $(COMMON_QEMU_FLAGS) -s -S -no-reboot -d int,cpu_reset
 
 run-debug-kvm: image.iso
 	qemu-system-x86_64 -cdrom image.iso $(COMMON_QEMU_FLAGS) -enable-kvm -s -S -no-reboot
