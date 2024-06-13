@@ -84,11 +84,11 @@ run-iso-uefi: image.iso
 run-hdd-uefi: image.hdd
 	qemu-system-x86_64 $(UEFI_OPTIONS) -hda image.hdd $(COMMON_QEMU_FLAGS)
 
-run-kvm: image.hdd
-	qemu-system-x86_64 -hda image.hdd $(COMMON_QEMU_FLAGS) -enable-kvm
+run-kvm: image.hdd image.iso
+	qemu-system-x86_64 -hda image.hdd -cdrom image.iso $(COMMON_QEMU_FLAGS) -enable-kvm
 
-run-kvm-uefi: image.hdd
-	qemu-system-x86_64 $(UEFI_OPTIONS) -hda image.hdd $(COMMON_QEMU_FLAGS) -enable-kvm
+run-kvm-uefi: image.hdd image.iso
+	qemu-system-x86_64 $(UEFI_OPTIONS) -hda image.hdd -cdrom image.iso $(COMMON_QEMU_FLAGS) -enable-kvm
 
 
 run-debug: image.iso
