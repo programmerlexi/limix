@@ -2,6 +2,8 @@
 
 #include "libk/types.h"
 
+#define HEAP_BASE 0xfffffff800000000
+
 typedef struct heapseg {
   usz size;
   struct heapseg *prev;
