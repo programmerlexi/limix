@@ -42,6 +42,7 @@ void drm_init() {
       kernel_panic_error("DRM init failed");
     }
   }
+  drm_initialized = true;
   _active_drm = 0;
 }
 static void _drm_sync_real() {
