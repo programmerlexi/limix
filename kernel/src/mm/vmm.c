@@ -3,7 +3,6 @@
 #include "kernel/kernel.h"
 #include "kernel/mm/hhtp.h"
 #include "kernel/mm/mm.h"
-#include "libk/printing.h"
 #include "libk/types.h"
 #include "libk/utils/memory/memory.h"
 #include <stddef.h>
