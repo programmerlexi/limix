@@ -49,6 +49,8 @@ void vt_init(u64 attached_to_drm) {
   vt_clear();
 }
 void vt_clear() {
+  if (!_avail)
+    return;
   lock_vt;
   _vt_x = 0;
   _vt_y = 0;
@@ -58,6 +60,8 @@ void vt_clear() {
   vt_flush();
 }
 void vt_draw_char(u64 i) {
+  if (!_avail)
+    return;
   vt_char_t c = _vt_buffer[i];
   u64 cx = i % _vt_width;
   u64 cy = i / _vt_width;
@@ -68,6 +72,8 @@ void vt_draw_char(u64 i) {
     drm_fill_rel_rect(_attached_drm, cx * 8, cy * 17, 8, 17, c.bg.fb_color);
 }
 void vt_flush() {
+  if (!_avail)
+    return;
   if (drm_is_attached_to_process(_attached_drm))
     return;
   if (_full_redraw) {
@@ -94,11 +100,15 @@ void vt_flush() {
 }
 
 void vt_redraw() {
+  if (!_avail)
+    return;
   _full_redraw = true;
   vt_flush();
 }
 
 void vt_advance_y() {
+  if (!_avail)
+    return;
   _vt_y++;
   _dirty = true;
   if (_vt_y >= _vt_height) {
@@ -116,6 +126,8 @@ void vt_advance_y() {
   vt_flush();
 }
 void vt_advance_x() {
+  if (!_avail)
+    return;
   _vt_x++;
   if (_vt_x >= _vt_width) {
     _vt_x = 0;
@@ -126,6 +138,8 @@ void vt_advance_x() {
 bool termcode = false;
 
 void kprint(char *s) {
+  if (!_avail)
+    return;
   lock_vt;
   while (*s) {
     kprintc(*s);
@@ -135,6 +149,8 @@ void kprint(char *s) {
   vt_flush();
 }
 void kprintc(char c) {
+  if (!_avail)
+    return;
   if (_state.working) {
     _state = ansi_process(_state, c);
   } else if (termcode) {

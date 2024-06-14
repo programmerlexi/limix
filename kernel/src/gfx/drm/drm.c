@@ -17,6 +17,7 @@
 static drm_t _drms[MAX_DRMS];
 static u64 _active_drm;
 static u32 _drm_sys_lock;
+static bool drm_initialized;
 
 static u32 _fallback_font[] = {
     0x6999f999, 0xe99e99e0, 0x78888870, 0xe99999e0, 0xf88f88f0, 0xf88f8880,
@@ -48,6 +49,8 @@ static void _drm_sync_real() {
   kmemcpy(g_fb->address, ad.framebuffer, ad.pitch * ad.height);
 }
 void drm_switch(u64 drm) {
+  if (!drm_initialized)
+    return;
   if (drm >= MAX_DRMS)
     return;
   kmemcpy(_drms[_active_drm].framebuffer, g_fb->address,
@@ -59,6 +62,8 @@ void drm_switch(u64 drm) {
 }
 
 void drm_sync() {
+  if (!drm_initialized)
+    return;
   spinlock(&_drm_sys_lock);
 #ifndef DRM_WRITETHROUGH
   _drm_sync_real();
@@ -66,6 +71,8 @@ void drm_sync() {
   spinunlock(&_drm_sys_lock);
 }
 void drm_plot(u64 drm, u64 x, u64 y, u32 c) {
+  if (!drm_initialized)
+    return;
   if (x > _drms[drm].width)
     return;
   if (y > _drms[drm].height)
@@ -86,6 +93,8 @@ void drm_plot(u64 drm, u64 x, u64 y, u32 c) {
   spinunlock(&_drms[drm].lock);
 }
 void drm_plot_line(u64 drm, u64 x0, u64 y0, u64 x1, u64 y1, u32 c) {
+  if (!drm_initialized)
+    return;
   i32 x, y, t, dx, dy, incx, incy, pdx, pdy, ddx, ddy, deltaslowdirection,
       deltafastdirection, err;
   dx = x1 - x0;
@@ -130,12 +139,16 @@ void drm_plot_line(u64 drm, u64 x0, u64 y0, u64 x1, u64 y1, u32 c) {
   }
 }
 void drm_plot_rect(u64 drm, u64 x0, u64 y0, u64 x1, u64 y1, u32 c) {
+  if (!drm_initialized)
+    return;
   drm_plot_line(drm, x0, y0, x1, y0, c);
   drm_plot_line(drm, x0, y0, x0, y1, c);
   drm_plot_line(drm, x0, y1, x1, y1, c);
   drm_plot_line(drm, x1, y0, x1, y1, c);
 }
 void drm_plot_circle(u64 drm, u64 x0, u64 y0, u64 r, u32 c) {
+  if (!drm_initialized)
+    return;
   i32 f = 1 - r;
   i32 ddF_x = 0;
   i32 ddF_y = -2 * r;
@@ -168,6 +181,8 @@ void drm_plot_circle(u64 drm, u64 x0, u64 y0, u64 r, u32 c) {
   }
 }
 void drm_fill_rect(u64 drm, u64 x0, u64 y0, u64 x1, u64 y1, u32 c) {
+  if (!drm_initialized)
+    return;
   for (u64 x = x0; x < x1; x++) {
     for (u64 y = y0; y < y1; y++) {
       drm_plot(drm, x, y, c);
@@ -175,6 +190,8 @@ void drm_fill_rect(u64 drm, u64 x0, u64 y0, u64 x1, u64 y1, u32 c) {
   }
 }
 void drm_fill_rel_rect(u64 drm, u64 x0, u64 y0, u64 w, u64 h, u32 c) {
+  if (!drm_initialized)
+    return;
   for (u64 x = x0; x < x0 + w; x++) {
     for (u64 y = y0; y < y0 + h; y++) {
       drm_plot(drm, x, y, c);
@@ -182,6 +199,8 @@ void drm_fill_rel_rect(u64 drm, u64 x0, u64 y0, u64 w, u64 h, u32 c) {
   }
 }
 void drm_clear(u64 drm) {
+  if (!drm_initialized)
+    return;
   spinlock(&_drm_sys_lock);
   kmemset(_drms[drm].framebuffer, 0,
           _drms[drm].width * _drms[drm].height * _drms[drm].bpp / 8);
@@ -264,6 +283,8 @@ static void _drm_plot_char_solid_fallback(u64 drm, u64 x, u64 y, u32 ch, u32 c,
 }
 
 void drm_plot_char(u64 drm, u64 x, u64 y, u32 ch, u32 c) {
+  if (!drm_initialized)
+    return;
   if (g_8x16_font)
     _drm_plot_char(drm, x, y, ch, c);
   else
@@ -280,6 +301,8 @@ u64 drm_width(u64 drm) { return _drms[drm].width; }
 u64 drm_height(u64 drm) { return _drms[drm].height; }
 
 bool drm_is_attached_to_process(u64 drm) {
+  if (!drm_initialized)
+    return false;
   return _drms[drm].flags & DRM_ATTACHED_TO_PROCESS;
 }
 
@@ -312,6 +335,8 @@ static i32 _drm_read(void *d, u64 o, u64 s, char *b) {
 }
 
 void drm_register_vfs() {
+  if (!drm_initialized)
+    return;
   for (u64 i = 0; i < MAX_DRMS; i++) {
     drm_number_t *dn = (drm_number_t *)kmalloc(sizeof(drm_number_t));
     nullsafe_error(dn, "Out of memory");
