@@ -72,13 +72,13 @@ void devfs_reload() {
   nullsafe(_devfs);
   if (!_devfs->root)
     _devfs->root = kmalloc(sizeof(directory_t));
-  nullsafe_error(_devfs->root, "Out of memory");
   if (_devfs->root->files)
     _devfs_clear_files();
   _devfs->root->file_count = _dev_count;
   _devfs->root->files = kmalloc(sizeof(void *) * _dev_count);
   device_t *c = _devices;
   for (u64 i = 0; i < _dev_count; i++) {
+    nullsafe(c);
     _devfs->root->files[i] = kmalloc(sizeof(file_t));
     nullsafe_error(_devfs->root->files[i], "Out of memory");
     _devfs->root->files[i]->name = c->name;
