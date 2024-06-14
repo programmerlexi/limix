@@ -12,7 +12,6 @@
 #include "kernel/mm/heap.h"
 #include "kernel/mm/hhtp.h"
 #include "kernel/mm/mm.h"
-#include "kernel/mm/vmm.h"
 #include "kernel/task/async.h"
 #include "kernel/task/sched/global.h"
 #include "limine.h"
@@ -40,7 +39,6 @@ void _start() {
     kernel_panic_error("MM init failed");
   gdt_init();
   idt_init();
-  init_kernel_vas();
   heap_init();
   config_init();
   fb_init(g_framebuffer_request.response->framebuffers[0]);
