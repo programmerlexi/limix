@@ -5,6 +5,7 @@
 #include "kernel/mm/mm.h"
 #include "libk/printing.h"
 #include "libk/types.h"
+#include "libk/utils/memory/memory.h"
 #include <stddef.h>
 
 void vmm_init() {
@@ -26,6 +27,7 @@ bool vmm_map(void *v, void *p, u64 flags) {
   if (!(pdpe & VMM_PRESENT)) {
     pml4[pdp_i] =
         VMM_ADDRESS(PHY(request_page())) | VMM_PRESENT | VMM_WRITEABLE;
+    kmemset((void *)HHDM(VMM_ADDRESS(pml4[pdp_i])), 0, 0x1000);
   }
   if (pdpe & VMM_PAGE_SIZE)
     kernel_panic_error("PAGING: PS bit not supported");
@@ -34,6 +36,7 @@ bool vmm_map(void *v, void *p, u64 flags) {
   u64 pde = pdp[pd_i];
   if (!(pde & VMM_PRESENT)) {
     pdp[pd_i] = VMM_ADDRESS(PHY(request_page())) | VMM_PRESENT | VMM_WRITEABLE;
+    kmemset((void *)HHDM(VMM_ADDRESS(pdp[pd_i])), 0, 0x1000);
   }
   if (pde & VMM_PAGE_SIZE)
     kernel_panic_error("PAGING: PS bit not supported");
@@ -42,6 +45,7 @@ bool vmm_map(void *v, void *p, u64 flags) {
   u64 pte = pd[pt_i];
   if (!(pte & VMM_PRESENT)) {
     pd[pt_i] = VMM_ADDRESS(PHY(request_page())) | VMM_PRESENT | VMM_WRITEABLE;
+    kmemset((void *)HHDM(VMM_ADDRESS(pd[pt_i])), 0, 0x1000);
   }
   if (pte & VMM_PAGE_SIZE)
     kernel_panic_error("PAGING: PS bit not supported");
