@@ -19,7 +19,7 @@
 
 #define CONFIG_KEYBOARD_MODE CONFIG_KEYBOARD_MODE_POLL
 
-#define CONFIG_HEAP_INITIAL_PAGES 16
+#define CONFIG_HEAP_INITIAL_PAGES 2
 
 #ifdef CONFIG_DYNCONF
 #define CONFIG_SCROLL_STEP                                                     \
