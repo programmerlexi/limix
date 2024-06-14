@@ -46,7 +46,7 @@ bool vmm_map(void *v, void *p, u64 flags) {
   if (pte & VMM_PAGE_SIZE)
     kernel_panic_error("PAGING: PS bit not supported");
 
-  u64 *pt = (u64 *)VMM_FRACTAL_PT(pdp_i, pd_i, p_i);
+  u64 *pt = (u64 *)VMM_FRACTAL_PT(pdp_i, pd_i, pt_i);
   pt[p_i] = VMM_ADDRESS((uptr)p) | VMM_PRESENT | flags;
   return true;
 }
