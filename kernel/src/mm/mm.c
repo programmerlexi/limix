@@ -15,6 +15,12 @@ static u32 page_lock = 0;
 #define lock spinlock(&page_lock);
 #define unlock spinunlock(&page_lock);
 
+uptr mm_fix(uptr ptr) {
+  if (ptr & 0x0000800000000000)
+    return ptr | 0xffff000000000000;
+  return ptr;
+}
+
 static void _mm_combine_forward(memseg_t *seg) {
   nullsafe(seg);
   nullsafe(seg->next);

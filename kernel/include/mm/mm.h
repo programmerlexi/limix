@@ -11,6 +11,8 @@ typedef struct memseg {
 
 bool mm_init(struct limine_memmap_response *);
 
+uptr mm_fix(uptr ptr);
+
 void *request_page();
 void *request_page_block(usz count);
 
