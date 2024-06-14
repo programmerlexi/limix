@@ -1,6 +1,7 @@
 #include "kernel/hw/pic/pic.h"
 #include "kernel/int/idt.h"
 #include "libk/types.h"
+#include "libk/utils/memory/memory.h"
 
 void irq_0();
 void irq_1();
@@ -22,7 +23,7 @@ void irq_15();
 static void (*handlers[16])();
 
 void irq_handler(u64 irq) {
-  if (pic_get_isr() & (1 << irq))
+  if (!(pic_get_isr() & (1 << irq)))
     return;
   if (handlers[irq])
     handlers[irq]();
@@ -36,6 +37,7 @@ void(*irq_stub_table[16]) = {
 
 void irq_init() {
   asm("cli");
+  kmemset(handlers, 0, sizeof(handlers));
   for (i32 i = 0; i < 16; i++)
     idt_add_handler(
         0x20 + i, irq_stub_table[i],
