@@ -29,6 +29,7 @@ void apic_init() {
   if (rdmsr(APIC_BASE_MSR) & APIC_BASE_MSR_BSP) {
     pic_init();
     pic_disable();
+    log(LOGLEVEL_INFO, "Disabled legacy PIC");
   }
 
   apic_set_base(apic_get_base());
