@@ -1,6 +1,7 @@
 #include "kernel/hw/pic/apic.h"
 #include "kernel/asm_inline.h"
 #include "kernel/debug.h"
+#include "kernel/hw/cpu/cpu.h"
 #include "kernel/hw/pic/pic.h"
 #include "kernel/kernel.h"
 #include "kernel/mm/hhtp.h"
@@ -8,9 +9,7 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "lapic"
 
-bool apic_check() {
-  return true; // TODO: Perform an actual check
-}
+bool apic_check() { return cpu_has(CPU_FEAT_APIC); }
 
 uptr apic_get_base() { return rdmsr(APIC_BASE_MSR) & ~0xfff; }
 void apic_set_base(uptr base) {
