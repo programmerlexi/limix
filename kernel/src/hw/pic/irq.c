@@ -35,13 +35,17 @@ void(*irq_stub_table[16]) = {
     irq_8, irq_9, irq_10, irq_11, irq_12, irq_13, irq_14, irq_15,
 };
 
-void irq_init() {
+void irq_attach() {
   asm("cli");
-  kmemset(handlers, 0, sizeof(handlers));
   for (i32 i = 0; i < 16; i++)
     idt_add_handler(
         0x20 + i, irq_stub_table[i],
         IDT_FLAGS_DPL0 | IDT_FLAGS_PRESENT | IDT_FLAGS_GATE_TYPE_INT, 0);
   asm("sti");
+}
+
+void irq_init() {
+  kmemset(handlers, 0, sizeof(handlers));
+  irq_attach();
 }
 void irq_register(void (*handler)(), u8 irq) { handlers[irq] = handler; }
