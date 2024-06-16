@@ -77,6 +77,11 @@ exec_thread_switch:
   pop rbp
   ret
 
+thread_enter:
+  pop rdi
+  ret
+
+[global thread_enter]
 [global exec_first_switch]
 [global exec_switch]
 [global exec_thread_switch]

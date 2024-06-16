@@ -1,4 +1,5 @@
 #include "kernel/hw/pcie/pcie.h"
+#include "kernel/asm_inline.h"
 #include "kernel/debug.h"
 #include "kernel/gfx/vt/vt.h"
 #include "kernel/hw/acpi/acpi.h"
@@ -9,6 +10,7 @@
 #include "kernel/hw/pci/pci.h"
 #include "kernel/hw/usb/xhci/xhci.h"
 #include "kernel/mm/hhtp.h"
+#include "kernel/task/sched/common.h"
 #include "libk/printing.h"
 #include <stdbool.h>
 #include <stddef.h>
@@ -32,6 +34,39 @@ pci_header_t *pcie_get_device(u8 b, u8 s, u8 f) {
     return NULL;
   u64 rb = b - r->start;
   return (pci_header_t *)((rb * 256 + s * 8 + f) * 0x1000 + r->base);
+}
+
+static void pci_handle_device(pci_header_t *dev) {
+  switch (dev->class_code) {
+  case PCI_CLASS_MASS_STORAGE:
+    switch (dev->subclass) {
+    case PCI_SUBCLASS_MASS_STORAGE_SATA:
+      switch (dev->prog_if) {
+      case PCI_PROGIF_MASS_STORAGE_SATA_VENDOR_AHCI:
+        ahci_init((pci_type0_t *)dev);
+        break;
+      }
+      break;
+    case PCI_SUBCLASS_MASS_STORAGE_NVM:
+      nvme_init((pci_type0_t *)dev);
+      break;
+    case PCI_SUBCLASS_MASS_STORAGE_IDE:
+      ide_init((pci_type0_t *)dev);
+      break;
+    }
+    break;
+  case PCI_CLASS_BUS:
+    switch (dev->subclass) {
+    case PCI_SUBCLASS_BUS_USB:
+      switch (dev->prog_if) {
+      case 0x30:
+        xhci_init((pci_type0_t *)dev);
+        break;
+      }
+      break;
+    }
+    break;
+  }
 }
 
 bool pcie_init() {
@@ -75,36 +110,7 @@ bool pcie_init() {
                         TERMCODE(TC_DIM) "%s\n\r" TERMCODE(TC_RESET),
             (u64)b, (u64)s, (u64)f, (int)dev->vendor_id, (int)dev->device_id,
             pci_get_vendor_name(b, s, f), pci_get_device_name(b, s, f));
-        switch (dev->class_code) {
-        case PCI_CLASS_MASS_STORAGE:
-          switch (dev->subclass) {
-          case PCI_SUBCLASS_MASS_STORAGE_SATA:
-            switch (dev->prog_if) {
-            case PCI_PROGIF_MASS_STORAGE_SATA_VENDOR_AHCI:
-              ahci_init((pci_type0_t *)dev);
-              break;
-            }
-            break;
-          case PCI_SUBCLASS_MASS_STORAGE_NVM:
-            nvme_init((pci_type0_t *)dev);
-            break;
-          case PCI_SUBCLASS_MASS_STORAGE_IDE:
-            ide_init((pci_type0_t *)dev);
-            break;
-          }
-          break;
-        case PCI_CLASS_BUS:
-          switch (dev->subclass) {
-          case PCI_SUBCLASS_BUS_USB:
-            switch (dev->prog_if) {
-            case 0x30:
-              xhci_init((pci_type0_t *)dev);
-              break;
-            }
-            break;
-          }
-          break;
-        }
+        sched_create(pci_handle_device, get_processor(), (u64)dev);
       }
     }
   }

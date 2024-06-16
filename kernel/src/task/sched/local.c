@@ -12,9 +12,7 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "local_sched"
 
-static u32 _sched_initialize = 1;
-
-void unlock_lschedi() { spinunlock(&_sched_initialize); }
+static u32 _sched_initialize;
 
 local_scheduler_t *sched_local_init(u64 cpu) {
   spinlock(&_sched_initialize);

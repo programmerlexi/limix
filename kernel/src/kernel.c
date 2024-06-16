@@ -17,33 +17,37 @@
 static local_scheduler_t *ls;
 
 void core_main() {
-  log(LOGLEVEL_INFO, "Core main entered");
   cpu_init();
+  logf(LOGLEVEL_INFO, "Running on a '%s'", cpu_vendor());
 
   apic_init();
+}
 
-  for (;;)
-    ;
+void hardware_enumerate() {
+  acpi_init();
+  pci_init();
+}
+
+void activate_cpus() { smp_init(); }
+
+void fs_init() {
+  vfs_init();
+  devfs_init();
+  devfs_bind(vfs_make("dev"));
+  devfs_reload();
+  drm_register_vfs();
 }
 
 long long main() {
   logf(LOGLEVEL_ALWAYS, "Starting limix v%u.%u.%u", KERNEL_MAJ, KERNEL_MIN,
        KERNEL_PATCH);
 
-  vfs_init();
-  devfs_init();
-  devfs_bind(vfs_make("dev"));
-  devfs_reload();
-  drm_register_vfs();
-
   kb_init();
 
-  acpi_init();
-  pci_init();
-
-  smp_init();
-
-  sched_create(core_main, get_processor());
+  sched_create(fs_init, get_processor(), 0);
+  sched_create(activate_cpus, get_processor(), 0);
+  sched_create(hardware_enumerate, get_processor(), 0);
+  sched_create(core_main, get_processor(), 0);
 
   ls = sched_local_init(0);
 

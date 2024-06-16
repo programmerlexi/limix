@@ -10,7 +10,7 @@
 typedef struct cpu_list_entry {
   u64 cpu_id;
   u64 capabilities;
-  char vendor[12];
+  char vendor[13];
   struct cpu_list_entry *next;
 } cpu_list_entry_t;
 
@@ -18,3 +18,4 @@ typedef u64 cpu_capability_t;
 
 void cpu_init();
 bool cpu_has(cpu_capability_t capability);
+char *cpu_vendor();

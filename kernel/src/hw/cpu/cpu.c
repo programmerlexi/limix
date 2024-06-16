@@ -27,6 +27,7 @@ void cpu_init() {
     n->vendor[4 + i] = (b >> (8 * i)) & 0xff;
   for (u8 i = 0; i < 4; i++)
     n->vendor[8 + i] = (c >> (8 * i)) & 0xff;
+  n->vendor[12] = 0;
 
   cpuid(1, &_, &_, &b, &a);
 
@@ -42,7 +43,7 @@ void cpu_init() {
   cpu_list = n;
 
   spinunlock(&cpu_list_lock);
-  logf(LOGLEVEL_INFO, "[CPU %i] Created cpu info", n->cpu_id);
+  logf(LOGLEVEL_DEBUG, "[CPU %i] Created cpu info", n->cpu_id);
 }
 
 bool cpu_has(cpu_capability_t capability) {
@@ -61,4 +62,22 @@ bool cpu_has(cpu_capability_t capability) {
 
   spinunlock(&cpu_list_lock);
   return false;
+}
+
+char *cpu_vendor() {
+  u64 cpu_id = get_processor();
+  spinlock(&cpu_list_lock);
+
+  cpu_list_entry_t *e = cpu_list;
+
+  while (e) {
+    if (e->cpu_id == cpu_id) {
+      spinunlock(&cpu_list_lock);
+      return e->vendor;
+    }
+    e = e->next;
+  }
+
+  spinunlock(&cpu_list_lock);
+  return "None";
 }

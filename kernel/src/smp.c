@@ -3,7 +3,6 @@
 #include "kernel/boot/requests.h"
 #include "kernel/debug.h"
 #include "kernel/gdt/gdt.h"
-#include "kernel/hw/pic/apic.h"
 #include "kernel/int/idt.h"
 #include "kernel/io/pio.h"
 #include "kernel/task/sched/common.h"
@@ -13,14 +12,13 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "smp"
 
-void unlock_lschedi();
 void core_main();
 
 void _smp_start(struct limine_smp_info *cpu_info) {
   logf(LOGLEVEL_DEBUG, "[CPU %u] Received startup", get_processor());
   gdt_init();
   idt_load();
-  sched_create(core_main, get_processor());
+  sched_create(core_main, get_processor(), 0);
   local_scheduler_t *ls = sched_local_init(get_processor());
   while (true) {
     sched_local_tick(ls);
@@ -39,7 +37,6 @@ u64 smp_init() {
   }
 
   debug("All processors started");
-  unlock_lschedi();
 
   return g_smp_request.response->cpu_count;
 }

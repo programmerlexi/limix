@@ -1,6 +1,7 @@
 #include "kernel/task/sched/global.h"
 #include "kernel/asm_inline.h"
 #include "kernel/debug.h"
+#include "kernel/int/syscall.h"
 #include "kernel/kernel.h"
 #include "kernel/mm/heap.h"
 #include "kernel/mm/mm.h"
@@ -21,6 +22,8 @@ static process_t *_procs;
 static local_scheduler_t *_scheds;
 static u32 _glob_sched_lock;
 static sched_frame_t *_frames;
+
+extern void thread_enter();
 
 void sched_glob_init() {
   log(LOGLEVEL_DEBUG, "Creating main process");
@@ -89,8 +92,13 @@ void sched_glob_tick() {
   sched_glob_release();
 }
 
+static void _sched_thread_end() {
+  for (;;)
+    call_syscall(SYSCALL_YIELD);
+}
+
 static u64 latest_pid = 1;
-void sched_create(void(*start), u64 cpu) {
+void sched_create(void(*start), i64 cpu, u64 arg) {
   sched_glob_aquire();
   process_t *proc = proc_create();
   if (!proc)
@@ -110,16 +118,19 @@ void sched_create(void(*start), u64 cpu) {
   void *rbp = request_page();
   if (!rbp)
     kernel_panic_error("Out of memory");
-  proc->threads->rsp = ((u64)rbp + 0x1000) - (8 * 8);
+  proc->threads->rsp = ((u64)rbp + 0x1000) - (8 * 11);
   logf(LOGLEVEL_ANALYZE, "RBP: %x RSP: %x", rbp, proc->threads->rsp);
-  ((uint64_t *)(proc->threads->rsp))[7] = (uptr)start;
+  ((uint64_t *)(proc->threads->rsp))[10] = (uptr)_sched_thread_end;
+  ((uint64_t *)(proc->threads->rsp))[9] = (uptr)start;
+  ((uint64_t *)(proc->threads->rsp))[8] = arg;
+  ((uint64_t *)(proc->threads->rsp))[7] = (uptr)thread_enter;
   ((uint64_t *)(proc->threads->rsp))[6] = 0;
   ((uint64_t *)(proc->threads->rsp))[5] = read_flags();
-  ((uint64_t *)(proc->threads->rsp))[4] = 5;
-  ((uint64_t *)(proc->threads->rsp))[3] = 4;
-  ((uint64_t *)(proc->threads->rsp))[2] = 3;
-  ((uint64_t *)(proc->threads->rsp))[1] = 2;
-  ((uint64_t *)(proc->threads->rsp))[0] = 1;
+  ((uint64_t *)(proc->threads->rsp))[4] = 0;
+  ((uint64_t *)(proc->threads->rsp))[3] = 0;
+  ((uint64_t *)(proc->threads->rsp))[2] = 0;
+  ((uint64_t *)(proc->threads->rsp))[1] = 0;
+  ((uint64_t *)(proc->threads->rsp))[0] = 0;
   proc->next = _procs->next;
   _procs->next = proc;
   sched_frame_t *frame = kmalloc(sizeof(*frame));
