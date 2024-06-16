@@ -17,6 +17,9 @@ static local_scheduler_t *ls;
 
 void core_main() {
   log(LOGLEVEL_INFO, "Core main entered");
+
+  apic_init();
+
   for (;;)
     ;
 }
@@ -32,8 +35,6 @@ long long main() {
   drm_register_vfs();
 
   kb_init();
-
-  apic_init();
 
   acpi_init();
   pci_init();

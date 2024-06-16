@@ -20,7 +20,6 @@ void _smp_start(struct limine_smp_info *cpu_info) {
   logf(LOGLEVEL_DEBUG, "[CPU %u] Received startup", get_processor());
   gdt_init();
   idt_load();
-  apic_init();
   sched_create(core_main, get_processor());
   local_scheduler_t *ls = sched_local_init(get_processor());
   while (true) {
