@@ -26,13 +26,15 @@ void apic_init() {
   if (!apic_check())
     kernel_panic_error(
         "Something just went incredibly wrong (APIC is not supported)");
-  pic_remap(0x20, 0x28);
-  pic_disable();
+  if (rdmsr(APIC_BASE_MSR) & APIC_BASE_MSR_BSP) {
+    pic_init();
+    pic_disable();
+  }
 
   apic_set_base(apic_get_base());
 
   apic_write_reg(APIC_REG_SPURIOUS_INTERRUPT_VECTOR,
-                 apic_read_reg(APIC_REG_SPURIOUS_INTERRUPT_VECTOR) | 0x100);
+                 apic_read_reg(APIC_REG_SPURIOUS_INTERRUPT_VECTOR) | 0x1ff);
 
   log(LOGLEVEL_INFO, "Initialized LAPIC");
 }
