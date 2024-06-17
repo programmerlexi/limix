@@ -20,7 +20,7 @@
 
 static process_t *_procs;
 static local_scheduler_t *_scheds;
-static u32 _glob_sched_lock;
+static u32 _glob_sched_lock = 1;
 static frame_queue_t _frames;
 
 extern void thread_enter();
@@ -82,6 +82,7 @@ void sched_glob_tick() {
             }
 
             nfc->frame = cf;
+            nfc->next = NULL;
             cf->assigned = true;
           }
         }
