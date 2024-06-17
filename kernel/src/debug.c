@@ -47,3 +47,7 @@ void _logf(loglevel_t ll, char *s, ...) {
   }
   spinunlock(&lock);
 }
+
+void log_lock() { spinlock(&lock); }
+
+void log_unlock() { spinunlock(&lock); }

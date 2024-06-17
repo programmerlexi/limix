@@ -44,3 +44,6 @@ void set_loglevel(loglevel_t ll);
 void set_serial_loglevel(loglevel_t ll);
 void _log(loglevel_t ll, char *s);
 void _logf(loglevel_t ll, char *s, ...);
+
+void log_lock();
+void log_unlock();
