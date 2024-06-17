@@ -15,6 +15,7 @@
 #include "kernel/mm/vmm.h"
 #include "kernel/task/async.h"
 #include "kernel/task/sched/global.h"
+#include "libk/utils/memory/memory.h"
 #include "limine.h"
 #include <stddef.h>
 
@@ -22,11 +23,15 @@ uint64_t g_hhaddr;
 uint64_t g_virtual_base;
 uint64_t g_physical_base;
 
+u64 _bss_start;
+u64 _bss_end;
+
 long long main();
 
 void _start() {
   if (LIMINE_BASE_REVISION_SUPPORTED == false)
     hcf();
+  kmemset(&_bss_start, 0, (uptr)_bss_end - (uptr)_bss_start);
   serial_early_init();
   if (g_framebuffer_request.response == NULL ||
       g_framebuffer_request.response->framebuffer_count < 1)
