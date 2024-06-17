@@ -113,7 +113,7 @@ bool pcie_init() {
             (u64)b, (u64)s, (u64)f, (int)dev->vendor_id, (int)dev->device_id,
             pci_get_vendor_name(b, s, f), pci_get_device_name(b, s, f));
         log_unlock();
-        sched_create(pci_handle_device, get_processor(), (u64)dev);
+        sched_create(pci_handle_device, cpu_get_random_cpu(), (u64)dev);
       }
     }
   }
