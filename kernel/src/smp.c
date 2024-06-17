@@ -6,6 +6,7 @@
 #include "kernel/int/idt.h"
 #include "kernel/io/pio.h"
 #include "kernel/task/sched/common.h"
+#include "kernel/task/sched/global.h"
 #include "kernel/task/sched/local.h"
 #include "limine.h"
 
@@ -21,6 +22,7 @@ void _smp_start(struct limine_smp_info *cpu_info) {
   sched_create(core_main, get_processor(), 0);
   local_scheduler_t *ls = sched_local_init(get_processor());
   while (true) {
+    sched_glob_tick();
     sched_local_tick(ls);
   }
 }
