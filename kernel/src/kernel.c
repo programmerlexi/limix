@@ -49,7 +49,7 @@ long long main() {
   sched_create(fs_init, get_processor(), 0);
   sched_create(hardware_enumerate, get_processor(), 0);
 
-  ls = sched_local_init(0);
+  ls = sched_local_init(get_processor());
 
   while (1) {
     sched_glob_tick();
