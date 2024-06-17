@@ -10,6 +10,7 @@
 #include "kernel/task/sched/local.h"
 #include "kernel/task/thread/thread.h"
 #include "libk/ipc/spinlock.h"
+#include "libk/utils/memory/safety.h"
 #include "libk/utils/strings/xstr.h"
 #include <stdbool.h>
 #include <stddef.h>
@@ -69,7 +70,7 @@ void sched_glob_tick() {
       sched_frame_t *cf = _frames.start;
       while (cf) {
         debug("Handling frame");
-        if (!cf->assigned) {
+        if (!cf->assigned && (cf->thread->state == THREAD_IDLE)) {
           if (cf->proc->cpu == c->cpu) {
             debug("Inserting frame");
             frame_container_t *nfc = kmalloc(sizeof(frame_container_t));
@@ -97,8 +98,14 @@ void sched_glob_tick() {
 }
 
 static void _sched_thread_end() {
-  for (;;)
-    call_syscall(SYSCALL_YIELD);
+  u64 c = get_processor();
+  // TODO: Do thread termination properly
+  local_scheduler_t *s = sched_get_local(c);
+  nullsafe_error(s, "No scheduler");
+  spinlock(&s->shed_lock);
+  s->frames.start->frame->thread->state = THREAD_TERMINATE;
+  spinunlock(&s->shed_lock);
+  call_syscall(SYSCALL_YIELD);
 }
 
 static u64 latest_pid = 1;
@@ -135,6 +142,7 @@ void sched_create(void(*start), i64 cpu, u64 arg) {
   ((uint64_t *)(proc->threads->rsp))[2] = 0;
   ((uint64_t *)(proc->threads->rsp))[1] = 0;
   ((uint64_t *)(proc->threads->rsp))[0] = 0;
+  proc->threads->state = THREAD_IDLE;
   proc->next = _procs->next;
   proc->prev = _procs;
   if (proc->next)
