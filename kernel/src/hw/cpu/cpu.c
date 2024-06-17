@@ -95,5 +95,8 @@ i64 cpu_get_random_cpu() {
   }
 
   spinunlock(&cpu_list_lock);
+
+  logf(LOGLEVEL_DEBUG, "Random cpu: %i", cs->cpu_id);
+
   return cs->cpu_id;
 }
