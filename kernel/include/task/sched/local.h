@@ -8,8 +8,13 @@ typedef struct frame_container {
   struct frame_container *next;
 } frame_container_t;
 
+typedef struct frame_container_queue {
+  frame_container_t *start;
+  frame_container_t *end;
+} frame_container_queue_t;
+
 typedef struct local_scheduler {
-  frame_container_t *frames;
+  frame_container_queue_t frames;
 
   process_t *core_process;
   bool from_core;

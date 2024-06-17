@@ -44,10 +44,10 @@ long long main() {
 
   kb_init();
 
-  sched_create(fs_init, get_processor(), 0);
-  sched_create(activate_cpus, get_processor(), 0);
-  sched_create(hardware_enumerate, get_processor(), 0);
   sched_create(core_main, get_processor(), 0);
+  sched_create(hardware_enumerate, get_processor(), 0);
+  sched_create(activate_cpus, get_processor(), 0);
+  sched_create(fs_init, get_processor(), 0);
 
   ls = sched_local_init(0);
 

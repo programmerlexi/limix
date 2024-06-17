@@ -21,11 +21,12 @@ void syscall(int_frame_t *f) {
     logf(LOGLEVEL_INFO, "CPU: %u", cpu);
     if (ls) {
       log(LOGLEVEL_INFO, "Local scheduler is initialized");
-      if (ls->frames) {
-        logf(LOGLEVEL_INFO, "PID: %u TID: %u", ls->frames->frame->proc->pid,
-             ls->frames->frame->thread->tid);
+      if (ls->frames.start) {
+        logf(LOGLEVEL_INFO, "PID: %u TID: %u",
+             ls->frames.start->frame->proc->pid,
+             ls->frames.start->frame->thread->tid);
         logf(LOGLEVEL_INFO, "Process name: %s",
-             ls->frames->frame->proc->name.cstr);
+             ls->frames.start->frame->proc->name.cstr);
       }
     }
     spinunlock(&lck);

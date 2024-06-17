@@ -13,4 +13,9 @@ typedef struct sched_frame {
   struct sched_frame *next;
 } sched_frame_t;
 
+typedef struct frame_queue {
+  sched_frame_t *start;
+  sched_frame_t *end;
+} frame_queue_t;
+
 void sched_create(void(*start), i64 cpu, u64 arg);

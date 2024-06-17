@@ -21,7 +21,7 @@
 static process_t *_procs;
 static local_scheduler_t *_scheds;
 static u32 _glob_sched_lock;
-static sched_frame_t *_frames;
+static frame_queue_t _frames;
 
 extern void thread_enter();
 
@@ -44,12 +44,12 @@ void sched_glob_init() {
   _procs->cpu = -1;
   log(LOGLEVEL_ANALYZE, "Filling task state");
   thread_switch(_procs->threads, _procs->threads);
-  _frames = kmalloc(sizeof(sched_frame_t));
-  if (!_frames)
+  _frames.start = _frames.end = kmalloc(sizeof(sched_frame_t));
+  if (!_frames.start)
     kernel_panic_error("Out of memory");
-  _frames->assigned = false;
-  _frames->proc = _procs;
-  _frames->thread = _procs->threads;
+  _frames.start->assigned = false;
+  _frames.start->proc = _procs;
+  _frames.start->thread = _procs->threads;
   _glob_sched_lock = 0;
   log(LOGLEVEL_INFO, "Global scheduler initialized");
 }
@@ -66,18 +66,21 @@ void sched_glob_tick() {
       debug("Handling scheduler");
       spinlock(&c->shed_lock);
 
-      sched_frame_t *cf = _frames;
+      sched_frame_t *cf = _frames.start;
       while (cf) {
         debug("Handling frame");
         if (!cf->assigned) {
           if (cf->proc->cpu == c->cpu) {
             debug("Inserting frame");
             frame_container_t *nfc = kmalloc(sizeof(frame_container_t));
-            frame_container_t **cfc = &c->frames;
-            while (*cfc) {
-              cfc = &((*cfc)->next);
+            if (c->frames.end) {
+              c->frames.end->next = nfc;
+              c->frames.end = nfc;
+            } else {
+              c->frames.start = nfc;
+              c->frames.end = nfc;
             }
-            *cfc = nfc;
+
             nfc->frame = cf;
             cf->assigned = true;
           }
@@ -139,8 +142,9 @@ void sched_create(void(*start), i64 cpu, u64 arg) {
   frame->proc = proc;
   frame->thread = proc->threads;
   frame->assigned = false;
-  frame->next = _frames->next;
-  _frames->next = frame;
+  frame->next = NULL;
+  _frames.end->next = frame;
+  _frames.end = frame;
   sched_glob_release();
 }
 
@@ -180,7 +184,8 @@ void sched_register_cpu(local_scheduler_t *ls) {
   proc->next = _procs->next;
   log(LOGLEVEL_ANALYZE, "Inserting process (Stage 2)");
   _procs->next = proc;
-  ls->frames = NULL;
+  ls->frames.start = NULL;
+  ls->frames.end = NULL;
   ls->core_process = proc;
 
   ls->next = _scheds;
