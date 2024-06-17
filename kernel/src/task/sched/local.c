@@ -40,15 +40,17 @@ void sched_local_tick(local_scheduler_t *ls) {
       return;
     }
   }
+  thread_t *org, *next;
   if (ls->from_core) {
     log(LOGLEVEL_ANALYZE, "Performing switch from kernel");
     ls->from_core = false;
     proc_switch(ls->core_process, ls->frames.start->frame->proc);
+    org = ls->frames.start->frame->thread;
+    next = ls->core_process->threads;
     spinunlock(&ls->shed_lock);
-    thread_switch(ls->frames.start->frame->thread, ls->core_process->threads);
+    thread_switch(org, next);
     return;
   }
-  thread_t *org, *next;
   if (ls->frames.start->next) {
     debug("Switching process");
     proc_switch(ls->frames.start->frame->proc,
