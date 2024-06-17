@@ -2,9 +2,6 @@
 #include "kernel/asm_inline.h"
 #include "kernel/config.h"
 #include "kernel/debug.h"
-#include "kernel/fs/devfs.h"
-#include "kernel/fs/vfs.h"
-#include "kernel/gfx/drm.h"
 #include "kernel/hw/acpi/acpi.h"
 #include "kernel/hw/cpu/cpu.h"
 #include "kernel/hw/hid/kb/kb.h"
@@ -28,27 +25,15 @@ void hardware_enumerate() {
   acpi_init();
   if (!pcie_init())
     kernel_panic_error("PCIe init failed");
-}
-
-void activate_cpus() { smp_init(); }
-
-void fs_init() {
-  vfs_init();
-  devfs_init();
-  devfs_bind(vfs_make("dev"));
-  devfs_reload();
-  drm_register_vfs();
+  kb_init();
 }
 
 long long main() {
   logf(LOGLEVEL_ALWAYS, "Starting limix v%u.%u.%u", KERNEL_MAJ, KERNEL_MIN,
        KERNEL_PATCH);
 
-  kb_init();
-
-  sched_create(activate_cpus, get_processor(), 0);
   sched_create(core_main, get_processor(), 0);
-  sched_create(fs_init, get_processor(), 0);
+  sched_create(smp_init, get_processor(), 0);
   sched_create(hardware_enumerate, get_processor(), 0);
 
   ls = sched_local_init(get_processor());
