@@ -9,15 +9,17 @@
 #include "kernel/mm/mm.h"
 #include "libk/types.h"
 #include "libk/utils/memory/memory.h"
+#include "libk/utils/memory/safety.h"
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "ahci"
 
 ahci_t *ahci_init(pci_type0_t *h) {
-  ahci_t *ahci = kmalloc(sizeof(*ahci));
+  ahci_t *ahci = kcalloc(sizeof(*ahci));
   ahci->ahci_device = h;
   ahci->abar = (ahci_hba_memory_t *)HHDM(
       (ahci->ahci_device->bar5 & (uptr)PCI_BAR_MEM_BASE_ADDR));
+  ahci->port_count = 0;
   logf(LOGLEVEL_DEBUG, "Got AHCI ABAR: 0x%l", ahci->abar);
   ahci_probe(ahci);
   for (u32 i = 0; i < ahci->port_count; i++)
@@ -36,6 +38,8 @@ void ahci_probe(ahci_t *ahci) {
     if (type == SATA) {
       logf(LOGLEVEL_INFO, "Found SATA device attached at port %u", (u64)i);
       ahci->ports[ahci->port_count] = kmalloc(sizeof(ahci_port_t));
+      invlpg(ahci->ports[ahci->port_count]);
+      nullsafe_error(ahci->ports[ahci->port_count], "Out of memory");
       ahci->ports[ahci->port_count]->port_type = type;
       ahci->ports[ahci->port_count]->hba_port = &ahci->abar->ports[i];
       ahci->ports[ahci->port_count]->port_number = i;
