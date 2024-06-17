@@ -139,13 +139,9 @@ void *kmalloc(usz size) {
   return kmalloc(size);
 }
 
-void *calloc(usz size, u8 val) {
+void *kcalloc(usz size) {
   void *ptr = kmalloc(size);
-  if (size % 0x10 > 0) {
-    size -= size % 0x10;
-    size += 0x10;
-  }
-  kmemset(ptr, val, size);
+  kmemset(ptr, 0, size);
   return ptr;
 }
 

@@ -15,4 +15,5 @@ void heap_init();
 u32 heap_get_used();
 
 void *kmalloc(usz count);
+void *kcalloc(usz count);
 void kfree(void *pointer);
