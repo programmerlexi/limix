@@ -136,6 +136,9 @@ void sched_create(void(*start), i64 cpu, u64 arg) {
   ((uint64_t *)(proc->threads->rsp))[1] = 0;
   ((uint64_t *)(proc->threads->rsp))[0] = 0;
   proc->next = _procs->next;
+  proc->prev = _procs;
+  if (proc->next)
+    proc->next->prev = proc;
   _procs->next = proc;
   sched_frame_t *frame = kmalloc(sizeof(*frame));
   if (!frame)
@@ -183,7 +186,9 @@ void sched_register_cpu(local_scheduler_t *ls) {
   frame->thread = proc->threads;
   log(LOGLEVEL_ANALYZE, "Inserting process");
   proc->next = _procs->next;
-  log(LOGLEVEL_ANALYZE, "Inserting process (Stage 2)");
+  if (proc->next)
+    proc->next->prev = proc;
+  proc->prev = _procs;
   _procs->next = proc;
   ls->frames.start = NULL;
   ls->frames.end = NULL;

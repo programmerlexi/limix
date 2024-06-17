@@ -20,6 +20,7 @@ typedef struct process {
 
   xstr_t name;
 
+  struct process *prev;
   struct process *next;
 } process_t;
 
