@@ -38,11 +38,6 @@ void fs_init() {
   drm_register_vfs();
 }
 
-void kmain() {
-  sched_create(hardware_enumerate, get_processor(), 0);
-  sched_create(fs_init, get_processor(), 0);
-}
-
 long long main() {
   logf(LOGLEVEL_ALWAYS, "Starting limix v%u.%u.%u", KERNEL_MAJ, KERNEL_MIN,
        KERNEL_PATCH);
@@ -51,7 +46,8 @@ long long main() {
 
   sched_create(activate_cpus, get_processor(), 0);
   sched_create(core_main, get_processor(), 0);
-  sched_create(kmain, get_processor(), 0);
+  sched_create(fs_init, get_processor(), 0);
+  sched_create(hardware_enumerate, get_processor(), 0);
 
   ls = sched_local_init(0);
 
