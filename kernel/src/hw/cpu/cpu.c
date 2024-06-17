@@ -3,6 +3,7 @@
 #include "kernel/debug.h"
 #include "kernel/hw/cpu/cpuid.h"
 #include "kernel/mm/heap.h"
+#include "libk/crypt/rand.h"
 #include "libk/ipc/spinlock.h"
 
 #undef DEBUG_MODULE
@@ -10,6 +11,7 @@
 
 static cpu_list_entry_t *cpu_list;
 static u32 cpu_list_lock;
+static u64 cpus;
 
 void cpu_init() {
   spinlock(&cpu_list_lock);
@@ -41,6 +43,7 @@ void cpu_init() {
     n->capabilities |= CPU_FEAT_APIC;
 
   cpu_list = n;
+  cpus++;
 
   spinunlock(&cpu_list_lock);
   logf(LOGLEVEL_DEBUG, "[CPU %i] Created cpu info", n->cpu_id);
@@ -80,4 +83,17 @@ char *cpu_vendor() {
 
   spinunlock(&cpu_list_lock);
   return "None";
+}
+
+i64 cpu_get_random_cpu() {
+  spinlock(&cpu_list_lock);
+
+  i64 c = krand() % cpus;
+  cpu_list_entry_t *cs = cpu_list;
+  for (i64 i = 0; i < c; i++) {
+    cs = cs->next;
+  }
+
+  spinunlock(&cpu_list_lock);
+  return cs->cpu_id;
 }

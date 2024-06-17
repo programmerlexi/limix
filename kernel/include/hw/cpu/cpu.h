@@ -19,3 +19,5 @@ typedef u64 cpu_capability_t;
 void cpu_init();
 bool cpu_has(cpu_capability_t capability);
 char *cpu_vendor();
+
+i64 cpu_get_random_cpu();

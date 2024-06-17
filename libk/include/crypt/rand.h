@@ -1,4 +1,4 @@
 #pragma once
 
-int rand();
-void srand(unsigned int seed);
+int krand();
+void ksrand(unsigned int seed);
