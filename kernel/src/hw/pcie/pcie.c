@@ -4,6 +4,7 @@
 #include "kernel/gfx/vt/vt.h"
 #include "kernel/hw/acpi/acpi.h"
 #include "kernel/hw/ahci/ahci.h"
+#include "kernel/hw/cpu/cpu.h"
 #include "kernel/hw/ide/ide.h"
 #include "kernel/hw/nvme/nvme.h"
 #include "kernel/hw/pci/codes.h"
@@ -102,6 +103,7 @@ bool pcie_init() {
           continue;
         if (!dev->device_id || dev->device_id == 0xffff)
           continue;
+        log_lock();
         kprintf(
             "PCIe device at " TERMCODE(TC_DIM) "%u/%u/%u: " TERMCODE(TC_NO_DIM)
                 TERMCODE(TC_BOLD) TERMCODE(TC_FG_BLUE) "%w %w " TERMCODE(
@@ -110,6 +112,7 @@ bool pcie_init() {
                         TERMCODE(TC_DIM) "%s\n\r" TERMCODE(TC_RESET),
             (u64)b, (u64)s, (u64)f, (int)dev->vendor_id, (int)dev->device_id,
             pci_get_vendor_name(b, s, f), pci_get_device_name(b, s, f));
+        log_unlock();
         sched_create(pci_handle_device, get_processor(), (u64)dev);
       }
     }
