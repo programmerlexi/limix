@@ -71,6 +71,8 @@ void sched_local_tick(local_scheduler_t *ls) {
     proc_switch(ls->frames.start->frame->proc, ls->core_process);
     org = ls->frames.start->frame->thread;
     next = ls->core_process->threads;
+    ls->frames.start = NULL;
+    ls->frames.end = NULL;
   }
   spinunlock(&ls->shed_lock);
 
