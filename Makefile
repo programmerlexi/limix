@@ -22,8 +22,11 @@ include: $(INCLUDES)
 libk: include
 	@make -j$(JOBS) -C libk
 
+release:
+	STRIP=strip make image.iso image.hdd
+
 kernel: libk include
-	@make -j$(JOBS) -C kernel
+	@make -j$(JOBS) -C kernel $(STRIP)
 
 util:
 	@make -j $(JOBS) -C util bin/font.lime bin/pci_devices.reg bin/pci_vendors.reg

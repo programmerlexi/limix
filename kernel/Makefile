@@ -108,6 +108,12 @@ bin/$(KERNEL).gz: bin/$(KERNEL)
 	@rm -f $@
 	@gzip -k $<
 
+strip: bin/$(KERNEL)
+	@echo "[GZIP] Compressing kernel"
+	@rm -f $@
+	@strip $<
+	@gzip -kf $<
+
 # Include header dependencies.
 -include $(HEADER_DEPS)
  
