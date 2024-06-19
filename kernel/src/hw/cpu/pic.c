@@ -1,4 +1,4 @@
-#include "kernel/hw/pic/pic.h"
+#include "kernel/hw/cpu/pic.h"
 #include "kernel/io/pio.h"
 
 void pic_init() {

@@ -1,4 +1,4 @@
-#include "kernel/hw/pic/pic.h"
+#include "kernel/hw/cpu/pic.h"
 #include "kernel/int/idt.h"
 #include "libk/types.h"
 #include "libk/utils/memory/memory.h"

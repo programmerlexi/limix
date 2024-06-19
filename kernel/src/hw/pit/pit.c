@@ -1,6 +1,6 @@
 #include "kernel/hw/pit/pit.h"
-#include "kernel/hw/pic/irq.h"
-#include "kernel/hw/pic/pic.h"
+#include "kernel/hw/cpu/irq.h"
+#include "kernel/hw/cpu/pic.h"
 #include "kernel/int/syscall.h"
 #include "kernel/io/pio.h"
 

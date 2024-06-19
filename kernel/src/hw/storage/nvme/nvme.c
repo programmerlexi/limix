@@ -1,4 +1,4 @@
-#include "kernel/hw/nvme/nvme.h"
+#include "kernel/hw/storage/nvme/nvme.h"
 #include "kernel/debug.h"
 #include "kernel/hw/pci/pci.h"
 #include "kernel/mm/heap.h"

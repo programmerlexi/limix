@@ -1,4 +1,4 @@
-#include "kernel/hw/ide/ide.h"
+#include "kernel/hw/storage/ide/ide.h"
 #include "kernel/debug.h"
 #include "kernel/hw/pci/pci.h"
 #include "kernel/mm/heap.h"

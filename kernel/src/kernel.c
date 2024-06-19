@@ -3,10 +3,10 @@
 #include "kernel/config.h"
 #include "kernel/debug.h"
 #include "kernel/hw/acpi/acpi.h"
+#include "kernel/hw/cpu/apic.h"
 #include "kernel/hw/cpu/cpu.h"
 #include "kernel/hw/hid/kb/kb.h"
 #include "kernel/hw/pcie/pcie.h"
-#include "kernel/hw/pic/apic.h"
 #include "kernel/smp.h"
 #include "kernel/task/sched/common.h"
 #include "kernel/task/sched/global.h"
@@ -23,9 +23,9 @@ void core_main() {
 
 void hardware_enumerate() {
   acpi_init();
+  kb_init();
   if (!pcie_init())
     kernel_panic_error("PCIe init failed");
-  kb_init();
 }
 
 long long main() {
