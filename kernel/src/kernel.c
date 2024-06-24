@@ -5,6 +5,7 @@
 #include "kernel/hw/acpi/acpi.h"
 #include "kernel/hw/cpu/apic.h"
 #include "kernel/hw/cpu/cpu.h"
+#include "kernel/hw/devman/devman.h"
 #include "kernel/hw/hid/kb/kb.h"
 #include "kernel/hw/pcie/pcie.h"
 #include "kernel/smp.h"
@@ -31,6 +32,8 @@ void hardware_enumerate() {
 long long main() {
   logf(LOGLEVEL_ALWAYS, "Starting limix v%u.%u.%u", KERNEL_MAJ, KERNEL_MIN,
        KERNEL_PATCH);
+
+  devman_init();
 
   sched_create(core_main, get_processor(), 0);
   sched_create(smp_init, get_processor(), 0);
