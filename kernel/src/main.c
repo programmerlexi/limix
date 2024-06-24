@@ -23,8 +23,8 @@ uint64_t g_hhaddr;
 uint64_t g_virtual_base;
 uint64_t g_physical_base;
 
-u64 _bss_start;
-u64 _bss_end;
+extern u64 _bss_start;
+extern u64 _bss_end;
 
 long long main();
 
