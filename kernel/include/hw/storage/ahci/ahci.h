@@ -145,3 +145,5 @@ void ahci_port_configure(ahci_port_t *p);
 void ahci_port_start_cmd(ahci_port_t *p);
 void ahci_port_stop_cmd(ahci_port_t *p);
 bool ahci_port_read(ahci_port_t *p, u64 sector, u32 count, void *buffer);
+bool ahci_port_write(ahci_port_t *p, u64 sector, u32 count, void *buffer);
+bool ahci_port_check(ahci_port_t *p);

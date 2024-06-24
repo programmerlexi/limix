@@ -1,15 +1,19 @@
 #include "kernel/hw/storage/ahci/ahci.h"
 #include "kernel/asm_inline.h"
 #include "kernel/debug.h"
+#include "kernel/fs/gpt.h"
+#include "kernel/hw/devman/devman.h"
 #include "kernel/hw/pci/pci.h"
 #include "kernel/hw/storage/ide/ide.h"
 #include "kernel/io/pio.h"
+#include "kernel/kernel.h"
 #include "kernel/mm/heap.h"
 #include "kernel/mm/hhtp.h"
 #include "kernel/mm/mm.h"
 #include "libk/types.h"
 #include "libk/utils/memory/memory.h"
 #include "libk/utils/memory/safety.h"
+#include <stdbool.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "ahci"
@@ -22,8 +26,20 @@ ahci_t *ahci_init(pci_type0_t *h) {
   ahci->port_count = 0;
   logf(LOGLEVEL_DEBUG, "Got AHCI ABAR: 0x%l", ahci->abar);
   ahci_probe(ahci);
-  for (u32 i = 0; i < ahci->port_count; i++)
+  for (u32 i = 0; i < ahci->port_count; i++) {
     ahci_port_configure(ahci->ports[i]);
+    devman_storage_type_t st;
+    if (ahci->ports[i]->port_type == SATA)
+      st = HDD;
+    else if (ahci->ports[i]->port_type == SATAPI)
+      st = CD;
+    else
+      kernel_panic_error("Logic error");
+    devman_add_storage(st, ahci->ports[i],
+                       (bool (*)(void *, u64, u32, void *))ahci_port_read,
+                       (bool (*)(void *, u64, u32, void *))ahci_port_write,
+                       (bool (*)(void *))ahci_port_check);
+  }
   log(LOGLEVEL_INFO, "Initialized AHCI");
 
   return ahci;
@@ -125,7 +141,8 @@ void ahci_port_configure(ahci_port_t *p) {
   log(LOGLEVEL_INFO, "Configured AHCI port");
 }
 
-bool _ahci_port_read_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
+bool _ahci_port_io_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer,
+                        bool write) {
   invlpg(buffer);
 
   p->hba_port->interrupt_status = (u32)-1;
@@ -143,7 +160,7 @@ bool _ahci_port_read_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
       ((u64)p->hba_port->command_list_base |
        ((u64)p->hba_port->command_list_base_upper << 32)));
   cmd_header->command_fis_length = sizeof(ahci_fis_h2d_t) / sizeof(u32);
-  cmd_header->write = 0;
+  cmd_header->write = write;
   cmd_header->prdt_length = (u16)((count - 1) >> 4) + 1;
 
   ahci_hba_command_table_t *cmd_table = (ahci_hba_command_table_t *)HHDM(
@@ -202,7 +219,18 @@ bool _ahci_port_read_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
 
 bool ahci_port_read(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
   if (p->port_type == SATA)
-    return _ahci_port_read_sata(p, sector, count, buffer);
+    return _ahci_port_io_sata(p, sector, count, buffer, false);
   else
     return false;
+}
+
+bool ahci_port_write(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
+  if (p->port_type == SATA)
+    return _ahci_port_io_sata(p, sector, count, buffer, true);
+  else
+    return false;
+}
+
+bool ahci_port_check(ahci_port_t *p) {
+  return true; // TODO: Check
 }
