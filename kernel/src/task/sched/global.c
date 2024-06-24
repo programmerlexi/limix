@@ -60,19 +60,15 @@ void sched_glob_release() { spinunlock(&_glob_sched_lock); }
 
 void sched_glob_tick() {
   sched_glob_aquire();
-  debug("Ticking global");
   local_scheduler_t *c = _scheds;
   while (c) {
     if (!c->shed_lock) {
-      debug("Handling scheduler");
       spinlock(&c->shed_lock);
 
       sched_frame_t *cf = _frames.start;
       while (cf) {
-        debug("Handling frame");
         if (!cf->assigned && (cf->thread->state == THREAD_IDLE)) {
           if (cf->proc->cpu == c->cpu) {
-            debug("Inserting frame");
             frame_container_t *nfc = kmalloc(sizeof(frame_container_t));
             if (c->frames.end) {
               c->frames.end->next = nfc;

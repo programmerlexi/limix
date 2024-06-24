@@ -31,7 +31,6 @@ local_scheduler_t *sched_local_init(u64 cpu) {
 
 void sched_local_tick(local_scheduler_t *ls) {
   spinlock(&ls->shed_lock);
-  debug("Ticking local");
   if (!ls->frames.start) {
     if (!ls->from_core) {
       kernel_panic_error("Something went horribly wrong");
@@ -76,6 +75,5 @@ void sched_local_tick(local_scheduler_t *ls) {
   }
   spinunlock(&ls->shed_lock);
 
-  debug("Switching thread");
   thread_switch(next, org);
 }
