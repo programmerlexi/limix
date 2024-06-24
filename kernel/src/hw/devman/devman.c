@@ -2,6 +2,7 @@
 #include "kernel/debug.h"
 #include "kernel/fs/gpt.h"
 #include "kernel/mm/heap.h"
+#include "libk/ipc/spinlock.h"
 #include "libk/utils/memory/heap_wrap.h"
 #include <stddef.h>
 
@@ -11,17 +12,20 @@
 static devman_storage_t **storage_pointers;
 static u64 storages;
 static u64 highest_storage;
+static u32 storage_lock = 1;
 
 void devman_init() {
   storage_pointers = NULL;
   storages = 0;
   highest_storage = 0;
+  spinunlock(&storage_lock);
 }
 
 void devman_add_storage(devman_storage_type_t type, void *driver_data,
                         bool (*read)(void *, u64, u32, void *),
                         bool (*write)(void *, u64, u32, void *),
                         bool (*check_attached)(void *)) {
+  spinlock(&storage_lock);
   if (!storage_pointers) {
     storage_pointers = kcalloc(sizeof(void *));
     storages = 1;
@@ -50,5 +54,6 @@ void devman_add_storage(devman_storage_type_t type, void *driver_data,
     storage_pointers[storages - 1] = s;
   }
   log(LOGLEVEL_INFO, "Registered storage device. Scanning partitions...");
+  spinunlock(&storage_lock);
   gpt_init(s->driver_data, s->read);
 }
