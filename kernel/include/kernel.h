@@ -1,5 +1,5 @@
 #pragma once
 
-void hcf();
-void kernel_panic_error(const char *error);
-void kernel_panic();
+__attribute__((noreturn)) void hcf();
+__attribute__((noreturn)) void kernel_panic_error(const char *error);
+__attribute__((noreturn)) void kernel_panic();
