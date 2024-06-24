@@ -1,7 +1,7 @@
 #include "kernel/task/thread/thread.h"
 #include "kernel/mm/heap.h"
 
-static u64 _latest_tid = 0;
+static u64 _latest_tid;
 
 thread_t *thread_create() {
   thread_t *t = (thread_t *)kcalloc(sizeof(thread_t));

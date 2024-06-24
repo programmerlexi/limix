@@ -8,9 +8,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-static memseg_t *_first = NULL;
-static memseg_t *_last = NULL;
-static u32 page_lock = 0;
+static memseg_t *_first;
+static memseg_t *_last;
+static u32 page_lock;
 
 #define lock spinlock(&page_lock);
 #define unlock spinunlock(&page_lock);
