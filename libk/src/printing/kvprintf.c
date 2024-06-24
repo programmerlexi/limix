@@ -14,14 +14,19 @@ void kvprintf(char *s, va_list args) {
       switch (*s) {
       case 'l':
         pad = true;
+        continue;
       case 'x':
         base += 6;
+        continue;
       case 'u':
         sign = false;
+        continue;
       case 'i':
         base += 2;
+        continue;
       case 'o':
         base += 6;
+        continue;
       case 'd':
         base += 2;
         if (base == 2)

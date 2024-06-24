@@ -33,7 +33,6 @@ $(eval $(call DEFAULT_VAR,NASMFLAGS,$(DEFAULT_NASMFLAGS)))
 override CFLAGS += \
     -Wall \
     -Wextra \
-		-Wno-implicit-fallthrough \
 		-Werror \
     -std=gnu11 \
     -ffreestanding \
