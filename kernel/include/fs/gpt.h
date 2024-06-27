@@ -1,6 +1,7 @@
 #pragma once
 
 #include "kernel/fs/mbr.h"
+#include "kernel/hw/devman/devman.h"
 #include <stdbool.h>
 
 typedef struct {
@@ -25,5 +26,4 @@ typedef struct {
   gpt_partition_header_t partition_header __attribute__((aligned(0x200)));
 } __attribute__((packed)) gpt_header_t;
 
-void gpt_init(void *drv,
-              bool (*read)(void *drv, u64 lba, u32 count, void *buffer));
+void gpt_init(devman_storage_access_handle_t ah);

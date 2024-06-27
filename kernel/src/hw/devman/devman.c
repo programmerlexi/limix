@@ -55,5 +55,80 @@ void devman_add_storage(devman_storage_type_t type, void *driver_data,
   }
   log(LOGLEVEL_INFO, "Registered storage device. Scanning partitions...");
   spinunlock(&storage_lock);
-  gpt_init(s->driver_data, s->read);
+  devman_storage_access_handle_t ah;
+  ah.partition_index = 0;
+  ah.storage_index = highest_storage - 1;
+  gpt_init(ah);
+}
+
+static devman_storage_partition_t _devman_get_partition(u64 drive,
+                                                        u64 partition) {
+  devman_storage_partition_t r;
+  r.id = 0;
+  r.start = 0;
+  r.end = 0;
+  if (!partition) {
+    r.id = 0;
+    r.start = 0;
+    r.end = -1;
+  } else {
+    if (!(drive < highest_storage))
+      return r;
+    for (u64 i = 0; i < storages; i++) {
+      if (!storage_pointers[i])
+        continue;
+      if (storage_pointers[i]->number == drive) {
+        if (!storage_pointers[i]->partitions)
+          break;
+        for (u64 j = 0; j < storage_pointers[i]->partition_count; j++) {
+          if (!storage_pointers[i]->partitions[j])
+            continue;
+          if (storage_pointers[i]->partitions[j]->id == partition) {
+            r.start = storage_pointers[i]->partitions[j]->start;
+            r.end = storage_pointers[i]->partitions[j]->end;
+            r.id = storage_pointers[i]->partitions[j]->id;
+            break;
+          }
+        }
+        break;
+      }
+    }
+  }
+  return r;
+}
+
+static devman_storage_t *_devman_get_storage(u64 drive) {
+  if (!storage_pointers)
+    return NULL;
+  for (u64 i = 0; i < storages; i++) {
+    if (!storage_pointers[i])
+      continue;
+    if (storage_pointers[i]->number == drive)
+      return storage_pointers[i];
+  }
+  return NULL;
+}
+
+bool devman_read(devman_storage_access_handle_t handle, u64 sector, u32 count,
+                 void *buffer) {
+  devman_storage_t *s = _devman_get_storage(handle.storage_index);
+  if (!s)
+    return false;
+  devman_storage_partition_t p =
+      _devman_get_partition(handle.storage_index, handle.partition_index);
+  if (!p.end)
+    return false;
+  return s->read(s->driver_data, sector, count, buffer);
+}
+
+bool devman_write(devman_storage_access_handle_t handle, u64 sector, u32 count,
+                  void *buffer) {
+  devman_storage_t *s = _devman_get_storage(handle.storage_index);
+  if (!s)
+    return false;
+  devman_storage_partition_t p =
+      _devman_get_partition(handle.storage_index, handle.partition_index);
+  if (!p.end)
+    return false;
+  return s->write(s->driver_data, sector, count, buffer);
 }
