@@ -188,7 +188,10 @@ bool _ahci_port_io_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer,
   ahci_fis_h2d_t *cmd_fis = (ahci_fis_h2d_t *)HHDM(&cmd_table->command_fis);
   cmd_fis->fis_type = AHCI_FIS_TYPE_REG_H2D;
   cmd_fis->cmd_control = 1;
-  cmd_fis->cmd = ATA_CMD_READ_DMA_EXT;
+  if (write)
+    cmd_fis->cmd = ATA_CMD_WRITE_DMA_EXT;
+  else
+    cmd_fis->cmd = ATA_CMD_READ_DMA_EXT;
   cmd_fis->lba_low[0] = (u8)sector;
   cmd_fis->lba_low[1] = (u8)(sector >> 8);
   cmd_fis->lba_low[2] = (u8)(sector >> 16);
