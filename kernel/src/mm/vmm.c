@@ -13,7 +13,15 @@ void vmm_init() {
       VMM_ADDRESS(PHY(pml4)) | VMM_PRESENT | VMM_WRITEABLE;
   write_cr3(read_cr3());
 }
-uptr vmm_new();
+uptr vmm_new() {
+  u64 *pml4 = (u64 *)HHDM(request_page());
+  u64 *op = (u64 *)HHDM((read_cr3() & ~0xfff));
+  kmemcpy(pml4, op, 0x1000);
+  kmemset(pml4, 0, 0x800);
+  pml4[VMM_FRACTAL_INDEX] =
+      VMM_ADDRESS(PHY(pml4)) | VMM_PRESENT | VMM_WRITEABLE;
+  return (uptr)pml4;
+}
 
 bool vmm_map(void *v, void *p, u64 flags) {
   u64 pdp_i = (((uptr)v) >> 39) & 0x1ff;
