@@ -17,8 +17,7 @@ static local_scheduler_t *ls;
 
 void core_main() {
   cpu_init();
-  logf(LOGLEVEL_INFO, "Running on a '%s'", cpu_vendor());
-
+  logf(LOGLEVEL_DEBUG, "Running on a '%s'", cpu_vendor());
   apic_init();
 }
 
