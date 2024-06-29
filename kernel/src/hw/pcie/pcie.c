@@ -1,4 +1,5 @@
 #include "kernel/hw/pcie/pcie.h"
+#include "kernel/asm_inline.h"
 #include "kernel/debug.h"
 #include "kernel/gfx/vt/vt.h"
 #include "kernel/hw/acpi/acpi.h"
@@ -44,28 +45,28 @@ static void pci_handle_device(pci_header_t *dev) {
       switch (dev->prog_if) {
       case PCI_PROGIF_MASS_STORAGE_SATA_VENDOR_AHCI:
         ahci_init((pci_type0_t *)dev);
-        break;
+        return;
       }
-      break;
+      return;
     case PCI_SUBCLASS_MASS_STORAGE_NVM:
       nvme_init((pci_type0_t *)dev);
-      break;
+      return;
     case PCI_SUBCLASS_MASS_STORAGE_IDE:
       ide_init((pci_type0_t *)dev);
-      break;
+      return;
     }
-    break;
+    return;
   case PCI_CLASS_BUS:
     switch (dev->subclass) {
     case PCI_SUBCLASS_BUS_USB:
       switch (dev->prog_if) {
       case 0x30:
         xhci_init((pci_type0_t *)dev);
-        break;
+        return;
       }
-      break;
+      return;
     }
-    break;
+    return;
   }
 }
 
