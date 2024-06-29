@@ -72,7 +72,7 @@ image.iso: base limine
 	@./limine/limine bios-install image.iso
 
 limine:
-	@git clone https://github.com/limine-bootloader/limine.git --branch=v7.7.2-binary --depth=1
+	@git clone https://github.com/limine-bootloader/limine.git --branch=v7.x-binary --depth=1
 	@make -j$(JOBS) -C limine
 
 run-hdd: image.hdd
