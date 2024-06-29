@@ -28,7 +28,7 @@ void apic_init() {
   if (rdmsr(APIC_BASE_MSR) & APIC_BASE_MSR_BSP) {
     pic_init();
     pic_disable();
-    log(LOGLEVEL_INFO, "Disabled legacy PIC");
+    log(LOGLEVEL_DEBUG, "Disabled legacy PIC");
   }
 
   apic_set_base(apic_get_base());
@@ -36,5 +36,5 @@ void apic_init() {
   apic_write_reg(APIC_REG_SPURIOUS_INTERRUPT_VECTOR,
                  apic_read_reg(APIC_REG_SPURIOUS_INTERRUPT_VECTOR) | 0x1ff);
 
-  log(LOGLEVEL_INFO, "Initialized LAPIC");
+  log(LOGLEVEL_DEBUG, "Initialized LAPIC");
 }
