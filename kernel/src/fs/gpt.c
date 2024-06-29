@@ -3,14 +3,14 @@
 #include "kernel/kernel.h"
 #include "kernel/mm/mm.h"
 #include "libk/printing.h"
+#include "libk/utils/memory/memory.h"
 #include "libk/utils/strings/strings.h"
 
 void gpt_init(devman_storage_access_handle_t ah) {
   gpt_header_t *gpt = request_page_block(sizeof(gpt_header_t) / 0x1000);
+  kmemset(gpt, 0, sizeof(gpt_header_t));
   if (!devman_read(ah, 0, sizeof(gpt_header_t) / 512, gpt))
     kernel_panic_error("Couldn't read gpt");
-  if (gpt->pmbr.partitions[0].attribute != 0)
-    kernel_panic_error("Attributes aren't zero");
   if (gpt->pmbr.partitions[0].start_chs[0] != 0)
     kernel_panic_error("CHS[0] isn't zero");
   if (gpt->pmbr.partitions[0].start_chs[1] != 0x02)
