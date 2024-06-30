@@ -223,9 +223,11 @@ static void _drm_plot_char_solid(u64 drm, u64 x, u64 y, u32 ch, u32 c, u32 b) {
     u8 m = 0x80;
     for (u8 i = 0; i < 8; i++) {
       if (g_8x16_font[16 * ch + hi] & m)
-        drm_plot(drm, x + i, y + hi, c);
+        drm_fill_rel_rect(drm, x + i * GFX_FONT_SCALE, y + hi * GFX_FONT_SCALE,
+                          GFX_FONT_SCALE, GFX_FONT_SCALE, c);
       else
-        drm_plot(drm, x + i, y + hi, b);
+        drm_fill_rel_rect(drm, x + i * GFX_FONT_SCALE, y + hi * GFX_FONT_SCALE,
+                          GFX_FONT_SCALE, GFX_FONT_SCALE, b);
       m >>= 1;
     }
   }

@@ -40,4 +40,6 @@
 
 /*#define PCIE_COLOR*/
 
+#define GFX_FONT_SCALE 1
+
 #define TASK_LIMIT 128

@@ -35,8 +35,8 @@ bool vt_is_available() { return _avail; }
 
 void vt_init(u64 attached_to_drm) {
   _attached_drm = attached_to_drm;
-  _vt_width = drm_width(_attached_drm) / 8;
-  _vt_height = drm_height(_attached_drm) / 17;
+  _vt_width = drm_width(_attached_drm) / (8 * GFX_FONT_SCALE);
+  _vt_height = drm_height(_attached_drm) / (16 * GFX_FONT_SCALE);
   _vt_buffer = (vt_char_t *)request_page_block(
       ((_vt_width * _vt_height * sizeof(vt_char_t)) + 4095) / 4096);
   if (_vt_buffer == NULL) {
@@ -66,10 +66,13 @@ void vt_draw_char(u64 i) {
   u64 cx = i % _vt_width;
   u64 cy = i / _vt_width;
   if (c.unicode)
-    drm_plot_char_solid(_attached_drm, cx * 8, cy * 17, c.unicode,
-                        c.fg.fb_color, c.bg.fb_color);
+    drm_plot_char_solid(_attached_drm, cx * 8 * GFX_FONT_SCALE,
+                        cy * 16 * GFX_FONT_SCALE, c.unicode, c.fg.fb_color,
+                        c.bg.fb_color);
   else
-    drm_fill_rel_rect(_attached_drm, cx * 8, cy * 17, 8, 17, c.bg.fb_color);
+    drm_fill_rel_rect(_attached_drm, cx * 8 * GFX_FONT_SCALE,
+                      cy * 16 * GFX_FONT_SCALE, 8 * GFX_FONT_SCALE,
+                      16 * GFX_FONT_SCALE, c.bg.fb_color);
 }
 void vt_flush() {
   if (!_avail)
@@ -278,5 +281,6 @@ void kprintc(char c) {
     }
   }
 }
+
 void klockv() { spinlock(&_vt_lock); }
 void kunlockv() { spinunlock(&_vt_lock); }
