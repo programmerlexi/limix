@@ -38,4 +38,6 @@
 
 #define DRM_WRITETHROUGH
 
+/*#define PCIE_COLOR*/
+
 #define TASK_LIMIT 128

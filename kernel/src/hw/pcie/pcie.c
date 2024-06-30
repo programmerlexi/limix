@@ -1,5 +1,6 @@
 #include "kernel/hw/pcie/pcie.h"
 #include "kernel/asm_inline.h"
+#include "kernel/config.h"
 #include "kernel/debug.h"
 #include "kernel/gfx/vt/vt.h"
 #include "kernel/hw/acpi/acpi.h"
@@ -103,6 +104,7 @@ bool pcie_init() {
           continue;
         if (!dev->device_id || dev->device_id == 0xffff)
           continue;
+#ifdef PCIE_COLOR
         log_lock();
         kprintf(
             "PCIe device at " TERMCODE(TC_DIM) "%u/%u/%u: " TERMCODE(TC_NO_DIM)
@@ -113,6 +115,11 @@ bool pcie_init() {
             (u64)b, (u64)s, (u64)f, (int)dev->vendor_id, (int)dev->device_id,
             pci_get_vendor_name(b, s, f), pci_get_device_name(b, s, f));
         log_unlock();
+#else
+        logf(LOGLEVEL_DEBUG, "PCIe device at %u/%u/%u: %w %w - %s %s", (u64)b,
+             (u64)s, (u64)f, (int)dev->vendor_id, (int)dev->device_id,
+             pci_get_vendor_name(b, s, f), pci_get_device_name(b, s, f));
+#endif
         sched_create(pci_handle_device, cpu_get_random_cpu(), (u64)dev);
       }
     }
