@@ -278,3 +278,5 @@ void kprintc(char c) {
     }
   }
 }
+void klockv() { spinlock(&_vt_lock); }
+void kunlockv() { spinunlock(&_vt_lock); }

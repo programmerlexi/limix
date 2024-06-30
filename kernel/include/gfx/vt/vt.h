@@ -63,4 +63,6 @@ void vt_flush();
 void vt_redraw();
 void kprintc(char c);
 void kprint(char *str);
+void klockv();
+void kunlockv();
 bool vt_is_available();
