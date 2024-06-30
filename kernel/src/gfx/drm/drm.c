@@ -80,7 +80,6 @@ void drm_plot(u64 drm, u64 x, u64 y, u32 c) {
     return;
   spinlock(&_drms[drm].lock);
 #ifndef DRM_WRITETHROUGH
-  drms[drm].framebuffer[drms[drm].width * y + x] = c;
 #else
   if (_active_drm == drm) {
     spinlock(&_drm_sys_lock);
