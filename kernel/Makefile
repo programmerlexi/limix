@@ -12,10 +12,10 @@ define DEFAULT_VAR =
     endif
 endef
  
-override DEFAULT_CC := x86_64-elf-gcc
+override DEFAULT_CC := gcc
 $(eval $(call DEFAULT_VAR,CC,$(DEFAULT_CC)))
  
-override DEFAULT_LD := x86_64-elf-ld
+override DEFAULT_LD := ld
 $(eval $(call DEFAULT_VAR,LD,$(DEFAULT_LD)))
  
 override DEFAULT_CFLAGS := -g -Os -pipe
@@ -77,7 +77,7 @@ override NASMFLAGS += \
     -f elf64
 
 override ARFLAGS = qc
-override AR = x86_64-elf-ar
+override AR = ar
  
 # Use "find" to glob all *.c, *.S, and *.asm files in the tree and obtain the
 # object and header dependency file names.

@@ -14,7 +14,7 @@ endef
 # It is suggested to use a custom built cross toolchain to build a kernel.
 # We are using the standard "cc" here, it may work by using
 # the host system's toolchain, but this is not guaranteed.
-override DEFAULT_CC := x86_64-elf-gcc
+override DEFAULT_CC := gcc
 $(eval $(call DEFAULT_VAR,CC,$(DEFAULT_CC)))
  
 # User controllable C flags.
@@ -63,7 +63,7 @@ override NASMFLAGS += \
     -f elf64
 
 override ARFLAGS = qc
-override AR = x86_64-elf-ar
+override AR = ar
  
 # Use "find" to glob all *.c, *.S, and *.asm files in the tree and obtain the
 # object and header dependency file names.
