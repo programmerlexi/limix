@@ -34,9 +34,9 @@ long long main() {
 
   devman_init();
 
-  sched_create(core_main, get_processor(), 0);
-  sched_create(smp_init, get_processor(), 0);
-  sched_create(hardware_enumerate, get_processor(), 0);
+  core_main();
+  smp_init();
+  hardware_enumerate();
 
   ls = sched_local_init(get_processor());
 
