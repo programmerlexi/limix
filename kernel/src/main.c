@@ -53,7 +53,6 @@ void _start() {
   drm_switch(0);
   vt_init(0);
   font_parse();
-  async_init();
   sched_glob_init();
   logf(LOGLEVEL_FATAL, "Kernel exit code: %i", main());
   log(LOGLEVEL_FATAL, "The kernel stopped executing (this should not happend)");
