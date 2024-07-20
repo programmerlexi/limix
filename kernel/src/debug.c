@@ -2,6 +2,7 @@
 #include "kernel/config.h"
 #include "kernel/gfx/vt/vt.h"
 #include "kernel/io/serial/serial.h"
+#include "kernel/mm/heap.h"
 #include "libk/ipc/spinlock.h"
 #include "libk/printing.h"
 #include <stdarg.h>
@@ -38,13 +39,21 @@ void _log(loglevel_t ll, char *s) {
 }
 void _logf(loglevel_t ll, char *s, ...) {
   spinlock(&lock);
+
+  va_list a;
+  va_start(a, s);
+  char *p = kvfprintf(s, a);
+  va_end(a);
+
+  if (ll >= _current_serial_loglevel) {
+    serial_writes(p);
+  }
+
   if (ll >= _current_loglevel) {
     kprint(_logcolors[ll]);
-    va_list a;
-    va_start(a, s);
-    kvprintf(s, a);
-    va_end(a);
+    kprint(p);
   }
+  kfree(p);
   spinunlock(&lock);
 }
 
