@@ -12,3 +12,4 @@ extern volatile struct limine_memmap_request g_mmap_request;
 extern volatile struct limine_module_request g_module_request;
 extern volatile struct limine_kernel_address_request g_kernel_address_request;
 extern volatile struct limine_rsdp_request g_rsdp_request;
+extern volatile struct limine_smbios_request g_smbios_request;

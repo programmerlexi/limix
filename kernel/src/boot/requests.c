@@ -1,3 +1,4 @@
+#include "kernel/boot/requests.h"
 #include "kernel/config.h"
 #include "limine.h"
 #include <stddef.h>
@@ -30,3 +31,6 @@ volatile struct limine_kernel_address_request g_kernel_address_request = {
 
 volatile struct limine_rsdp_request g_rsdp_request = {
     .id = LIMINE_RSDP_REQUEST, .revision = 0, .response = NULL};
+
+volatile struct limine_smbios_request g_smbios_request = {
+    .id = LIMINE_SMBIOS_REQUEST, .revision = 0, .response = NULL};
