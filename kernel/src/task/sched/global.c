@@ -51,6 +51,7 @@ void sched_glob_init() {
   _frames.start->assigned = false;
   _frames.start->proc = _procs;
   _frames.start->thread = _procs->threads;
+  _scheds = 0;
   _glob_sched_lock = 0;
   log(LOGLEVEL_INFO, "Global scheduler initialized");
 }
