@@ -1,4 +1,4 @@
-COMMON_QEMU_FLAGS=-machine q35 -m 4G -smp 8 -serial stdio -audio driver=alsa,model=hda,id=audio
+COMMON_QEMU_FLAGS=-machine q35 -m 4G -smp 8 -serial stdio
 
 INCLUDES=$(shell find kernel/include -type f) $(shell find libk/include -type f)
 
@@ -26,7 +26,7 @@ release:
 	STRIP=strip make image.iso image.hdd
 
 kernel: libk include
-	@make -j$(JOBS) -C kernel $(STRIP)
+	@make -j$(JOBS) -C kernel
 
 util:
 	@make -j $(JOBS) -C util bin/font.lime bin/pci_devices.reg bin/pci_vendors.reg
@@ -95,7 +95,7 @@ run-kvm-uefi: image.hdd image.iso
 
 
 run-debug: image.iso
-	qemu-system-x86_64 -cdrom image.iso $(UEFI_OPTIONS) $(COMMON_QEMU_FLAGS) -s -S -no-reboot -d int,cpu_reset
+	qemu-system-x86_64 -cdrom image.iso $(COMMON_QEMU_FLAGS) -s -S -no-reboot -d int,cpu_reset
 
 run-debug-kvm: image.iso
 	qemu-system-x86_64 -cdrom image.iso $(UEFI_OPTIONS) $(COMMON_QEMU_FLAGS) -enable-kvm -s -S -no-reboot
