@@ -1,10 +1,31 @@
+#include "kernel/mm/heap.h"
+#include "libk/math/lib.h"
 #include "libk/printing.h"
+#include "libk/utils/memory/heap_wrap.h"
 #include "libk/utils/memory/memory.h"
 #include "libk/utils/strings/strings.h"
 #include <stdarg.h>
 #include <stdbool.h>
 
 void kvprintf(char *s, va_list args) {
+  char *p = kvfprintf(s, args);
+  kprint(p);
+  kfree(p);
+}
+
+static char *_string_op(char *s, u64 sl, u64 *dl) {
+  if (*dl < sl) {
+    u64 l = max(*dl + 16, *dl);
+    s = krealloc(s, l, *dl);
+    *dl = l;
+  }
+  return s;
+}
+
+char *kvfprintf(char *s, va_list args) {
+  char *r = kmalloc(16);
+  u64 rl = 0;
+  u64 dl = 16;
   bool format = false;
   i32 base = 0;
   bool sign = true;
@@ -41,21 +62,31 @@ void kvprintf(char *s, va_list args) {
           break;
         }
         ntos(numbuf, va_arg(args, i64), base, l, !sign, pad);
-        kprint(numbuf);
+        r = _string_op(r, rl + kstrlen(numbuf), &dl);
+        kmemcpy(&r[rl], numbuf, kstrlen(numbuf));
+        rl += kstrlen(numbuf);
         format = false;
         break;
-      case 'w':
-        char numbuf1[5];
-        kmemset(numbuf1, 0, 5);
+      case 'w': {
+        char numbuf1[4];
         ntos(numbuf1, va_arg(args, int), 16, 4, true, true);
-        numbuf1[4] = 0;
-        kprint(numbuf1);
+        r = _string_op(r, rl + 4, &dl);
+        kmemcpy(&r[rl], numbuf1, 4);
+        rl += 4;
         format = false;
         break;
-      case 's':
-        kprint(va_arg(args, char *));
+      }
+      case 's': {
+        char *aps = va_arg(args, char *);
+        while (*aps) {
+          r = _string_op(r, rl + 1, &dl);
+          r[rl] = *aps;
+          rl++;
+          aps++;
+        }
         format = false;
         break;
+      }
       }
     } else {
       switch (*s) {
@@ -66,10 +97,15 @@ void kvprintf(char *s, va_list args) {
         pad = false;
         break;
       default:
-        kprintc(*s);
+        rl++;
+        r = _string_op(r, rl + 1, &dl);
+        r[rl - 1] = *s;
         break;
       }
     }
     s++;
   }
+  r = _string_op(r, rl + 1, &dl);
+  r[rl] = 0;
+  return r;
 }
