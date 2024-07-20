@@ -1,4 +1,5 @@
 #include "kernel/mm/mm.h"
+#include "kernel/debug.h"
 #include "kernel/kernel.h"
 #include "kernel/mm/hhtp.h"
 #include "libk/ipc/spinlock.h"
@@ -122,6 +123,7 @@ void free_page_block(void *p, usz n) {
     bool skip = false;
     if (is >= ss && ie <= se) {
       unlock;
+      log(LOGLEVEL_WARN2, "Encountered double free");
       return; // Block is completely inside other block
     }
     if (is >= ss && is <= se) { // Block is partially inside other block
