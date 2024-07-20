@@ -15,6 +15,7 @@ static u64 highest_storage;
 static u32 storage_lock = 1;
 
 void devman_init() {
+  log(LOGLEVEL_INFO, "Initializing devman...");
   storage_pointers = NULL;
   storages = 0;
   highest_storage = 0;
