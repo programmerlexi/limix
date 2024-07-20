@@ -98,7 +98,7 @@ bin/$(KERNEL).a: Makefile $(OBJ)
 	@$(AR) $(ARFLAGS) $@ $(OBJ)
 
 # Link rules for the final kernel executable.
-bin/$(KERNEL): Makefile linker.ld bin/$(KERNEL).a
+bin/$(KERNEL): Makefile linker.ld bin/$(KERNEL).a ../libk/bin/libk.a
 	@echo "[LD] Linking kernel"
 	@mkdir -p "$$(dirname $@)"
 	@$(LD) obj/main.c.o $@.a ../libk/bin/libk.a $(LDFLAGS) -o $@
