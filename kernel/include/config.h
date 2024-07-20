@@ -19,7 +19,7 @@
 
 #define CONFIG_KEYBOARD_MODE CONFIG_KEYBOARD_MODE_POLL
 
-#define CONFIG_HEAP_INITIAL_PAGES 2
+#define CONFIG_HEAP_INITIAL_PAGES 16
 
 #ifdef CONFIG_DYNCONF
 #define CONFIG_SCROLL_STEP                                                     \
@@ -32,13 +32,9 @@
 #endif
 
 #define LOGLEVEL LOGLEVEL_INFO
-#define LOGLEVEL_SERIAL LOGLEVEL_WARN0
-
-// #define LOG_SERIAL
+#define LOGLEVEL_SERIAL LOGLEVEL_DEBUG
 
 #define DRM_WRITETHROUGH
-
-/*#define PCIE_COLOR*/
 
 #define GFX_FONT_SCALE 1
 
