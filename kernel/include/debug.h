@@ -5,8 +5,8 @@ typedef u8 loglevel_t;
 
 #define LOGLEVEL_ANALYZE 0
 #define LOGLEVEL_DEBUG 1
-#define LOGLEVEL_INFO 2
-#define LOGLEVEL_NORMAL 3
+#define LOGLEVEL_NORMAL 2
+#define LOGLEVEL_INFO 3
 #define LOGLEVEL_WARN0 4
 #define LOGLEVEL_WARN1 5
 #define LOGLEVEL_WARN2 6
@@ -23,7 +23,11 @@ typedef u8 loglevel_t;
 #endif
 
 #define debug_module "[" DEBUG_MODULE "] "
+#ifdef DEBUG_SHOW_POS
 #define debug_str debug_module "[" __FILE__ ":" xstr(__LINE__) "] "
+#else
+#define debug_str debug_module
+#endif
 #define debug_end TERMCODE(TC_RESET) "\n\r"
 
 #define logf(l, s, f...) _logf(l, debug_str s debug_end, f)
