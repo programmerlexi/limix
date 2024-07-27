@@ -4,6 +4,8 @@
 #include "kernel/task/thread/thread.h"
 #include <stdbool.h>
 
+#define TASK_STACK_ADDRESS 0x7ffff000
+
 typedef struct sched_frame {
   process_t *proc;
   thread_t *thread;

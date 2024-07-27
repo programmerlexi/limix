@@ -4,7 +4,9 @@
 #include "kernel/int/syscall.h"
 #include "kernel/kernel.h"
 #include "kernel/mm/heap.h"
+#include "kernel/mm/hhtp.h"
 #include "kernel/mm/mm.h"
+#include "kernel/mm/vmm.h"
 #include "kernel/task/proc/proc.h"
 #include "kernel/task/sched/common.h"
 #include "kernel/task/sched/local.h"
@@ -116,17 +118,21 @@ void sched_create(void(*start), i64 cpu, u64 arg) {
   proc->gid = -1;
   proc->euid = -1;
   proc->egid = -1;
-  proc->cr3 = read_cr3();
+  proc->cr3 = vmm_new();
   proc->thread_count = 1;
   proc->threads = thread_create();
   if (!proc->threads)
     kernel_panic_error("Out of memory");
   proc->name = to_xstr("process");
   proc->cpu = cpu;
-  void *rbp = request_page();
+  void *rbp = (void *)HHDM(request_page());
   if (!rbp)
     kernel_panic_error("Out of memory");
-  proc->threads->rsp = ((u64)rbp + 0x1000) - (8 * 11);
+  u64 ccr3 = read_cr3();
+  write_cr3(proc->cr3);
+  vmm_map((void *)TASK_STACK_ADDRESS, (void *)PHY(rbp), VMM_WRITEABLE);
+  write_cr3(ccr3);
+  proc->threads->rsp = ((uptr)rbp + 0x1000) - (8 * 11);
   logf(LOGLEVEL_ANALYZE, "RBP: %x RSP: %x", rbp, proc->threads->rsp);
   ((uint64_t *)(proc->threads->rsp))[10] = (uptr)_sched_thread_end;
   ((uint64_t *)(proc->threads->rsp))[9] = (uptr)start;
