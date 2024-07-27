@@ -105,7 +105,7 @@ char *kvfprintf(char *s, va_list args) {
     }
     s++;
   }
-  r = _string_op(r, rl + 1, &dl);
+  r = _string_op(r, rl + 2, &dl);
   r[rl] = 0;
   return r;
 }
