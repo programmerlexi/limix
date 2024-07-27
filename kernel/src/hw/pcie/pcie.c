@@ -45,15 +45,15 @@ static void pci_handle_device(pci_header_t *dev) {
     case PCI_SUBCLASS_MASS_STORAGE_SATA:
       switch (dev->prog_if) {
       case PCI_PROGIF_MASS_STORAGE_SATA_VENDOR_AHCI:
-        ahci_init((pci_type0_t *)dev);
+        sched_create(ahci_init, cpu_get_random_cpu(), (u64)(pci_type0_t *)dev);
         return;
       }
       return;
     case PCI_SUBCLASS_MASS_STORAGE_NVM:
-      nvme_init((pci_type0_t *)dev);
+      sched_create(nvme_init, cpu_get_random_cpu(), (u64)(pci_type0_t *)dev);
       return;
     case PCI_SUBCLASS_MASS_STORAGE_IDE:
-      ide_init((pci_type0_t *)dev);
+      sched_create(ide_init, cpu_get_random_cpu(), (u64)(pci_type0_t *)dev);
       return;
     }
     return;
@@ -62,7 +62,7 @@ static void pci_handle_device(pci_header_t *dev) {
     case PCI_SUBCLASS_BUS_USB:
       switch (dev->prog_if) {
       case 0x30:
-        xhci_init((pci_type0_t *)dev);
+        sched_create(xhci_init, cpu_get_random_cpu(), (u64)(pci_type0_t *)dev);
         return;
       }
       return;
