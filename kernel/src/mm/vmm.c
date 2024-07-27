@@ -20,7 +20,7 @@ uptr vmm_new() {
   kmemset(pml4, 0, 0x800);
   pml4[VMM_FRACTAL_INDEX] =
       VMM_ADDRESS(PHY(pml4)) | VMM_PRESENT | VMM_WRITEABLE;
-  return (uptr)pml4;
+  return (uptr)PHY(pml4);
 }
 
 bool vmm_map(void *v, void *p, u64 flags) {
