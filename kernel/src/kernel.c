@@ -9,7 +9,6 @@
 #include "kernel/hw/hid/kb/kb.h"
 #include "kernel/hw/pcie/pcie.h"
 #include "kernel/smp.h"
-#include "kernel/task/sched/common.h"
 #include "kernel/task/sched/global.h"
 #include "kernel/task/sched/local.h"
 

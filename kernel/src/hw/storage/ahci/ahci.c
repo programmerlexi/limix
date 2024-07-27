@@ -1,7 +1,6 @@
 #include "kernel/hw/storage/ahci/ahci.h"
 #include "kernel/asm_inline.h"
 #include "kernel/debug.h"
-#include "kernel/fs/gpt.h"
 #include "kernel/hw/devman/devman.h"
 #include "kernel/hw/pci/pci.h"
 #include "kernel/hw/storage/ide/ide.h"
