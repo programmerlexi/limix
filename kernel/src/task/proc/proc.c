@@ -3,7 +3,7 @@
 #include "kernel/mm/heap.h"
 
 process_t *proc_create() {
-  process_t *p = (process_t *)kcalloc(sizeof(process_t));
+  process_t *p = (process_t *)kzalloc(sizeof(process_t));
   return p;
 }
 

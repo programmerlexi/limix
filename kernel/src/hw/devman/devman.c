@@ -28,7 +28,7 @@ void devman_add_storage(devman_storage_type_t type, void *driver_data,
                         bool (*check_attached)(void *)) {
   spinlock(&storage_lock);
   if (!storage_pointers) {
-    storage_pointers = kcalloc(sizeof(void *));
+    storage_pointers = kzalloc(sizeof(void *));
     storages = 1;
   }
 

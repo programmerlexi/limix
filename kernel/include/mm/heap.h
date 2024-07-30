@@ -16,8 +16,13 @@ typedef struct heapseg {
 } __attribute__((packed)) heapseg_t;
 
 void heap_init();
-u32 heap_get_used();
+usz heap_get_used();
+usz heap_get_free();
+usz heap_get_overhead();
+
+void heap_print_usage();
 
 void *kmalloc(usz count);
-void *kcalloc(usz count);
+void *kzalloc(usz count);
+void *kcalloc(usz count, usz value);
 void kfree(void *pointer);

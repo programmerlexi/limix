@@ -4,7 +4,7 @@
 static u64 _latest_tid;
 
 thread_t *thread_create() {
-  thread_t *t = (thread_t *)kcalloc(sizeof(thread_t));
+  thread_t *t = (thread_t *)kzalloc(sizeof(thread_t));
   t->tid = ++_latest_tid;
   t->state = THREAD_INIT;
   return t;

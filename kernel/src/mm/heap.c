@@ -14,10 +14,12 @@
 
 static heapseg_t *_heap_first;
 static heapseg_t *_heap_last;
-
 static u32 _heap_lock;
-
 static uptr heap_top;
+
+static usz _heap_memory_free;
+static usz _heap_memory_used;
+static usz _struct_overhead;
 
 static void _heap_check_canary(heapseg_t *seg) {
   nullsafe(seg);
@@ -32,7 +34,9 @@ void heap_init() {
   for (int i = 0; i < CONFIG_HEAP_INITIAL_PAGES; i++)
     vmm_map((void *)(HEAP_BASE + (i << 12)), (void *)(heap_space + (i << 12)),
             VMM_WRITEABLE);
-
+  _heap_memory_free = CONFIG_HEAP_INITIAL_PAGES * 0x1000 - sizeof(heapseg_t);
+  _heap_memory_used = sizeof(heapseg_t);
+  _struct_overhead = sizeof(heapseg_t);
   _heap_first = (void *)HEAP_BASE;
   _heap_last = _heap_first;
   kmemset(_heap_first, 0, CONFIG_HEAP_INITIAL_PAGES * 0x1000);
@@ -61,6 +65,9 @@ static void _heap_combine_forward(heapseg_t *seg) {
     seg->next->next->prev = seg;
   seg->size = seg->size + seg->next->size + sizeof(heapseg_t);
   seg->next = seg->next->next;
+  _heap_memory_free += sizeof(heapseg_t);
+  _heap_memory_used -= sizeof(heapseg_t);
+  _struct_overhead += sizeof(heapseg_t);
 }
 
 static void _heap_combine_backward(heapseg_t *seg) {
@@ -96,6 +103,9 @@ void expand_heap(usz size) {
   _heap_last = new_seg;
   new_seg->next = NULL;
   new_seg->size = size - sizeof(heapseg_t);
+  _struct_overhead += sizeof(heapseg_t);
+  _heap_memory_used += sizeof(heapseg_t);
+  _heap_memory_free += sizeof(new_seg->size);
   _heap_combine_backward(new_seg);
 }
 
@@ -119,6 +129,7 @@ static heapseg_t *_heap_split(heapseg_t *seg, usz size) {
   new_seg->used = seg->used;
   new_seg->size = splitSize;
   seg->size = size;
+  _struct_overhead += sizeof(heapseg_t);
   if (_heap_last == seg)
     _heap_last = new_seg;
   return new_seg;
@@ -132,6 +143,8 @@ void kfree(void *addr) {
   if (!seg->used)
     log(LOGLEVEL_WARN2, "Encountered double free");
   seg->used = false;
+  _heap_memory_used -= seg->size;
+  _heap_memory_free += seg->size;
   _heap_combine_forward(seg);
   _heap_combine_backward(seg);
   spinunlock(&_heap_lock);
@@ -154,11 +167,15 @@ void *kmalloc(usz size) {
       if (seg->size > (size + sizeof(heapseg_t) * 2)) {
         _heap_split(seg, size);
         seg->used = true;
+        _heap_memory_free -= seg->size;
+        _heap_memory_used += seg->size;
         spinunlock(&_heap_lock);
         return (void *)((usz)seg + sizeof(heapseg_t));
       }
       if (seg->size >= size) {
         seg->used = true;
+        _heap_memory_free -= seg->size;
+        _heap_memory_used += seg->size;
         spinunlock(&_heap_lock);
         return (void *)((usz)seg + sizeof(heapseg_t));
       }
@@ -172,13 +189,19 @@ void *kmalloc(usz size) {
   return kmalloc(size);
 }
 
-void *kcalloc(usz size) {
+void *kcalloc(usz size, usz value) {
   void *ptr = kmalloc(size);
-  kmemset(ptr, 0, size);
+  kmemset(ptr, value, size);
   return ptr;
 }
 
-u32 heap_get_used() {
+void *kzalloc(usz size) { return kcalloc(size, 0); }
+
+usz heap_get_used() { return _heap_memory_used; }
+usz heap_get_free() { return _heap_memory_free; }
+usz heap_get_overhead() { return _struct_overhead; }
+
+u32 heap_get_used_old() {
   u32 used = 0;
   heapseg_t *c = _heap_first;
   while (c) {

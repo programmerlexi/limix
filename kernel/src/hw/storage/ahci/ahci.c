@@ -18,7 +18,7 @@
 #define DEBUG_MODULE "ahci"
 
 ahci_t *ahci_init(pci_type0_t *h) {
-  ahci_t *ahci = kcalloc(sizeof(*ahci));
+  ahci_t *ahci = kzalloc(sizeof(*ahci));
   ahci->ahci_device = h;
   ahci->abar = (ahci_hba_memory_t *)HHDM(
       (ahci->ahci_device->bar5 & (uptr)PCI_BAR_MEM_BASE_ADDR));
