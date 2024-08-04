@@ -16,7 +16,10 @@ endef
 # the host system's toolchain, but this is not guaranteed.
 override DEFAULT_CC := gcc
 $(eval $(call DEFAULT_VAR,CC,$(DEFAULT_CC)))
- 
+
+C3=c3c
+C3FLAGS=--obj-out obj --emit-stdlib=no --use-stdlib=no --link-libc=no --no-entry
+
 # User controllable C flags.
 override DEFAULT_CFLAGS := -g -Os -pipe
 $(eval $(call DEFAULT_VAR,CFLAGS,$(DEFAULT_CFLAGS)))
@@ -68,9 +71,10 @@ override AR = ar
 # Use "find" to glob all *.c, *.S, and *.asm files in the tree and obtain the
 # object and header dependency file names.
 override CFILES := $(shell cd src && find -L * -type f -name '*.c')
+override C3FILES := $(shell cd src && find -L * -type f -name '*.c3')
 override ASFILES := $(shell cd src && find -L * -type f -name '*.S')
 override NASMFILES := $(shell cd src && find -L * -type f -name '*.asm')
-override OBJ := $(addprefix obj/,$(CFILES:.c=.c.o) $(ASFILES:.S=.S.o) $(NASMFILES:.asm=.asm.o))
+override OBJ := $(addprefix obj/,$(C3FILES:.c3=.o) $(CFILES:.c=.c.o) $(ASFILES:.S=.S.o) $(NASMFILES:.asm=.asm.o))
 override HEADER_DEPS := $(addprefix obj/,$(CFILES:.c=.c.d) $(ASFILES:.S=.S.d))
  
 # Default target.
@@ -101,9 +105,14 @@ obj/%.S.o: src/%.S Makefile
  
 # Compilation rules for *.asm (nasm) files.
 obj/%.asm.o: src/%.asm Makefile
-	@echo "[CC] Building libk component $@"
+	@echo "[NASM] Building libk component $@"
 	@mkdir -p "$$(dirname $@)"
 	@nasm $(NASMFLAGS) $< -o $@
+
+obj/%.o: src/%.c3 Makefile
+	@echo "[C3] Building libk component $@"
+	@mkdir -p "$$(dirname $@)"
+	$(C3) compile-only $(C3FLAGS) $<
  
 # Remove object files and the final executable.
 .PHONY: clean
