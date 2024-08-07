@@ -17,17 +17,17 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "ahci"
 
-ahci_t *ahci_init(pci_type0_t *h) {
-  ahci_t *ahci = kzalloc(sizeof(*ahci));
+Ahci *ahci_init(PciType0 *h) {
+  Ahci *ahci = kzalloc(sizeof(*ahci));
   ahci->ahci_device = h;
-  ahci->abar = (ahci_hba_memory_t *)HHDM(
+  ahci->abar = (AhciHbaMemory *)HHDM(
       (ahci->ahci_device->bar5 & (uptr)PCI_BAR_MEM_BASE_ADDR));
   ahci->port_count = 0;
   logf(LOGLEVEL_DEBUG, "Got AHCI ABAR: 0x%l", ahci->abar);
   ahci_probe(ahci);
   for (u32 i = 0; i < ahci->port_count; i++) {
     ahci_port_configure(ahci->ports[i]);
-    devman_storage_type_t st;
+    DevmanStorageType st;
     if (ahci->ports[i]->port_type == SATA)
       st = HDD;
     else if (ahci->ports[i]->port_type == SATAPI)
@@ -44,15 +44,15 @@ ahci_t *ahci_init(pci_type0_t *h) {
   return ahci;
 }
 
-void ahci_probe(ahci_t *ahci) {
+void ahci_probe(Ahci *ahci) {
   u32 ports_implemented = ahci->abar->ports_implemented;
   for (i32 i = 0; i < 32; i++) {
     if (!(ports_implemented & (1 << i)))
       continue;
-    ahci_port_type_t type = ahci_check_port_type(&ahci->abar->ports[i]);
+    AhciPortType type = ahci_check_port_type(&ahci->abar->ports[i]);
     if (type == SATA) {
       logf(LOGLEVEL_INFO, "Found SATA device attached at port %u", (u64)i);
-      ahci->ports[ahci->port_count] = kmalloc(sizeof(ahci_port_t));
+      ahci->ports[ahci->port_count] = kmalloc(sizeof(AhciPort));
       invlpg(ahci->ports[ahci->port_count]);
       nullsafe_error(ahci->ports[ahci->port_count], "Out of memory");
       ahci->ports[ahci->port_count]->port_type = type;
@@ -62,7 +62,7 @@ void ahci_probe(ahci_t *ahci) {
     }
   }
 }
-ahci_port_type_t ahci_check_port_type(ahci_hba_port_t *port) {
+AhciPortType ahci_check_port_type(AhciHbaPort *port) {
   u32 sata_status = port->sata_status;
 
   u8 interface_power_management = (sata_status >> 8) & 0b111;
@@ -87,7 +87,7 @@ ahci_port_type_t ahci_check_port_type(ahci_hba_port_t *port) {
   }
 }
 
-void ahci_port_start_cmd(ahci_port_t *p) {
+void ahci_port_start_cmd(AhciPort *p) {
   log(LOGLEVEL_ANALYZE, "Starting CMD");
   while (p->hba_port->cmd_sts & HBA_PxCMD_CR)
     ;
@@ -96,7 +96,7 @@ void ahci_port_start_cmd(ahci_port_t *p) {
   log(LOGLEVEL_ANALYZE, "Started CMD");
 }
 
-void ahci_port_stop_cmd(ahci_port_t *p) {
+void ahci_port_stop_cmd(AhciPort *p) {
   log(LOGLEVEL_ANALYZE, "Stopping CMD");
   p->hba_port->cmd_sts &= ~HBA_PxCMD_ST;
   p->hba_port->cmd_sts &= ~HBA_PxCMD_FRE;
@@ -114,7 +114,7 @@ void ahci_port_stop_cmd(ahci_port_t *p) {
   log(LOGLEVEL_ANALYZE, "Stopped CMD");
 }
 
-void ahci_port_configure(ahci_port_t *p) {
+void ahci_port_configure(AhciPort *p) {
   ahci_port_stop_cmd(p);
   void *new_base = request_page();
   p->hba_port->command_list_base = (u32)PHY(new_base);
@@ -126,8 +126,7 @@ void ahci_port_configure(ahci_port_t *p) {
   p->hba_port->fis_base_address_upper = (u32)(PHY(fis_base) >> 32);
   kmemset(fis_base, 0, 256);
 
-  ahci_hba_command_header_t *command_header =
-      (ahci_hba_command_header_t *)new_base;
+  AhciCommandHeader *command_header = (AhciCommandHeader *)new_base;
   for (i32 i = 0; i < 32; i++) {
     command_header[i].prdt_length = 8;
     void *command_base = request_page();
@@ -140,7 +139,7 @@ void ahci_port_configure(ahci_port_t *p) {
   log(LOGLEVEL_INFO, "Configured AHCI port");
 }
 
-bool _ahci_port_io_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer,
+bool _ahci_port_io_sata(AhciPort *p, u64 sector, u32 count, void *buffer,
                         bool write) {
   invlpg(buffer);
 
@@ -155,19 +154,19 @@ bool _ahci_port_io_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer,
   if (spin == 1000000)
     return false;
 
-  ahci_hba_command_header_t *cmd_header = (ahci_hba_command_header_t *)HHDM(
+  AhciCommandHeader *cmd_header = (AhciCommandHeader *)HHDM(
       ((u64)p->hba_port->command_list_base |
        ((u64)p->hba_port->command_list_base_upper << 32)));
-  cmd_header->command_fis_length = sizeof(ahci_fis_h2d_t) / sizeof(u32);
+  cmd_header->command_fis_length = sizeof(AhciFisH2D) / sizeof(u32);
   cmd_header->write = write;
   cmd_header->prdt_length = (u16)((count - 1) >> 4) + 1;
 
-  ahci_hba_command_table_t *cmd_table = (ahci_hba_command_table_t *)HHDM(
+  AhciHbaCommandTable *cmd_table = (AhciHbaCommandTable *)HHDM(
       (cmd_header->command_table_base_address |
        ((u64)cmd_header->command_table_base_address_upper << 32)));
   kmemset(cmd_table, 0,
-          sizeof(ahci_hba_command_table_t) +
-              ((cmd_header->prdt_length - 1) * sizeof(ahci_hba_prdt_entry_t)));
+          sizeof(AhciHbaCommandTable) +
+              ((cmd_header->prdt_length - 1) * sizeof(AhciHbaPrdtEntry)));
 
   u64 buf = PHY(buffer);
   i32 i;
@@ -184,7 +183,7 @@ bool _ahci_port_io_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer,
   cmd_table->prdt_entry[i].byte_count = (count << 9) - 1;
   cmd_table->prdt_entry[i].interrupt_on_completion = 1;
 
-  ahci_fis_h2d_t *cmd_fis = (ahci_fis_h2d_t *)HHDM(&cmd_table->command_fis);
+  AhciFisH2D *cmd_fis = (AhciFisH2D *)HHDM(&cmd_table->command_fis);
   cmd_fis->fis_type = AHCI_FIS_TYPE_REG_H2D;
   cmd_fis->cmd_control = 1;
   if (write)
@@ -219,20 +218,20 @@ bool _ahci_port_io_sata(ahci_port_t *p, u64 sector, u32 count, void *buffer,
   return true;
 }
 
-bool ahci_port_read(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
+bool ahci_port_read(AhciPort *p, u64 sector, u32 count, void *buffer) {
   if (p->port_type == SATA)
     return _ahci_port_io_sata(p, sector, count, buffer, false);
   else
     return false;
 }
 
-bool ahci_port_write(ahci_port_t *p, u64 sector, u32 count, void *buffer) {
+bool ahci_port_write(AhciPort *p, u64 sector, u32 count, void *buffer) {
   if (p->port_type == SATA)
     return _ahci_port_io_sata(p, sector, count, buffer, true);
   else
     return false;
 }
 
-bool ahci_port_check(ahci_port_t *p) {
+bool ahci_port_check(AhciPort *p) {
   return true; // TODO: Check
 }

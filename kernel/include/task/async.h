@@ -3,7 +3,7 @@
 #include "libk/utils/results.h"
 #include "libk/utils/variety.h"
 
-enum async_state {
+enum AsyncStateEnum {
   ASYNC_NONE,
   ASYNC_RUNNING,
   ASYNC_INIT,
@@ -11,23 +11,23 @@ enum async_state {
   ASYNC_DONE
 };
 
-typedef struct task {
+typedef struct AsyncTaskStruct {
   void *sp;
   void *page;
-  enum async_state state;
+  enum AsyncStateEnum state;
   union {
-    struct task *next;
+    struct AsyncTaskStruct *next;
     result_t res;
   };
-} task_t;
+} AsyncTask;
 
 typedef struct {
-  task_t *run;
-  task_t *own;
-} future_t;
+  AsyncTask *run;
+  AsyncTask *own;
+} AsyncFuture;
 
-void fire(future_t *future);
-result_t await(future_t *future);
-future_t async(result_t (*func)(variety_t), variety_t arg);
+void fire(AsyncFuture *future);
+result_t await(AsyncFuture *future);
+AsyncFuture async(result_t (*func)(variety_t), variety_t arg);
 
 void async_init();

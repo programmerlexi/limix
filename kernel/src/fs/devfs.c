@@ -11,8 +11,8 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "devfs"
 
-static device_t *_devices;
-static vfs_t *_devfs;
+static Device *_devices;
+static Vfs *_devfs;
 static u64 _dev_count;
 
 static i32 _zero_r(void *p, u64 o, u64 s, char *b) {
@@ -28,13 +28,13 @@ void devfs_init() {
 void devfs_create(char *name, i32 (*read)(void *, u64, u64, char *),
                   i32 (*write)(void *, u64, u64, char *), void *data) {
   debugf("Creating dev node '%s'...", name);
-  device_t *device;
+  Device *device;
   if (!_devices)
-    device = _devices = kmalloc(sizeof(device_t));
+    device = _devices = kmalloc(sizeof(Device));
   else {
-    device = kmalloc(sizeof(device_t));
-    device_t *c = _devices;
-    device_t *p = NULL;
+    device = kmalloc(sizeof(Device));
+    Device *c = _devices;
+    Device *p = NULL;
     while (c) {
       p = c;
       c = c->next;
@@ -50,12 +50,12 @@ void devfs_create(char *name, i32 (*read)(void *, u64, u64, char *),
   _dev_count++;
 }
 
-static i32 _devfs_read(u64 o, u64 s, char *b, file_t *f) {
-  device_t *d = f->data;
+static i32 _devfs_read(u64 o, u64 s, char *b, File *f) {
+  Device *d = f->data;
   return d->read(d->data, o, s, b);
 }
-static i32 _devfs_write(u64 o, u64 s, char *b, file_t *f) {
-  device_t *d = f->data;
+static i32 _devfs_write(u64 o, u64 s, char *b, File *f) {
+  Device *d = f->data;
   return d->write(d->data, o, s, b);
 }
 
@@ -71,17 +71,17 @@ static void _devfs_clear_files() {
 void devfs_reload() {
   nullsafe(_devfs);
   if (!_devfs->root)
-    _devfs->root = kmalloc(sizeof(directory_t));
+    _devfs->root = kmalloc(sizeof(Directory));
   nullsafe_error(_devfs->root, "No memory");
   if (_devfs->root->files)
     _devfs_clear_files();
   _devfs->root->file_count = _dev_count;
   _devfs->root->files = kmalloc(sizeof(void *) * _dev_count);
   nullsafe_error(_devfs->root->files, "No memory");
-  device_t *c = _devices;
+  Device *c = _devices;
   for (u64 i = 0; i < _dev_count; i++) {
     nullsafe(c);
-    _devfs->root->files[i] = kmalloc(sizeof(file_t));
+    _devfs->root->files[i] = kmalloc(sizeof(File));
     nullsafe_error(_devfs->root->files[i], "Out of memory");
     _devfs->root->files[i]->name = c->name;
     _devfs->root->files[i]->read = _devfs_read;
@@ -91,4 +91,4 @@ void devfs_reload() {
     c = c->next;
   }
 }
-void devfs_bind(vfs_t *fs) { _devfs = fs; }
+void devfs_bind(Vfs *fs) { _devfs = fs; }

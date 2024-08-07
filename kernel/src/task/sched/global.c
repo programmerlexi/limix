@@ -21,10 +21,10 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "sched_global"
 
-static process_t *_procs;
-static local_scheduler_t *_scheds;
+static Process *_procs;
+static LocalScheduler *_scheds;
 static u32 _glob_sched_lock = 1;
-static frame_queue_t _frames;
+static FrameQueue _frames;
 
 extern void thread_enter();
 
@@ -47,7 +47,7 @@ void sched_glob_init() {
   _procs->cpu = -1;
   log(LOGLEVEL_ANALYZE, "Filling task state");
   thread_switch(_procs->threads, _procs->threads);
-  _frames.start = _frames.end = kmalloc(sizeof(sched_frame_t));
+  _frames.start = _frames.end = kmalloc(sizeof(SchedulerFrame));
   if (!_frames.start)
     kernel_panic_error("Out of memory");
   _frames.start->assigned = false;
@@ -63,16 +63,16 @@ void sched_glob_release() { spinunlock(&_glob_sched_lock); }
 
 void sched_glob_tick() {
   sched_glob_aquire();
-  local_scheduler_t *c = _scheds;
+  LocalScheduler *c = _scheds;
   while (c) {
     if (!c->shed_lock) {
       spinlock(&c->shed_lock);
 
-      sched_frame_t *cf = _frames.start;
+      SchedulerFrame *cf = _frames.start;
       while (cf) {
         if (!cf->assigned && (cf->thread->state == THREAD_IDLE)) {
           if (cf->proc->cpu == c->cpu) {
-            frame_container_t *nfc = kmalloc(sizeof(frame_container_t));
+            FrameContainer *nfc = kmalloc(sizeof(FrameContainer));
             if (c->frames.end) {
               c->frames.end->next = nfc;
               c->frames.end = nfc;
@@ -99,7 +99,7 @@ void sched_glob_tick() {
 static void _sched_thread_end() {
   u64 c = get_processor();
   // TODO: Do thread termination properly
-  local_scheduler_t *s = sched_get_local(c);
+  LocalScheduler *s = sched_get_local(c);
   nullsafe_error(s, "No scheduler");
   spinlock(&s->shed_lock);
   s->frames.start->frame->thread->state = THREAD_TERMINATE;
@@ -110,7 +110,7 @@ static void _sched_thread_end() {
 static u64 latest_pid = 1;
 void sched_create(void(*start), i64 cpu, u64 arg) {
   sched_glob_aquire();
-  process_t *proc = proc_create();
+  Process *proc = proc_create();
   if (!proc)
     kernel_panic_error("Out of memory");
   proc->pid = latest_pid++;
@@ -151,7 +151,7 @@ void sched_create(void(*start), i64 cpu, u64 arg) {
   if (proc->next)
     proc->next->prev = proc;
   _procs->next = proc;
-  sched_frame_t *frame = kmalloc(sizeof(*frame));
+  SchedulerFrame *frame = kmalloc(sizeof(*frame));
   if (!frame)
     kernel_panic_error("Out of memory");
   frame->proc = proc;
@@ -163,13 +163,13 @@ void sched_create(void(*start), i64 cpu, u64 arg) {
   sched_glob_release();
 }
 
-void sched_register_cpu(local_scheduler_t *ls) {
+void sched_register_cpu(LocalScheduler *ls) {
   sched_glob_aquire();
 
   log(LOGLEVEL_ANALYZE, "Registering scheduler");
 
   log(LOGLEVEL_ANALYZE, "Creating core process");
-  process_t *proc = proc_create();
+  Process *proc = proc_create();
   if (!proc)
     kernel_panic_error("Out of memory");
   log(LOGLEVEL_ANALYZE, "Filling process info");
@@ -189,7 +189,7 @@ void sched_register_cpu(local_scheduler_t *ls) {
   proc->name = to_xstr("kernel_core");
   proc->cpu = ls->cpu;
   log(LOGLEVEL_ANALYZE, "Creating frame");
-  sched_frame_t *frame = kmalloc(sizeof(sched_frame_t));
+  SchedulerFrame *frame = kmalloc(sizeof(SchedulerFrame));
   if (!frame)
     kernel_panic_error("Out of memory");
   frame->assigned = true;
@@ -214,7 +214,7 @@ void sched_register_cpu(local_scheduler_t *ls) {
 }
 
 void sched_glob_list_processes() {
-  process_t *p = _procs;
+  Process *p = _procs;
   while (p) {
     logf(LOGLEVEL_INFO, "Process '%s' (PID %u) Threads: %u", p->name.cstr,
          p->pid, p->thread_count);
@@ -222,9 +222,9 @@ void sched_glob_list_processes() {
   }
 }
 
-local_scheduler_t *sched_get_local(u64 cpu) {
+LocalScheduler *sched_get_local(u64 cpu) {
   sched_glob_aquire();
-  local_scheduler_t *l = _scheds;
+  LocalScheduler *l = _scheds;
   while (l) {
     if (l->cpu == cpu) {
       sched_glob_release();

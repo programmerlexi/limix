@@ -9,14 +9,14 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "cpu"
 
-static cpu_list_entry_t *cpu_list;
+static CpuListEntry *cpu_list;
 static u32 cpu_list_lock;
 static u64 cpus;
 
 void cpu_init() {
   spinlock(&cpu_list_lock);
 
-  cpu_list_entry_t *n = kmalloc(sizeof(*n));
+  CpuListEntry *n = kmalloc(sizeof(*n));
   n->next = cpu_list;
   n->cpu_id = get_processor();
 
@@ -49,11 +49,11 @@ void cpu_init() {
   logf(LOGLEVEL_DEBUG, "[CPU %i] Created cpu info", n->cpu_id);
 }
 
-bool cpu_has(cpu_capability_t capability) {
+bool cpu_has(CpuCapability capability) {
   u64 cpu_id = get_processor();
   spinlock(&cpu_list_lock);
 
-  cpu_list_entry_t *e = cpu_list;
+  CpuListEntry *e = cpu_list;
 
   while (e) {
     if (e->cpu_id == cpu_id) {
@@ -71,7 +71,7 @@ char *cpu_vendor() {
   u64 cpu_id = get_processor();
   spinlock(&cpu_list_lock);
 
-  cpu_list_entry_t *e = cpu_list;
+  CpuListEntry *e = cpu_list;
 
   while (e) {
     if (e->cpu_id == cpu_id) {
@@ -89,7 +89,7 @@ i64 cpu_get_random_cpu() {
   spinlock(&cpu_list_lock);
 
   i64 c = krand() % cpus;
-  cpu_list_entry_t *cs = cpu_list;
+  CpuListEntry *cs = cpu_list;
   for (i64 i = 0; i < c; i++) {
     cs = cs->next;
   }

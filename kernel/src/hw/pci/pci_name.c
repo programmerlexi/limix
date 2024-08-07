@@ -278,7 +278,7 @@ static const char *_get_progif_name(u8 cID, u8 scID, u8 prgIF) {
 char *pci_get_classname(u8 bus, u8 slot, u8 func) {
   u8 c;
   if (pcie_initialized()) {
-    pci_header_t *h = pcie_get_device(bus, slot, func);
+    PciHeader *h = pcie_get_device(bus, slot, func);
     if (!h)
       return "-";
     c = h->class_code;
@@ -292,7 +292,7 @@ char *pci_get_classname(u8 bus, u8 slot, u8 func) {
 char *pci_get_subclassname(u8 bus, u8 slot, u8 func) {
   u8 c, sc;
   if (pcie_initialized()) {
-    pci_header_t *h = pcie_get_device(bus, slot, func);
+    PciHeader *h = pcie_get_device(bus, slot, func);
     if (!h)
       return "-";
     c = h->class_code;
@@ -306,7 +306,7 @@ char *pci_get_subclassname(u8 bus, u8 slot, u8 func) {
 char *pci_get_device_name(u8 bus, u8 slot, u8 func) {
   u16 vendor, device;
   if (pcie_initialized()) {
-    pci_header_t *h = pcie_get_device(bus, slot, func);
+    PciHeader *h = pcie_get_device(bus, slot, func);
     if (!h)
       return "-";
     vendor = h->vendor_id;
@@ -321,7 +321,7 @@ char *pci_get_device_name(u8 bus, u8 slot, u8 func) {
 char *pci_get_vendor_name(u8 bus, u8 slot, u8 func) {
   u16 vendor;
   if (pcie_initialized()) {
-    pci_header_t *h = pcie_get_device(bus, slot, func);
+    PciHeader *h = pcie_get_device(bus, slot, func);
     if (!h)
       return "-";
     vendor = h->vendor_id;
@@ -334,7 +334,7 @@ char *pci_get_vendor_name(u8 bus, u8 slot, u8 func) {
 char *pci_get_typename(u8 bus, u8 slot, u8 func) {
   u8 c, sc, pi;
   if (pcie_initialized()) {
-    pci_header_t *h = pcie_get_device(bus, slot, func);
+    PciHeader *h = pcie_get_device(bus, slot, func);
     if (!h)
       return "-";
     c = h->class_code;

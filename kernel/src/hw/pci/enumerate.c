@@ -8,7 +8,7 @@ u16 pci_get_count(u16 vendor, u16 device) {
       for (u8 f = 0; f < 8; f++) {
         u16 v, d;
         if (pcie_initialized()) {
-          pci_header_t *h;
+          PciHeader *h;
           h = pcie_get_device(b, s, f);
           v = h->vendor_id;
           d = h->device_id;
@@ -24,8 +24,8 @@ u16 pci_get_count(u16 vendor, u16 device) {
   }
   return c;
 }
-pci_address_t pci_search(u16 vendor, u16 device, u16 number) {
-  pci_address_t a;
+PciAddress pci_search(u16 vendor, u16 device, u16 number) {
+  PciAddress a;
   a.exists = false;
   if (pci_get_count(vendor, device) < number)
     return a;
@@ -36,7 +36,7 @@ pci_address_t pci_search(u16 vendor, u16 device, u16 number) {
       for (u8 f = 0; f < 8; f++) {
         u16 v, d;
         if (pcie_initialized()) {
-          pci_header_t *h;
+          PciHeader *h;
           h = pcie_get_device(b, s, f);
           v = h->vendor_id;
           d = h->device_id;

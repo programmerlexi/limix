@@ -26,13 +26,13 @@ typedef struct {
   u8 reserved;
   u16 st_max_size;
   uptr st_addr;
-} smb_eps64_t;
+} SmbiosEntryPoint64;
 
 typedef struct {
   u8 type;
   u8 length;
   u16 handle;
-} smb_header_t;
+} SmbiosHeader;
 
 void smb_init();
-usz smb_struct_len(smb_header_t *h);
+usz smb_struct_len(SmbiosHeader *h);

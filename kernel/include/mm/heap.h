@@ -6,14 +6,14 @@
 #define HEAP_CANARY0 0x6865617062697264
 #define HEAP_CANARY1 0x6269726468656170
 
-typedef struct heapseg {
+typedef struct HeapSegmentStruct {
   u64 canary0;
   usz size;
-  struct heapseg *prev;
-  struct heapseg *next;
+  struct HeapSegmentStruct *prev;
+  struct HeapSegmentStruct *next;
   u64 used;
   u64 canary1;
-} __attribute__((packed)) heapseg_t;
+} __attribute__((packed)) HeapSegment;
 
 void heap_init();
 usz heap_get_used();

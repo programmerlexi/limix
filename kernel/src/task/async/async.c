@@ -11,12 +11,12 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "async"
 
-extern void exec_switch(task_t *prev, task_t *next);
-extern void exec_first_switch(task_t *prev, task_t *next);
+extern void exec_switch(AsyncTask *prev, AsyncTask *next);
+extern void exec_first_switch(AsyncTask *prev, AsyncTask *next);
 extern void hcf();
 
-static task_t *_threads;
-static task_t *_current;
+static AsyncTask *_threads;
+static AsyncTask *_current;
 
 static u64 _count;
 static u64 _waiting;
@@ -34,8 +34,8 @@ void async_init() {
   log(LOGLEVEL_INFO, "Finished initialization");
 }
 
-static void _fire(task_t *t) {
-  task_t *p = _current;
+static void _fire(AsyncTask *t) {
+  AsyncTask *p = _current;
   _current = t;
   if (t != NULL) {
     if (t->state == ASYNC_INIT) {
@@ -56,8 +56,8 @@ static void _async_wrapper(result_t (*func)(variety_t), variety_t arg) {
     _fire(_threads); // Invoke first thread
 }
 
-future_t async(result_t (*func)(variety_t), variety_t arg) {
-  task_t *t = NULL;
+AsyncFuture async(result_t (*func)(variety_t), variety_t arg) {
+  AsyncTask *t = NULL;
   for (i32 i = 0; i < TASK_LIMIT; i++)
     if (_threads[i].state == ASYNC_NONE) {
       t = &_threads[i];
@@ -74,13 +74,13 @@ future_t async(result_t (*func)(variety_t), variety_t arg) {
   *(u64 *)(t->page + 0x1000 - 16) = (uintptr_t)t->page + 0x1000;
   *(u64 *)(t->page + 0x1000 - 24) = (uintptr_t)func;
   *(variety_t *)(t->page + 0x1000 - 32) = arg;
-  future_t future;
+  AsyncFuture future;
   future.run = t;
   future.own = _current;
   return future;
 }
 
-result_t await(future_t *f) {
+result_t await(AsyncFuture *f) {
   _waiting++;
   f->own->state = ASYNC_WAIT;
   f->run->next = f->own;
@@ -94,4 +94,4 @@ result_t await(future_t *f) {
   return res;
 }
 
-void fire(future_t *f) { _fire(f->run); }
+void fire(AsyncFuture *f) { _fire(f->run); }

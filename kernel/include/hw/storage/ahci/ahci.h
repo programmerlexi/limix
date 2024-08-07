@@ -25,15 +25,15 @@
 #define AHCI_FIS_TYPE_PIO_SETUP 0x5f
 #define AHCI_FIS_TYPE_DEV_BITS 0xa1
 
-typedef enum ahci_port_type {
+typedef enum AhciPortTypeEnum {
   NONE = 0,
   SATA = 1,
   SEMB = 2,
   PM = 3,
   SATAPI = 4,
-} ahci_port_type_t;
+} AhciPortType;
 
-typedef struct ahci_hba_port {
+typedef struct AhciHbaPortStruct {
   u32 command_list_base;
   u32 command_list_base_upper;
   u32 fis_base_address;
@@ -53,9 +53,9 @@ typedef struct ahci_hba_port {
   u32 fis_switch_control;
   u32 rsv1[11];
   u32 vendor[4];
-} __attribute__((packed)) ahci_hba_port_t;
+} __attribute__((packed)) AhciHbaPort;
 
-typedef struct ahci_hba_memory {
+typedef struct AhciHbaMemoryStruct {
   u32 host_capability;
   u32 global_host_control;
   u32 interrupt_status;
@@ -69,10 +69,10 @@ typedef struct ahci_hba_memory {
   u32 bios_handoff_ctrl_sts;
   u8 rsv0[0x74];
   u8 vendor[0x60];
-  ahci_hba_port_t ports[1];
-} __attribute__((packed)) ahci_hba_memory_t;
+  AhciHbaPort ports[1];
+} __attribute__((packed)) AhciHbaMemory;
 
-typedef struct ahci_hba_command_header {
+typedef struct AhciHbaCommandHeaderStruct {
   u8 command_fis_length : 5;
   u8 atapi : 1;
   u8 write : 1;
@@ -89,9 +89,9 @@ typedef struct ahci_hba_command_header {
   u32 command_table_base_address;
   u32 command_table_base_address_upper;
   u32 rsv1[4];
-} __attribute__((packed)) ahci_hba_command_header_t;
+} __attribute__((packed)) AhciCommandHeader;
 
-typedef struct ahci_fis_h2d {
+typedef struct AhciFisH2DStruct {
   u8 fis_type;
   u8 port_multiplier : 4;
   u8 reserved0 : 3;
@@ -106,44 +106,44 @@ typedef struct ahci_fis_h2d {
   u8 iso_command_completion;
   u8 control;
   u8 reserved1[4];
-} __attribute__((packed)) ahci_fis_h2d_t;
+} __attribute__((packed)) AhciFisH2D;
 
-typedef struct ahci_hba_prdt_entry {
+typedef struct AhciHbaPrdtEntryStruct {
   u32 data_base[2];
   u32 reserved0;
   u32 byte_count : 22;
   u32 reserved1 : 9;
   u32 interrupt_on_completion : 1;
-} __attribute__((packed)) ahci_hba_prdt_entry_t;
+} __attribute__((packed)) AhciHbaPrdtEntry;
 
-typedef struct ahci_hba_command_table {
+typedef struct AhciHbaCommandTableStruct {
   u8 command_fis[64];
   u8 atapi_cmd[16];
   u8 reserved0[48];
-  ahci_hba_prdt_entry_t prdt_entry[];
-} __attribute__((packed)) ahci_hba_command_table_t;
+  AhciHbaPrdtEntry prdt_entry[];
+} __attribute__((packed)) AhciHbaCommandTable;
 
-typedef struct ahci_port {
-  ahci_hba_port_t *hba_port;
-  ahci_port_type_t port_type;
+typedef struct AhciPortStruct {
+  AhciHbaPort *hba_port;
+  AhciPortType port_type;
   u8 *buffer;
   u8 port_number;
-} ahci_port_t;
+} AhciPort;
 
 typedef struct {
-  pci_type0_t *ahci_device;
-  ahci_hba_memory_t *abar;
-  ahci_port_t *ports[32];
+  PciType0 *ahci_device;
+  AhciHbaMemory *abar;
+  AhciPort *ports[32];
   u32 port_count;
-} ahci_t;
+} Ahci;
 
-ahci_t *ahci_init(pci_type0_t *h);
-void ahci_probe(ahci_t *driver);
-ahci_port_type_t ahci_check_port_type(ahci_hba_port_t *port);
+Ahci *ahci_init(PciType0 *h);
+void ahci_probe(Ahci *driver);
+AhciPortType ahci_check_port_type(AhciHbaPort *port);
 
-void ahci_port_configure(ahci_port_t *p);
-void ahci_port_start_cmd(ahci_port_t *p);
-void ahci_port_stop_cmd(ahci_port_t *p);
-bool ahci_port_read(ahci_port_t *p, u64 sector, u32 count, void *buffer);
-bool ahci_port_write(ahci_port_t *p, u64 sector, u32 count, void *buffer);
-bool ahci_port_check(ahci_port_t *p);
+void ahci_port_configure(AhciPort *p);
+void ahci_port_start_cmd(AhciPort *p);
+void ahci_port_stop_cmd(AhciPort *p);
+bool ahci_port_read(AhciPort *p, u64 sector, u32 count, void *buffer);
+bool ahci_port_write(AhciPort *p, u64 sector, u32 count, void *buffer);
+bool ahci_port_check(AhciPort *p);

@@ -10,9 +10,9 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "syscall"
 
-void syscall(int_frame_t *f) {
+void syscall(InterruptFrame *f) {
   u64 cpu = (u64)get_processor();
-  local_scheduler_t *ls = sched_get_local(cpu);
+  LocalScheduler *ls = sched_get_local(cpu);
   switch (f->rax) {
   case SYSCALL_TEST:
     static u32 lck = 0;

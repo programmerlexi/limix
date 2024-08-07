@@ -10,7 +10,7 @@ typedef struct {
   u64 metadata_pointer;
   u64 data_pointer[2];
   u32 command_specific[6];
-} __attribute__((packed)) nvme_submission_queue_entry_t;
+} __attribute__((packed)) NvmeSubmissionQueueEntry;
 
 typedef struct {
   u32 command_specific;
@@ -20,7 +20,7 @@ typedef struct {
   u16 command_identifier;
   bool phase : 1;
   u16 status_field : 15;
-} __attribute__((packed)) nvme_completion_queue_entry_t;
+} __attribute__((packed)) NvmeCompletionQueueEntry;
 
 typedef struct {
   u64 capabilities;
@@ -35,14 +35,14 @@ typedef struct {
   u64 admin_submission_queue;
   u64 admin_completion_queue;
   char reserved2[0xfc8];
-} __attribute__((packed)) nvme_registers_t;
+} __attribute__((packed)) NvmeRegisters;
 
 typedef struct {
-  pci_type0_t *nvme_device;
-  nvme_registers_t *bar0;
-  nvme_submission_queue_entry_t *admin_submission_queue;
-  nvme_completion_queue_entry_t *admin_completion_queue;
-} nvme_t;
+  PciType0 *nvme_device;
+  NvmeRegisters *bar0;
+  NvmeSubmissionQueueEntry *admin_submission_queue;
+  NvmeCompletionQueueEntry *admin_completion_queue;
+} Nvme;
 
-nvme_t *nvme_init(pci_type0_t *h);
-void nvme_probe(nvme_t *nvme);
+Nvme *nvme_init(PciType0 *h);
+void nvme_probe(Nvme *nvme);

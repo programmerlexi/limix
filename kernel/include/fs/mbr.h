@@ -9,12 +9,12 @@ typedef struct {
   u8 end_chs[3];
   u32 start_lba;
   u32 sectors;
-} __attribute__((packed)) mbr_entry_t;
+} __attribute__((packed)) MbrEntry;
 
 typedef struct {
   u8 bootstrap[440];
   u32 udid;
   u16 reserved;
-  mbr_entry_t partitions[4];
+  MbrEntry partitions[4];
   u8 bootsector_signature[2];
-} __attribute__((packed)) mbr_t;
+} __attribute__((packed)) MbrBootsector;

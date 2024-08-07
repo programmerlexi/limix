@@ -6,8 +6,8 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "ide"
 
-ide_t *ide_init(pci_type0_t *h) {
-  ide_t *ide = kmalloc(sizeof(*ide));
+Ide *ide_init(PciType0 *h) {
+  Ide *ide = kmalloc(sizeof(*ide));
   ide->ide_device = h;
   ide->bar0 = h->bar0 & PCI_BAR_MEM_BASE_ADDR;
   ide->bar1 = h->bar1 & PCI_BAR_MEM_BASE_ADDR;

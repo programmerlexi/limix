@@ -3,31 +3,31 @@
 #include "libk/types.h"
 #include "libk/utils/strings/xstr.h"
 
-typedef struct file {
+typedef struct FileStruct {
   xstr_t name;
   u64 size;
-  i32 (*read)(u64, u64, char *, struct file *);
-  i32 (*write)(u64, u64, char *, struct file *);
+  i32 (*read)(u64, u64, char *, struct FileStruct *);
+  i32 (*write)(u64, u64, char *, struct FileStruct *);
   void *data;
-} file_t;
+} File;
 
-typedef struct directory {
+typedef struct DirectoryStruct {
   xstr_t name;
   u64 directory_count;
   u64 file_count;
-  struct directory **directories;
-  file_t **files;
-} directory_t;
+  struct DirectoryStruct **directories;
+  File **files;
+} Directory;
 
-typedef struct vfs {
+typedef struct VfsStruct {
   xstr_t name;
-  directory_t *root;
-  struct vfs *next;
-} vfs_t;
+  Directory *root;
+  struct VfsStruct *next;
+} Vfs;
 
 void vfs_init();
-vfs_t *vfs_fs(char *name);
-i32 vfs_find_directory(directory_t **result, char *path);
-i32 vfs_find_file(file_t **result, char *path);
+Vfs *vfs_fs(char *name);
+i32 vfs_find_directory(Directory **result, char *path);
+i32 vfs_find_file(File **result, char *path);
 i32 vfs_type(char *path, u64 *type);
-vfs_t *vfs_make(char *name);
+Vfs *vfs_make(char *name);

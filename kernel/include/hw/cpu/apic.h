@@ -68,7 +68,7 @@ typedef struct {
   u16 mask : 1;
   u16 timer_mode : 3;
   u16 reserved1 : 12;
-} __attribute__((packed)) apic_lvt_t;
+} __attribute__((packed)) APICLvt;
 
 typedef struct {
   u8 int_vector;
@@ -83,7 +83,7 @@ typedef struct {
   u32 reserved1 : 2;
   u32 destination : 2;
   u32 reserved2 : 28;
-} __attribute__((packed)) apic_icr_t;
+} __attribute__((packed)) APICIcr;
 
 void apic_init();
 bool apic_check();

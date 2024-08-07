@@ -18,21 +18,21 @@ typedef struct {
   u16 offset_mid;
   u32 offset_high;
   u32 reserved;
-} __attribute__((packed)) idt_gate_t;
+} __attribute__((packed)) IdtGate;
 
 typedef struct {
   u16 size;
   u64 addr;
-} __attribute__((packed)) idt_desc_t;
+} __attribute__((packed)) IdtDescriptor;
 
 typedef struct {
   u64 r15, r14, r13, r12, r11, r10, r9, r8, rdi, rsi, rdx, rcx, rbx, rax, rbp,
       rip, cs, rflags, rsp;
-} int_frame_t;
+} InterruptFrame;
 
 void idt_init();
 void idt_add_handler(u8 id, void *handler, u8 flags, u8 ist);
 void isr_init();
 void idt_load();
 
-extern idt_gate_t g_idt[256];
+extern IdtGate g_idt[256];

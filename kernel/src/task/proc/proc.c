@@ -2,14 +2,14 @@
 #include "kernel/asm_inline.h"
 #include "kernel/mm/heap.h"
 
-process_t *proc_create() {
-  process_t *p = (process_t *)kzalloc(sizeof(process_t));
+Process *proc_create() {
+  Process *p = (Process *)kzalloc(sizeof(Process));
   return p;
 }
 
-void proc_destroy(process_t *p) { kfree(p); }
+void proc_destroy(Process *p) { kfree(p); }
 
-void proc_switch(process_t *p, process_t *n) {
+void proc_switch(Process *p, Process *n) {
   p->cr3 = read_cr3();
   write_cr3(n->cr3);
 }

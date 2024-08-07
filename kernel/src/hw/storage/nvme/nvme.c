@@ -8,8 +8,8 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "nvme"
 
-nvme_t *nvme_init(pci_type0_t *h) {
-  nvme_t *nvme = kmalloc(sizeof(*nvme));
+Nvme *nvme_init(PciType0 *h) {
+  Nvme *nvme = kmalloc(sizeof(*nvme));
   nvme->nvme_device = h;
   uptr phys_addr = HHDM((h->bar0 & PCI_BAR_MEM_BASE_ADDR));
   if ((h->bar0 & PCI_BAR_MEM_TYPE >> 1) == 2)
@@ -30,6 +30,6 @@ nvme_t *nvme_init(pci_type0_t *h) {
   return nvme;
 }
 
-void nvme_probe(nvme_t *nvme) {
+void nvme_probe(Nvme *nvme) {
   // TODO: Write a working probe function
 }

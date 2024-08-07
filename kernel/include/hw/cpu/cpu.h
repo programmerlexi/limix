@@ -7,17 +7,17 @@
 #define CPU_FEAT_X2APIC 2
 #define CPU_FEAT_APIC 4
 
-typedef struct cpu_list_entry {
+typedef struct CpuListEntryStruct {
   u64 cpu_id;
   u64 capabilities;
   char vendor[13];
-  struct cpu_list_entry *next;
-} cpu_list_entry_t;
+  struct CpuListEntryStruct *next;
+} CpuListEntry;
 
-typedef u64 cpu_capability_t;
+typedef u64 CpuCapability;
 
 void cpu_init();
-bool cpu_has(cpu_capability_t capability);
+bool cpu_has(CpuCapability capability);
 char *cpu_vendor();
 
 i64 cpu_get_random_cpu();

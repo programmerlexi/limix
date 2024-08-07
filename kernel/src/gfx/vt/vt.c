@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-static vt_char_t *_vt_buffer;
+static VtChar *_vt_buffer;
 static u64 _vt_height;
 static u64 _vt_width;
 static u64 _vt_x;
@@ -23,7 +23,7 @@ static bool _full_redraw;
 
 static u32 _vt_lock;
 
-static ansi_state_t _state;
+static AnsiState _state;
 
 static u64 _attached_drm;
 static bool _avail;
@@ -37,8 +37,8 @@ void vt_init(u64 attached_to_drm) {
   _attached_drm = attached_to_drm;
   _vt_width = drm_width(_attached_drm) / (8 * GFX_FONT_SCALE);
   _vt_height = drm_height(_attached_drm) / (16 * GFX_FONT_SCALE);
-  _vt_buffer = (vt_char_t *)request_page_block(
-      ((_vt_width * _vt_height * sizeof(vt_char_t)) + 4095) / 4096);
+  _vt_buffer = (VtChar *)request_page_block(
+      ((_vt_width * _vt_height * sizeof(VtChar)) + 4095) / 4096);
   if (_vt_buffer == NULL) {
     kernel_panic_error("Couldn't initialize VT!");
   }
@@ -54,7 +54,7 @@ void vt_clear() {
   lock_vt;
   _vt_x = 0;
   _vt_y = 0;
-  kmemset(_vt_buffer, 0, _vt_height * _vt_width * sizeof(vt_char_t));
+  kmemset(_vt_buffer, 0, _vt_height * _vt_width * sizeof(VtChar));
   _full_redraw = true;
   unlock_vt;
   vt_flush();
@@ -62,7 +62,7 @@ void vt_clear() {
 void vt_draw_char(u64 i) {
   if (!_avail)
     return;
-  vt_char_t c = _vt_buffer[i];
+  VtChar c = _vt_buffer[i];
   u64 cx = i % _vt_width;
   u64 cy = i / _vt_width;
   if (c.unicode)
@@ -118,12 +118,12 @@ void vt_advance_y() {
     _vt_y -= CONFIG_SCROLL_STEP;
     kmemmove(_vt_buffer,
              (void *)((uintptr_t)_vt_buffer +
-                      sizeof(vt_char_t) * _vt_width * CONFIG_SCROLL_STEP),
-             _vt_width * (_vt_height - CONFIG_SCROLL_STEP) * sizeof(vt_char_t));
+                      sizeof(VtChar) * _vt_width * CONFIG_SCROLL_STEP),
+             _vt_width * (_vt_height - CONFIG_SCROLL_STEP) * sizeof(VtChar));
     kmemset((void *)((uintptr_t)_vt_buffer +
-                     sizeof(vt_char_t) *
+                     sizeof(VtChar) *
                          (_vt_width * (_vt_height - CONFIG_SCROLL_STEP))),
-            0, _vt_width * sizeof(vt_char_t) * CONFIG_SCROLL_STEP);
+            0, _vt_width * sizeof(VtChar) * CONFIG_SCROLL_STEP);
     _full_redraw = true;
   }
   vt_flush();

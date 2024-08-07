@@ -3,7 +3,7 @@
 #include "libk/types.h"
 #include <stdbool.h>
 
-typedef union vt_color {
+typedef union VtColorUnion {
   struct {
     u8 reserved;
     u8 red;
@@ -11,23 +11,23 @@ typedef union vt_color {
     u8 blue;
   } ccolor;
   u32 fb_color;
-} vt_color_t;
+} VtColor;
 
-typedef struct vt_graphic_rendition {
-  vt_color_t fg_rgb; /* Incompatible with bold/dim */
+typedef struct VtGraphicRenditionStruct {
+  VtColor fg_rgb; /* Incompatible with bold/dim */
   u8 fg_index;
 
-  vt_color_t bg_rgb;
+  VtColor bg_rgb;
   u8 bg_index;
 
   u8 font_state;
-} vt_graphic_rendition_t;
+} VtGraphicRendition;
 
-typedef struct vt_char {
+typedef struct VtCharStruct {
   u32 unicode;
-  vt_color_t fg;
-  vt_color_t bg;
-} vt_char_t;
+  VtColor fg;
+  VtColor bg;
+} VtChar;
 
 #define VT_BOLD 1
 #define VT_DIM 2
@@ -57,6 +57,7 @@ typedef struct vt_char {
 #define TC_BG_PURPLE "\x26"
 #define TC_BG_CYAN "\x27"
 #define TC_BG_WHITE "\x28"
+
 void vt_init(u64 drm_number);
 void vt_clear();
 void vt_flush();

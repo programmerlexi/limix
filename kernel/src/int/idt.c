@@ -6,9 +6,9 @@
 #include "libk/ipc/spinlock.h"
 #include "libk/utils/memory/memory.h"
 
-__attribute__((aligned(0x10))) idt_gate_t g_idt[256];
+__attribute__((aligned(0x10))) IdtGate g_idt[256];
 
-static idt_desc_t IDTR;
+static IdtDescriptor IDTR;
 
 void idt_load() {
   asm("cli");
@@ -36,7 +36,7 @@ void panic_init() {
                   0);
 }
 
-void panic_handle(int_frame_t *f) {
+void panic_handle(InterruptFrame *f) {
   static u32 lock = 0;
   spinlock(&lock);
   logf(LOGLEVEL_FATAL, "RAX: 0x%l RBX: 0x%l", f->rax, f->rbx);
@@ -57,11 +57,11 @@ void panic_handle(int_frame_t *f) {
 }
 
 void idt_add_handler(u8 id, void *handler, u8 flags, u8 ist) {
-  g_idt[id] = (idt_gate_t){.ist = ist,
-                           .segment_selector = 0x08,
-                           .flags = flags,
-                           .offset_low = (u16)(u64)handler,
-                           .offset_mid = (u16)((u64)handler >> 16),
-                           .offset_high = (u32)((u64)handler >> 32),
-                           .reserved = 0};
+  g_idt[id] = (IdtGate){.ist = ist,
+                        .segment_selector = 0x08,
+                        .flags = flags,
+                        .offset_low = (u16)(u64)handler,
+                        .offset_mid = (u16)((u64)handler >> 16),
+                        .offset_high = (u32)((u64)handler >> 32),
+                        .reserved = 0};
 }

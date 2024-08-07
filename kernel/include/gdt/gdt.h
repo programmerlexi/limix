@@ -2,28 +2,28 @@
 
 #include "libk/types.h"
 
-typedef struct gdt_descriptor {
+typedef struct GdtDescriptorStruct {
   u16 size;
   u64 offset;
-} __attribute__((packed)) gdt_descriptor_t;
+} __attribute__((packed)) GdtDescriptor;
 
-typedef struct gdt_entry {
+typedef struct GdtEntryStruct {
   u16 limit_low;
   u16 base_low;
   u8 base_mid;
   u8 access;
   u8 flags_limit_hi;
   u8 base_hi;
-} __attribute__((packed)) gdt_entry_t;
+} __attribute__((packed)) GdtEntry;
 
-typedef struct gdt {
-  gdt_entry_t null;        // 0x00
-  gdt_entry_t kernel_code; // 0x08
-  gdt_entry_t kernel_data; // 0x10
-  gdt_entry_t user_null;
-  gdt_entry_t user_code;
-  gdt_entry_t user_data;
-} __attribute__((packed)) __attribute((aligned(0x1000))) gdt_t;
+typedef struct GdtStruct {
+  GdtEntry null;        // 0x00
+  GdtEntry kernel_code; // 0x08
+  GdtEntry kernel_data; // 0x10
+  GdtEntry user_null;
+  GdtEntry user_code;
+  GdtEntry user_data;
+} __attribute__((packed)) __attribute((aligned(0x1000))) Gdt;
 
 typedef enum {
   GDT_ACCESS_CODE_READABLE = 0x02,
@@ -46,7 +46,7 @@ typedef enum {
 
   GDT_ACCESS_PRESENT = 0x80,
 
-} GDT_ACCESS;
+} GdtAccess;
 
 typedef enum {
   GDT_FLAG_64BIT = 0x20,
@@ -55,9 +55,9 @@ typedef enum {
 
   GDT_FLAG_GRANULARITY_1B = 0x00,
   GDT_FLAG_GRANULARITY_4K = 0x80,
-} GDT_FLAGS;
+} GDTFlags;
 
-extern gdt_t g_gdt;
+extern Gdt g_gdt;
 
-extern void load_gdt(gdt_descriptor_t *gdt_descriptor);
+extern void load_gdt(GdtDescriptor *gdt_descriptor);
 void gdt_init(void);

@@ -14,7 +14,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-static drm_t _drms[MAX_DRMS];
+static Drm _drms[MAX_DRMS];
 static u64 _active_drm;
 static u32 _drm_sys_lock;
 static bool drm_initialized;
@@ -46,7 +46,7 @@ void drm_init() {
   _active_drm = 0;
 }
 static void _drm_sync_real() {
-  drm_t ad = _drms[_active_drm];
+  Drm ad = _drms[_active_drm];
   kmemcpy(g_fb->address, ad.framebuffer, ad.pitch * ad.height);
 }
 void drm_switch(u64 drm) {
@@ -310,7 +310,7 @@ bool drm_is_attached_to_process(u64 drm) {
 }
 
 static i32 _drm_write(void *d, u64 o, u64 s, char *b) {
-  drm_number_t *dn = (drm_number_t *)d;
+  DrmNumber *dn = (DrmNumber *)d;
   if (o > drm_width(*dn) * drm_height(*dn))
     return E_OUTOFBOUNDS;
   if (o + s > drm_width(*dn) * drm_height(*dn))
@@ -323,7 +323,7 @@ static i32 _drm_write(void *d, u64 o, u64 s, char *b) {
 }
 
 static i32 _drm_read(void *d, u64 o, u64 s, char *b) {
-  drm_number_t *dn = (drm_number_t *)d;
+  DrmNumber *dn = (DrmNumber *)d;
   if (o > drm_width(*dn) * drm_height(*dn))
     return E_OUTOFBOUNDS;
   if (o + s > drm_width(*dn) * drm_height(*dn))
@@ -341,7 +341,7 @@ void drm_register_vfs() {
   if (!drm_initialized)
     return;
   for (u64 i = 0; i < MAX_DRMS; i++) {
-    drm_number_t *dn = (drm_number_t *)kmalloc(sizeof(drm_number_t));
+    DrmNumber *dn = (DrmNumber *)kmalloc(sizeof(DrmNumber));
     nullsafe_error(dn, "Out of memory");
     char *devname = (char *)kmalloc(4);
     nullsafe_error(devname, "Out of memory");

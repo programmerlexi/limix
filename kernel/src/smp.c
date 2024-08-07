@@ -20,7 +20,7 @@ void _smp_start(struct limine_smp_info *cpu_info) {
   gdt_init();
   idt_load();
   sched_create(core_main, get_processor(), 0);
-  local_scheduler_t *ls = sched_local_init(get_processor());
+  LocalScheduler *ls = sched_local_init(get_processor());
   while (true) {
     sched_glob_tick();
     sched_local_tick(ls);

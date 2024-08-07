@@ -13,11 +13,11 @@ typedef struct {
   u32 doorbell_offset;
   u32 runtime_register_space_offset;
   u32 cap_params1;
-} xhci_capability_register_t;
+} XhciCapabilityRegister;
 
 typedef struct {
-  pci_type0_t *xhci_device;
-  xhci_capability_register_t *cap;
-} xhci_t;
+  PciType0 *xhci_device;
+  XhciCapabilityRegister *cap;
+} Xhci;
 
-xhci_t *xhci_init(pci_type0_t *h);
+Xhci *xhci_init(PciType0 *h);

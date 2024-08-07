@@ -9,8 +9,8 @@ void sched_glob_tick();
 void sched_glob_release();
 void sched_glob_aquire();
 
-void sched_register_cpu(local_scheduler_t *shed);
+void sched_register_cpu(LocalScheduler *shed);
 
 void sched_glob_list_processes();
 
-local_scheduler_t *sched_get_local(u64 cpu);
+LocalScheduler *sched_get_local(u64 cpu);

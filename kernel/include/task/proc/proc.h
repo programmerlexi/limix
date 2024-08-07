@@ -3,7 +3,7 @@
 #include "kernel/task/thread/thread.h"
 #include "libk/types.h"
 
-typedef struct process {
+typedef struct ProcessStruct {
   u64 pid;
 
   u64 uid;
@@ -12,7 +12,7 @@ typedef struct process {
   u64 egid;
 
   u64 thread_count;
-  thread_t *threads;
+  Thread *threads;
 
   u64 cpu;
 
@@ -20,11 +20,11 @@ typedef struct process {
 
   xstr_t name;
 
-  struct process *prev;
-  struct process *next;
-} process_t;
+  struct ProcessStruct *prev;
+  struct ProcessStruct *next;
+} Process;
 
-process_t *proc_create();
-void proc_destroy(process_t *process);
+Process *proc_create();
+void proc_destroy(Process *process);
 
-void proc_switch(process_t *prev, process_t *next);
+void proc_switch(Process *prev, Process *next);

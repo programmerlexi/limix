@@ -58,7 +58,7 @@
 
 #define PCI_BAR_IO_BASE_ADDR ~3
 
-typedef u32 pci_bar_t;
+typedef u32 PciBar;
 
 typedef struct {
   u16 vendor_id;
@@ -73,16 +73,16 @@ typedef struct {
   u8 latency_timer;
   u8 header_type;
   u8 bist;
-} pci_header_t;
+} PciHeader;
 
 typedef struct {
-  pci_header_t h;
-  pci_bar_t bar0;
-  pci_bar_t bar1;
-  pci_bar_t bar2;
-  pci_bar_t bar3;
-  pci_bar_t bar4;
-  pci_bar_t bar5;
+  PciHeader h;
+  PciBar bar0;
+  PciBar bar1;
+  PciBar bar2;
+  PciBar bar3;
+  PciBar bar4;
+  PciBar bar5;
   u32 card_bus_cis_pointer;
   u16 subsystem_vendor;
   u16 subsystem;
@@ -93,14 +93,14 @@ typedef struct {
   u8 interrupt_pin;
   u8 min_grant;
   u8 max_latency;
-} pci_type0_t;
+} PciType0;
 
 typedef struct {
   u8 bus;
   u8 slot;
   u8 func;
   bool exists;
-} pci_address_t;
+} PciAddress;
 
 void pci_init();
 u16 pci_config_read_word(u8 bus, u8 slot, u8 func, u8 offset);
@@ -112,4 +112,4 @@ char *pci_get_typename(u8 bus, u8 slot, u8 func);
 char *pci_get_device_name(u8 bus, u8 slot, u8 func);
 char *pci_get_vendor_name(u8 bus, u8 slot, u8 func);
 u16 pci_get_count(u16 vendor, u16 device);
-pci_address_t pci_search(u16 vendor, u16 device, u16 number);
+PciAddress pci_search(u16 vendor, u16 device, u16 number);

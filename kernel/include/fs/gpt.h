@@ -19,11 +19,11 @@ typedef struct {
   u32 partition_entries;
   u32 partition_entry_size;
   u32 crc_partition_array;
-} __attribute__((packed)) gpt_partition_header_t;
+} __attribute__((packed)) GptPartitionHeader;
 
 typedef struct {
-  mbr_t pmbr __attribute__((aligned(0x200)));
-  gpt_partition_header_t partition_header __attribute__((aligned(0x200)));
-} __attribute__((packed)) gpt_header_t;
+  MbrBootsector pmbr __attribute__((aligned(0x200)));
+  GptPartitionHeader partition_header __attribute__((aligned(0x200)));
+} __attribute__((packed)) GptHeader;
 
-void gpt_init(devman_storage_access_handle_t ah);
+void gpt_init(DevmanStorageAccessHandle ah);

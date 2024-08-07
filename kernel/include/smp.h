@@ -29,7 +29,7 @@ typedef union {
     u8 cmd_args[6];
   };
   u64 data;
-} smp_cmd_t;
+} SmpCommand;
 
 void _smp_start(struct limine_smp_info *info_structure);
 u64 smp_init();

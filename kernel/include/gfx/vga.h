@@ -3,7 +3,7 @@
 #include "kernel/gfx/gfx.h"
 #include "libk/types.h"
 
-enum ellipse_type { E_FULL = 0xf, E_1 = 1, E_2 = 2, E_3 = 4, E_4 = 8 };
+enum EllipseType { E_FULL = 0xf, E_1 = 1, E_2 = 2, E_3 = 4, E_4 = 8 };
 
 void fill_rect(absolute64_t x0, absolute64_t y0, offset64_t width,
                offset64_t height, color32_t color);

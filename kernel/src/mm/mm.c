@@ -9,8 +9,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-static memseg_t *_first;
-static memseg_t *_last;
+static MemorySegment *_first;
+static MemorySegment *_last;
 static u32 page_lock;
 
 #define lock spinlock(&page_lock);
@@ -22,7 +22,7 @@ uptr mm_fix(uptr ptr) {
   return ptr;
 }
 
-static void _mm_combine_forward(memseg_t *seg) {
+static void _mm_combine_forward(MemorySegment *seg) {
   nullsafe(seg);
   nullsafe(seg->next);
   if ((uintptr_t)(seg->next) != ((uintptr_t)seg + (seg->pages << 12)))
@@ -35,7 +35,7 @@ static void _mm_combine_forward(memseg_t *seg) {
   seg->next = seg->next->next;
 }
 
-static void _mm_combine_backward(memseg_t *seg) {
+static void _mm_combine_backward(MemorySegment *seg) {
   nullsafe(seg);
   _mm_combine_forward(seg->prev);
 }
@@ -62,11 +62,11 @@ void *request_page_block(usz n) {
 
   lock;
 
-  memseg_t *s = _first;
+  MemorySegment *s = _first;
   while (PHY(s)) {
     if (s->pages >= n) {
       if (s->pages > n) {
-        memseg_t *ns = (memseg_t *)((uptr)s + (n << 12));
+        MemorySegment *ns = (MemorySegment *)((uptr)s + (n << 12));
         ns->prev = s->prev;
         ns->next = s->next;
         ns->pages = s->pages - n;
@@ -114,9 +114,9 @@ void free_page_block(void *p, usz n) {
   }
   uptr is = (uptr)p;
   uptr ie = (uptr)p + (n << 12);
-  memseg_t *np = NULL;
-  memseg_t *nn = NULL;
-  memseg_t *s = _first;
+  MemorySegment *np = NULL;
+  MemorySegment *nn = NULL;
+  MemorySegment *s = _first;
   while (s) {
     uptr ss = (uptr)s;
     uptr se = (uptr)s + (s->pages << 12);
@@ -152,7 +152,7 @@ void free_page_block(void *p, usz n) {
     }
     s = s->next;
   }
-  memseg_t *ns = (memseg_t *)is;
+  MemorySegment *ns = (MemorySegment *)is;
   ns->pages = (ie - is) >> 12;
   ns->next = nn;
   ns->prev = np;

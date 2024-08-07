@@ -13,28 +13,28 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "vfs"
 
-static vfs_t *_filesystems;
+static Vfs *_filesystems;
 static u64 _fs_count;
 
 void vfs_init() { _fs_count = 0; }
 
-vfs_t *vfs_make(char *name) {
+Vfs *vfs_make(char *name) {
   debugf("Making mount '%s'", name);
-  vfs_t **a = &_filesystems;
-  vfs_t *c = _filesystems;
+  Vfs **a = &_filesystems;
+  Vfs *c = _filesystems;
   while (c) {
     a = &c->next;
     c = c->next;
   }
-  *a = (vfs_t *)kmalloc(sizeof(vfs_t));
+  *a = (Vfs *)kmalloc(sizeof(Vfs));
   nullsafe_error(*a, "Out of memory");
   (*a)->name = to_xstr(name);
   _fs_count++;
   return *a;
 }
 
-vfs_t *vfs_fs(char *name) {
-  vfs_t *c = _filesystems;
+Vfs *vfs_fs(char *name) {
+  Vfs *c = _filesystems;
   while (c) {
     if (kstrlen(name) == c->name.length)
       if (kstrncmp(c->name.cstr, name,
@@ -44,7 +44,7 @@ vfs_t *vfs_fs(char *name) {
   }
   return c;
 }
-i32 vfs_find_directory(directory_t **result, char *path) {
+i32 vfs_find_directory(Directory **result, char *path) {
   u64 ft;
   i32 tr = vfs_type(path, &ft);
   if (tr != E_SUCCESS)
@@ -56,11 +56,11 @@ i32 vfs_find_directory(directory_t **result, char *path) {
     return E_INVOPT;
 
   char *fs_name = (char *)clone(path, kstrnext(path, PATHSEP));
-  vfs_t *fs = vfs_fs(fs_name);
+  Vfs *fs = vfs_fs(fs_name);
   kfree(fs_name);
   if (!fs)
     return E_NOENT;
-  directory_t *d = fs->root;
+  Directory *d = fs->root;
   u64 it = 0;
   while (kstrlen(path) > kstrnext(path, PATHSEP)) {
     if (it)
@@ -100,7 +100,7 @@ i32 vfs_find_directory(directory_t **result, char *path) {
   }
   return E_INVOP;
 }
-i32 vfs_find_file(file_t **result, char *path) {
+i32 vfs_find_file(File **result, char *path) {
   u64 ft;
   i32 tr = vfs_type(path, &ft);
   if (tr != E_SUCCESS)
@@ -112,11 +112,11 @@ i32 vfs_find_file(file_t **result, char *path) {
     return E_INVOPT;
 
   char *fs_name = (char *)clone(path, kstrnext(path, PATHSEP));
-  vfs_t *fs = vfs_fs(fs_name);
+  Vfs *fs = vfs_fs(fs_name);
   kfree(fs_name);
   if (!fs)
     return E_NOENT;
-  directory_t *d = fs->root;
+  Directory *d = fs->root;
   u64 it = 0;
   while (kstrlen(path) > kstrnext(path, PATHSEP)) {
     if (it)
@@ -161,11 +161,11 @@ i32 vfs_type(char *path, u64 *type) {
   if (!kstrlen(path))
     return E_INVOPT;
   char *fs_name = (char *)clone(path, kstrnext(path, PATHSEP));
-  vfs_t *fs = vfs_fs(fs_name);
+  Vfs *fs = vfs_fs(fs_name);
   kfree(fs_name);
   if (!fs)
     return E_NOENT;
-  directory_t *d = fs->root;
+  Directory *d = fs->root;
   u64 it = 0;
   while (kstrlen(path) > kstrnext(path, PATHSEP)) {
     if (it)

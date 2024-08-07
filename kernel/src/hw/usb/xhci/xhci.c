@@ -8,8 +8,8 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "xhci"
 
-xhci_t *xhci_init(pci_type0_t *h) {
-  xhci_t *xhci = kmalloc(sizeof(*xhci));
+Xhci *xhci_init(PciType0 *h) {
+  Xhci *xhci = kmalloc(sizeof(*xhci));
   xhci->xhci_device = h;
   logf(LOGLEVEL_DEBUG, "%l %l", (u64)h->bar0, (u64)h->bar1);
   uptr phy_addr = h->bar0 & PCI_BAR_MEM_BASE_ADDR;

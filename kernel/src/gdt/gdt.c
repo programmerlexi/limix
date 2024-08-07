@@ -1,7 +1,7 @@
 #include "kernel/gdt/gdt.h"
 #include "libk/types.h"
 
-__attribute__((aligned(0x1000))) gdt_t g_gdt = {
+__attribute__((aligned(0x1000))) Gdt g_gdt = {
     {0, 0, 0, 0x00, 0x00, 0}, // null
     {0xff, 0, 0,
      GDT_ACCESS_CODE_SEGMENT | GDT_ACCESS_PRESENT | GDT_ACCESS_CODE_READABLE |
@@ -25,8 +25,8 @@ __attribute__((aligned(0x1000))) gdt_t g_gdt = {
 };
 
 void gdt_init(void) {
-  __attribute__((aligned(0x1000))) gdt_descriptor_t gdt_desc;
-  gdt_desc.size = sizeof(gdt_t) - 1;
+  __attribute__((aligned(0x1000))) GdtDescriptor gdt_desc;
+  gdt_desc.size = sizeof(Gdt) - 1;
   gdt_desc.offset = (uptr)&g_gdt;
   load_gdt(&gdt_desc);
 }

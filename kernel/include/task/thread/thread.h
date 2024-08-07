@@ -3,7 +3,7 @@
 #include "libk/types.h"
 #include "libk/utils/strings/xstr.h"
 
-enum thread_state {
+enum ThreadStateEnum {
   THREAD_IDLE,
   THREAD_RUNNING,
   THREAD_BLOCKED,
@@ -11,17 +11,17 @@ enum thread_state {
   THREAD_TERMINATE
 };
 
-typedef struct thread {
+typedef struct ThreadStruct {
   u64 tid;
-  enum thread_state state;
+  enum ThreadStateEnum state;
   u64 rsp;
   u64 entry;
   xstr_t cwd;
 
-  struct thread *next;
-} thread_t;
+  struct ThreadStruct *next;
+} Thread;
 
-void thread_switch(thread_t *next, thread_t *prev);
+void thread_switch(Thread *next, Thread *prev);
 
-thread_t *thread_create();
-void thread_destroy(thread_t *thread);
+Thread *thread_create();
+void thread_destroy(Thread *thread);

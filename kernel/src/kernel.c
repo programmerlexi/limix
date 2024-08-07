@@ -12,7 +12,7 @@
 #include "kernel/task/sched/global.h"
 #include "kernel/task/sched/local.h"
 
-static local_scheduler_t *ls;
+static LocalScheduler *ls;
 
 void core_main() {
   cpu_init();

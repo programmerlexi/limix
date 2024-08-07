@@ -3,11 +3,11 @@
 #include "limine.h"
 #include <stdbool.h>
 
-typedef struct memseg {
-  struct memseg *prev;
-  struct memseg *next;
+typedef struct MemorySegmentStruct {
+  struct MemorySegmentStruct *prev;
+  struct MemorySegmentStruct *next;
   usz pages;
-} memseg_t;
+} MemorySegment;
 
 bool mm_init(struct limine_memmap_response *);
 

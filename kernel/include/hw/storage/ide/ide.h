@@ -82,11 +82,11 @@
 #define ATA_WRITE 0x01
 
 typedef struct {
-  pci_type0_t *ide_device;
+  PciType0 *ide_device;
   u16 bar0;
   u16 bar1;
   u16 bar2;
   u16 bar3;
-} ide_t;
+} Ide;
 
-ide_t *ide_init(pci_type0_t *h);
+Ide *ide_init(PciType0 *h);

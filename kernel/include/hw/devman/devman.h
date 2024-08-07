@@ -6,36 +6,36 @@
 typedef enum {
   HDD,
   CD,
-} devman_storage_type_t;
+} DevmanStorageType;
 
 typedef struct {
   u64 start;
   u64 end;
   u64 id;
-} devman_storage_partition_t;
+} DevmanStoragePartition;
 
 typedef struct {
-  devman_storage_type_t type;
+  DevmanStorageType type;
   u64 number;
   void *driver_data;
   bool (*read)(void *, u64, u32, void *);
   bool (*write)(void *, u64, u32, void *);
   bool (*check_attached)(void *);
   u64 partition_count;
-  devman_storage_partition_t **partitions;
-} devman_storage_t;
+  DevmanStoragePartition **partitions;
+} DevmanStorage;
 
 typedef struct {
   u64 storage_index;
   u64 partition_index;
-} devman_storage_access_handle_t;
+} DevmanStorageAccessHandle;
 
 void devman_init();
-void devman_add_storage(devman_storage_type_t type, void *driver_data,
+void devman_add_storage(DevmanStorageType type, void *driver_data,
                         bool (*read)(void *, u64, u32, void *),
                         bool (*write)(void *, u64, u32, void *),
                         bool (*check_attached)(void *));
-bool devman_read(devman_storage_access_handle_t handle, u64 sector, u32 count,
+bool devman_read(DevmanStorageAccessHandle handle, u64 sector, u32 count,
                  void *buffer);
-bool devman_write(devman_storage_access_handle_t handle, u64 sector, u32 count,
+bool devman_write(DevmanStorageAccessHandle handle, u64 sector, u32 count,
                   void *buffer);

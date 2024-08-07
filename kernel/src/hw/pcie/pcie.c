@@ -21,11 +21,11 @@
 #define DEBUG_MODULE "pcie"
 
 static u8 region_count;
-static pcie_region_t regions[256];
+static PcieRegion regions[256];
 static bool initialized = false;
 
-pci_header_t *pcie_get_device(u8 b, u8 s, u8 f) {
-  pcie_region_t *r = NULL;
+PciHeader *pcie_get_device(u8 b, u8 s, u8 f) {
+  PcieRegion *r = NULL;
   for (u8 i = 0; i < region_count; i++) {
     if (regions[i].start <= b && regions[i].end >= b) {
       r = &regions[i];
@@ -35,25 +35,25 @@ pci_header_t *pcie_get_device(u8 b, u8 s, u8 f) {
   if (!r)
     return NULL;
   u64 rb = b - r->start;
-  return (pci_header_t *)((rb * 256 + s * 8 + f) * 0x1000 + r->base);
+  return (PciHeader *)((rb * 256 + s * 8 + f) * 0x1000 + r->base);
 }
 
-static void pci_handle_device(pci_header_t *dev) {
+static void pci_handle_device(PciHeader *dev) {
   switch (dev->class_code) {
   case PCI_CLASS_MASS_STORAGE:
     switch (dev->subclass) {
     case PCI_SUBCLASS_MASS_STORAGE_SATA:
       switch (dev->prog_if) {
       case PCI_PROGIF_MASS_STORAGE_SATA_VENDOR_AHCI:
-        sched_create(ahci_init, cpu_get_random_cpu(), (u64)(pci_type0_t *)dev);
+        sched_create(ahci_init, cpu_get_random_cpu(), (u64)(PciType0 *)dev);
         return;
       }
       return;
     case PCI_SUBCLASS_MASS_STORAGE_NVM:
-      sched_create(nvme_init, cpu_get_random_cpu(), (u64)(pci_type0_t *)dev);
+      sched_create(nvme_init, cpu_get_random_cpu(), (u64)(PciType0 *)dev);
       return;
     case PCI_SUBCLASS_MASS_STORAGE_IDE:
-      sched_create(ide_init, cpu_get_random_cpu(), (u64)(pci_type0_t *)dev);
+      sched_create(ide_init, cpu_get_random_cpu(), (u64)(PciType0 *)dev);
       return;
     }
     return;
@@ -62,7 +62,7 @@ static void pci_handle_device(pci_header_t *dev) {
     case PCI_SUBCLASS_BUS_USB:
       switch (dev->prog_if) {
       case 0x30:
-        sched_create(xhci_init, cpu_get_random_cpu(), (u64)(pci_type0_t *)dev);
+        sched_create(xhci_init, cpu_get_random_cpu(), (u64)(PciType0 *)dev);
         return;
       }
       return;
@@ -72,14 +72,14 @@ static void pci_handle_device(pci_header_t *dev) {
 }
 
 bool pcie_init() {
-  acpi_mcfg_t *mcfg = (acpi_mcfg_t *)acpi_get("MCFG");
+  AcpiMcfg *mcfg = (AcpiMcfg *)acpi_get("MCFG");
   if (!mcfg) {
     log(LOGLEVEL_WARN0, "Couldn't get MCFG");
     return false;
   }
   u64 entries =
       (mcfg->header.length - sizeof(mcfg->header) - sizeof(mcfg->reserved)) /
-      sizeof(acpi_mcfg_csbaa_t);
+      sizeof(AcpiMcfgCsbaa);
   if (!entries) {
     log(LOGLEVEL_WARN1, "No PCIe busses found");
     return false;
@@ -97,7 +97,7 @@ bool pcie_init() {
   for (u16 b = 0; b < 256; b++) {
     for (u8 s = 0; s < 32; s++) {
       for (u8 f = 0; f < 8; f++) {
-        pci_header_t *dev = pcie_get_device(b, s, f);
+        PciHeader *dev = pcie_get_device(b, s, f);
         if (!dev)
           continue;
         if (!dev->vendor_id || dev->vendor_id == 0xffff)

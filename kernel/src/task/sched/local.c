@@ -15,10 +15,10 @@
 
 static u32 _sched_initialize;
 
-local_scheduler_t *sched_local_init(u64 cpu) {
+LocalScheduler *sched_local_init(u64 cpu) {
   spinlock(&_sched_initialize);
   log(LOGLEVEL_ANALYZE, "Creating local scheduler");
-  local_scheduler_t *s = kmalloc(sizeof(local_scheduler_t));
+  LocalScheduler *s = kmalloc(sizeof(LocalScheduler));
   if (!s)
     kernel_panic_error("Out of memory");
   s->cpu = cpu;
@@ -29,7 +29,7 @@ local_scheduler_t *sched_local_init(u64 cpu) {
   return s;
 }
 
-void sched_local_tick(local_scheduler_t *ls) {
+void sched_local_tick(LocalScheduler *ls) {
   spinlock(&ls->shed_lock);
   if (!ls->frames.start) {
     if (!ls->from_core) {
@@ -39,7 +39,7 @@ void sched_local_tick(local_scheduler_t *ls) {
       return;
     }
   }
-  thread_t *org, *next;
+  Thread *org, *next;
   if (ls->from_core) {
     log(LOGLEVEL_ANALYZE, "Performing switch from kernel");
     ls->from_core = false;
@@ -59,7 +59,7 @@ void sched_local_tick(local_scheduler_t *ls) {
       kernel_panic_error("There seem to be a slight problem");
     next = ls->frames.start->next->frame->thread;
     ls->frames.start->frame->assigned = false;
-    frame_container_t *old_frame = ls->frames.start;
+    FrameContainer *old_frame = ls->frames.start;
     ls->frames.start = ls->frames.start->next;
     if (!ls->frames.start)
       ls->frames.end = NULL;

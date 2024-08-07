@@ -11,12 +11,12 @@ typedef struct {
   u32 relocs;
   u16 width;
   u16 height;
-} limefont_header_t;
+} LimefontHeader;
 
 typedef struct {
   u32 source;
   u32 target;
   u32 count;
-} limefont_relocation_t;
+} LimefontRelocation;
 
 bool limefont_parse(void *font);

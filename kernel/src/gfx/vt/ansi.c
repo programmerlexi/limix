@@ -10,7 +10,7 @@ static u32 _dim_colors[] = {0x000000, 0xb71c1c, 0x827717, 0xf57f17,
 static u32 _bright_colors[] = {0x7f7f7f, 0xf44336, 0xcddc39, 0xffeb3b,
                                0x673ab7, 0x8e24aa, 0xffeb3b, 0xffffff};
 
-static u32 _ansi_convert_fg(vt_graphic_rendition_t gr) {
+static u32 _ansi_convert_fg(VtGraphicRendition gr) {
   if (gr.font_state & VT_BOLD)
     return _bright_colors[gr.fg_index];
   if (gr.font_state & VT_DIM)
@@ -18,22 +18,22 @@ static u32 _ansi_convert_fg(vt_graphic_rendition_t gr) {
   return _normal_colors[gr.fg_index];
 }
 
-static u32 _ansi_convert_bg(vt_graphic_rendition_t gr) {
+static u32 _ansi_convert_bg(VtGraphicRendition gr) {
   return _normal_colors[gr.bg_index];
 }
 
-u32 ansi_convert_fg(vt_graphic_rendition_t gr) {
+u32 ansi_convert_fg(VtGraphicRendition gr) {
   if (gr.font_state & VT_REVERSE)
     return _ansi_convert_bg(gr);
   return _ansi_convert_fg(gr);
 }
-u32 ansi_convert_bg(vt_graphic_rendition_t gr) {
+u32 ansi_convert_bg(VtGraphicRendition gr) {
   if (gr.font_state & VT_REVERSE)
     return _ansi_convert_fg(gr);
   return _ansi_convert_bg(gr);
 }
 
-ansi_state_t ansi_process(ansi_state_t s, char c) {
+AnsiState ansi_process(AnsiState s, char c) {
   switch (s.as) {
   case C1:
     switch (c) {

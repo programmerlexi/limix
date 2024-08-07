@@ -3,7 +3,7 @@
 #include "libk/types.h"
 #include <stdbool.h>
 
-typedef struct acpi_rsdp {
+typedef struct AcpiRsdpStruct {
   char signature[8];
   u8 checksum;
   char oem[6];
@@ -14,17 +14,17 @@ typedef struct acpi_rsdp {
   u64 xsdt_address;
   u8 extended_checksum;
   u8 reserved[3];
-} __attribute__((packed)) acpi_rsdp_t;
+} __attribute__((packed)) AcpiRsdp;
 
-typedef struct acpi_gas {
+typedef struct AcpiGasStruct {
   u8 addr_space;
   u8 bit_width;
   u8 bit_offset;
   u8 access_size;
   u64 addr;
-} acpi_gas_t;
+} AcpiGas;
 
-typedef struct acpi_table {
+typedef struct AcpiTableStruct {
   char signature[4];
   u32 length;
   u8 revision;
@@ -34,20 +34,20 @@ typedef struct acpi_table {
   u32 oem_revision;
   u32 creator_id;
   u32 creator_revision;
-} __attribute__((packed)) acpi_table_t;
+} __attribute__((packed)) AcpiTable;
 
-typedef struct acpi_xsdt {
-  acpi_table_t header;
+typedef struct AcpiXsdtStruct {
+  AcpiTable header;
   u64 other_sdt[];
-} __attribute__((packed)) acpi_xsdt_t;
+} __attribute__((packed)) AcpiXsdt;
 
-typedef struct acpi_rsdt {
-  acpi_table_t header;
+typedef struct AcpiRsdtStruct {
+  AcpiTable header;
   u32 other_sdt[];
-} __attribute__((packed)) acpi_rsdt_t;
+} __attribute__((packed)) AcpiRsdt;
 
-typedef struct acpi_fadt {
-  acpi_table_t header;
+typedef struct AcpiFadtStruct {
+  AcpiTable header;
   u32 fw_ctl;
   u32 dsdt;
   u8 reserved0;
@@ -91,7 +91,7 @@ typedef struct acpi_fadt {
   u32 flags;
 
   // 12 byte structure; see below for details
-  acpi_gas_t reset_reg;
+  AcpiGas reset_reg;
 
   u8 reset_value;
   u8 reserved2[3];
@@ -100,30 +100,30 @@ typedef struct acpi_fadt {
   u64 x_firmware_ctl;
   u64 x_dsdt;
 
-  acpi_gas_t x_pm1a_event_block;
-  acpi_gas_t x_pm1b_event_block;
-  acpi_gas_t x_pm1a_control_block;
-  acpi_gas_t x_pm1b_control_block;
-  acpi_gas_t x_pm2_control_block;
-  acpi_gas_t x_pm_timer_block;
-  acpi_gas_t x_gpe0_block;
-  acpi_gas_t x_gpe1_block;
-} __attribute__((packed)) acpi_fadt_t;
+  AcpiGas x_pm1a_event_block;
+  AcpiGas x_pm1b_event_block;
+  AcpiGas x_pm1a_control_block;
+  AcpiGas x_pm1b_control_block;
+  AcpiGas x_pm2_control_block;
+  AcpiGas x_pm_timer_block;
+  AcpiGas x_gpe0_block;
+  AcpiGas x_gpe1_block;
+} __attribute__((packed)) AcpiFadt;
 
-typedef struct acpi_mcfg_csbaa {
+typedef struct AcpiMcfgCsbaaStruct {
   u64 base_addr;
   u16 pci_seg_group;
   u8 start_bus;
   u8 end_bus;
   u32 reserved;
-} __attribute__((packed)) acpi_mcfg_csbaa_t;
+} __attribute__((packed)) AcpiMcfgCsbaa;
 
-typedef struct acpi_mcfg {
-  acpi_table_t header;
+typedef struct AcpiMcfgStruct {
+  AcpiTable header;
   u64 reserved;
-  acpi_mcfg_csbaa_t csbaas[];
-} __attribute__((packed)) acpi_mcfg_t;
+  AcpiMcfgCsbaa csbaas[];
+} __attribute__((packed)) AcpiMcfg;
 
 void acpi_init();
-acpi_table_t *acpi_get(char *id);
-bool acpi_check_table(acpi_table_t *table);
+AcpiTable *acpi_get(char *id);
+bool acpi_check_table(AcpiTable *table);
