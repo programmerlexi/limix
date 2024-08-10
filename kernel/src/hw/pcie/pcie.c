@@ -71,7 +71,7 @@ static void pci_handle_device(PciHeader *dev) {
   }
 }
 
-bool pcie_init() {
+bool pcie_init(void (*device_callback)(PciType0 *device)) {
   AcpiMcfg *mcfg = (AcpiMcfg *)acpi_get("MCFG");
   if (!mcfg) {
     log(LOGLEVEL_WARN0, "Couldn't get MCFG");
@@ -120,7 +120,7 @@ bool pcie_init() {
              (u64)s, (u64)f, (int)dev->vendor_id, (int)dev->device_id,
              pci_get_vendor_name(b, s, f), pci_get_device_name(b, s, f));
 #endif
-        sched_create(pci_handle_device, cpu_get_random_cpu(), (u64)dev);
+        device_callback((PciType0 *)dev);
       }
     }
   }

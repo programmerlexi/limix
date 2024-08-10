@@ -1,5 +1,6 @@
 #pragma once
 
+#include "kernel/hw/pci/pci.h"
 #include "libk/types.h"
 #include <stdbool.h>
 
@@ -30,7 +31,26 @@ typedef struct {
   u64 partition_index;
 } DevmanStorageAccessHandle;
 
+enum PcieDriverAddressTypeEnum {
+  VENDOR,
+  VENDORDEVICE,
+  CLASS,
+  CLASSSUBCLASS,
+  CLASSSUBCLASSPROGIF,
+};
+
+typedef struct PcieDriverHandleStruct {
+  enum PcieDriverAddressTypeEnum address_type;
+  u16 address[3];
+  bool (*init)(PciType0 *device);
+  struct PcieDriverHandleStruct *next;
+} PcieDriverHandle;
+
 void devman_init();
+void devman_register_driver(enum PcieDriverAddressTypeEnum address_type,
+                            u16 addr0, u16 addr1, u16 addr2,
+                            bool (*init)(PciType0 *device));
+
 void devman_add_storage(DevmanStorageType type, void *driver_data,
                         bool (*read)(void *, u64, u32, void *),
                         bool (*write)(void *, u64, u32, void *),

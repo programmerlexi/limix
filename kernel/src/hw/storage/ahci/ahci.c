@@ -17,7 +17,7 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "ahci"
 
-Ahci *ahci_init(PciType0 *h) {
+bool ahci_init(PciType0 *h) {
   Ahci *ahci = kzalloc(sizeof(*ahci));
   ahci->ahci_device = h;
   ahci->abar = (AhciHbaMemory *)HHDM(
@@ -41,7 +41,7 @@ Ahci *ahci_init(PciType0 *h) {
   }
   log(LOGLEVEL_INFO, "Initialized AHCI");
 
-  return ahci;
+  return true;
 }
 
 void ahci_probe(Ahci *ahci) {

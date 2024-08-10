@@ -1,6 +1,10 @@
 #include "kernel/hw/devman/devman.h"
 #include "kernel/debug.h"
 #include "kernel/fs/gpt.h"
+#include "kernel/hw/pci/codes.h"
+#include "kernel/hw/pcie/pcie.h"
+#include "kernel/hw/storage/ahci/ahci.h"
+#include "kernel/kernel.h"
 #include "kernel/mm/heap.h"
 #include "libk/ipc/spinlock.h"
 #include "libk/utils/memory/heap_wrap.h"
@@ -10,9 +14,55 @@
 #define DEBUG_MODULE "devman"
 
 static DevmanStorage **storage_pointers;
+static PcieDriverHandle *pcie_drivers = NULL;
 static u64 storages;
 static u64 highest_storage;
 static u32 storage_lock = 1;
+static u32 driver_lock;
+
+static void devman_handle_device(PciType0 *device) {
+  spinlock(&driver_lock);
+  PcieDriverHandle *d = pcie_drivers;
+  while (d) {
+    switch (d->address_type) {
+    case VENDOR:
+      if (d->address[0] == device->h.vendor_id)
+        if (d->init(device))
+          goto end;
+      break;
+    case VENDORDEVICE:
+      if (d->address[0] == device->h.vendor_id &&
+          d->address[1] == device->h.device_id)
+        if (d->init(device))
+          goto end;
+      break;
+    case CLASS:
+      if (d->address[0] == device->h.class_code)
+        if (d->init(device))
+          goto end;
+      break;
+    case CLASSSUBCLASS:
+      if (d->address[0] == device->h.class_code &&
+          d->address[1] == device->h.subclass)
+        if (d->init(device))
+          goto end;
+      break;
+    case CLASSSUBCLASSPROGIF:
+      if (d->address[0] == device->h.class_code &&
+          d->address[1] == device->h.subclass &&
+          d->address[2] == device->h.prog_if)
+        if (d->init(device))
+          goto end;
+      break;
+    }
+    d = d->next;
+  }
+  logf(LOGLEVEL_WARN0, "No driver for device %w:%w (%w.%w.%w)",
+       device->h.vendor_id, device->h.device_id, device->h.class_code,
+       device->h.subclass, device->h.prog_if);
+end:
+  spinunlock(&driver_lock);
+}
 
 void devman_init() {
   log(LOGLEVEL_INFO, "Initializing devman...");
@@ -20,6 +70,26 @@ void devman_init() {
   storages = 0;
   highest_storage = 0;
   spinunlock(&storage_lock);
+  devman_register_driver(CLASSSUBCLASSPROGIF, PCI_CLASS_MASS_STORAGE,
+                         PCI_SUBCLASS_MASS_STORAGE_SATA,
+                         PCI_PROGIF_MASS_STORAGE_SATA_VENDOR_AHCI, ahci_init);
+  if (!pcie_init(devman_handle_device))
+    kernel_panic_error("PCIe init failed");
+}
+
+void devman_register_driver(enum PcieDriverAddressTypeEnum address_type,
+                            u16 addr0, u16 addr1, u16 addr2,
+                            bool (*init)(PciType0 *device)) {
+  PcieDriverHandle *driver_handle = kmalloc(sizeof(*driver_handle));
+  driver_handle->init = init;
+  driver_handle->address[0] = addr0;
+  driver_handle->address[1] = addr1;
+  driver_handle->address[2] = addr2;
+  driver_handle->address_type = address_type;
+  spinlock(&driver_lock);
+  driver_handle->next = pcie_drivers;
+  pcie_drivers = driver_handle;
+  spinunlock(&driver_lock);
 }
 
 void devman_add_storage(DevmanStorageType type, void *driver_data,

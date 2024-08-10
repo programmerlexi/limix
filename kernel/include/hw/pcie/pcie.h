@@ -10,6 +10,6 @@ typedef struct PcieRegionStruct {
   u64 base;
 } PcieRegion;
 
-bool pcie_init();
+bool pcie_init(void (*device_callback)(PciType0 *device));
 PciHeader *pcie_get_device(u8 b, u8 s, u8 f);
 bool pcie_initialized();

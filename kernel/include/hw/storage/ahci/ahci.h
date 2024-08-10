@@ -137,7 +137,7 @@ typedef struct {
   u32 port_count;
 } Ahci;
 
-Ahci *ahci_init(PciType0 *h);
+bool ahci_init(PciType0 *h);
 void ahci_probe(Ahci *driver);
 AhciPortType ahci_check_port_type(AhciHbaPort *port);
 

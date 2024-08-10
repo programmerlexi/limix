@@ -1,4 +1,3 @@
-#include "kernel/kernel.h"
 #include "kernel/asm_inline.h"
 #include "kernel/config.h"
 #include "kernel/debug.h"
@@ -7,7 +6,6 @@
 #include "kernel/hw/cpu/cpu.h"
 #include "kernel/hw/devman/devman.h"
 #include "kernel/hw/hid/kb/kb.h"
-#include "kernel/hw/pcie/pcie.h"
 #include "kernel/smp.h"
 #include "kernel/task/sched/global.h"
 #include "kernel/task/sched/local.h"
@@ -23,15 +21,12 @@ void core_main() {
 void hardware_enumerate() {
   acpi_init();
   kb_init();
-  if (!pcie_init())
-    kernel_panic_error("PCIe init failed");
+  devman_init();
 }
 
 long long main() {
   logf(LOGLEVEL_ALWAYS, "Starting limix v%u.%u.%u", KERNEL_MAJ, KERNEL_MIN,
        KERNEL_PATCH);
-
-  devman_init();
 
   core_main();
   smp_init();
