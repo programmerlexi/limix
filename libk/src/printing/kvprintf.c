@@ -1,5 +1,4 @@
 #include "kernel/mm/heap.h"
-#include "libk/math/lib.h"
 #include "libk/printing.h"
 #include "libk/utils/memory/heap_wrap.h"
 #include "libk/utils/memory/memory.h"
@@ -14,16 +13,17 @@ void kvprintf(char *s, va_list args) {
 }
 
 static char *_string_op(char *s, u64 sl, u64 *dl) {
-  if (*dl < sl) {
-    u64 l = max(*dl + 16, *dl);
-    s = krealloc(s, l, *dl);
+  char *n = s;
+  while (*dl < sl + 4) {
+    u64 l = *dl + 16;
+    n = krealloc(n, l, *dl);
     *dl = l;
   }
-  return s;
+  return n;
 }
 
 char *kvfprintf(char *s, va_list args) {
-  char *r = kmalloc(16);
+  char *r = kzalloc(16);
   u64 rl = 0;
   u64 dl = 16;
   bool format = false;
@@ -78,12 +78,9 @@ char *kvfprintf(char *s, va_list args) {
       }
       case 's': {
         char *aps = va_arg(args, char *);
-        while (*aps) {
-          r = _string_op(r, rl + 1, &dl);
-          r[rl] = *aps;
-          rl++;
-          aps++;
-        }
+        r = _string_op(r, rl + kstrlen(aps), &dl);
+        kmemcpy(&r[rl], aps, kstrlen(aps));
+        rl += kstrlen(aps);
         format = false;
         break;
       }
