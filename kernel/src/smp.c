@@ -15,7 +15,7 @@
 
 void core_main();
 
-void _smp_start(struct limine_smp_info *cpu_info) {
+void __attribute__((noreturn)) _smp_start(struct limine_smp_info *cpu_info) {
   logf(LOGLEVEL_DEBUG, "[CPU %u] Received startup", get_processor());
   gdt_init();
   idt_load();
