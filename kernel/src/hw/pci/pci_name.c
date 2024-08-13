@@ -90,7 +90,7 @@ static const char *_get_device_name(u16 vID, u16 dID) {
     if (registry->vID == vID) {
       if (registry->dID == dID) {
         u16 strs = registry->size - 6;
-        char *ns = kmalloc(strs + 1);
+        char *ns = kzalloc(strs + 1);
         kmemcpy(ns, &registry->name, strs);
         return ns;
       }
