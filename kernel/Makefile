@@ -90,7 +90,7 @@ override HEADER_DEPS := $(addprefix obj/,$(CFILES:.c=.c.d) $(ASFILES:.S=.S.d))
  
 # Default target.
 .PHONY: all
-all: bin/$(KERNEL).gz
+all: bin/$(KERNEL)
 
 bin/$(KERNEL).a: Makefile $(OBJ)
 	@echo "[AR] Packing kernel"

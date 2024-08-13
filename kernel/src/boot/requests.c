@@ -18,6 +18,8 @@ volatile struct limine_paging_mode_request g_paging_request = {
     .id = LIMINE_PAGING_MODE_REQUEST,
     .revision = 0,
     .mode = USED_PAGING_MODE,
+    .max_mode = USED_PAGING_MODE,
+    .min_mode = USED_PAGING_MODE,
     .response = NULL};
 
 volatile struct limine_memmap_request g_mmap_request = {

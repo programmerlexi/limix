@@ -45,9 +45,9 @@ image.hdd: base limine
 	@./limine/limine bios-install image.hdd
 	@mformat -i image.hdd@@1M
 	@mmd -i image.hdd@@1M ::/boot
-	@mcopy -i image.hdd@@1M kernel/bin/limix.gz util/bin/font.lime util/bin/pci_devices.reg util/bin/pci_vendors.reg ::/boot
+	@mcopy -i image.hdd@@1M kernel/bin/limix util/bin/font.lime util/bin/pci_devices.reg util/bin/pci_vendors.reg ::/boot
 	@mmd -i image.hdd@@1M ::/boot/limine
-	@mcopy -i image.hdd@@1M boot/limine.cfg limine/limine-bios.sys ::/boot/limine
+	@mcopy -i image.hdd@@1M boot/limine.conf limine/limine-bios.sys ::/boot/limine
 	@mmd -i image.hdd@@1M ::/EFI
 	@mmd -i image.hdd@@1M ::/EFI/BOOT
 	@mcopy -i image.hdd@@1M limine/BOOTX64.EFI ::/EFI/BOOT
@@ -57,9 +57,9 @@ image.iso: base limine
 	@echo "Making image.iso"
 	@mkdir -p iso_root
 	@mkdir -p iso_root/boot
-	@cp -v kernel/bin/limix.gz util/bin/font.lime util/bin/pci_devices.reg util/bin/pci_vendors.reg iso_root/boot/
+	@cp -v kernel/bin/limix util/bin/font.lime util/bin/pci_devices.reg util/bin/pci_vendors.reg iso_root/boot/
 	@mkdir -p iso_root/boot/limine
-	@cp -v boot/limine.cfg limine/limine-bios.sys limine/limine-bios-cd.bin \
+	@cp -v boot/limine.conf limine/limine-bios.sys limine/limine-bios-cd.bin \
 		limine/limine-uefi-cd.bin iso_root/boot/limine/
 	@mkdir -p iso_root/EFI/BOOT
 	@cp -v limine/BOOTX64.EFI iso_root/EFI/BOOT/
@@ -72,7 +72,7 @@ image.iso: base limine
 	@./limine/limine bios-install image.iso
 
 limine:
-	@git clone https://github.com/limine-bootloader/limine.git --branch=v7.x-binary --depth=1
+	@git clone https://github.com/limine-bootloader/limine.git --branch=v8.x-binary --depth=1
 	@make -j$(JOBS) -C limine
 
 run-hdd: image.hdd
