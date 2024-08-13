@@ -50,7 +50,7 @@ static char *_get_vendor_name(u16 id) {
   while (offset < pci_vendor_registry->size) {
     if (registry->vID == id) {
       u16 strs = registry->size - 4;
-      char *ns = kmalloc(strs + 1);
+      char *ns = kzalloc(strs + 1);
       kmemcpy(ns, &registry->name, strs);
       return ns;
     }
