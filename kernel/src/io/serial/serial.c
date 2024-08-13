@@ -23,8 +23,10 @@ void serial_early_init() {
                                          COM_MODEM_CTRL_OUT2 |
                                          COM_MODEM_CTRL_LOOP);
   outb(DEFAULT_COM + COM_DATA, 0xAE);
-  if (inb(DEFAULT_COM + COM_DATA) != 0xAE)
+  if (inb(DEFAULT_COM + COM_DATA) != 0xAE) {
+    spinunlock(&_lock);
     return;
+  }
   outb(DEFAULT_COM + COM_MODEM_CTRL, COM_MODEM_CTRL_DTR | COM_MODEM_CTRL_RTS |
                                          COM_MODEM_CTRL_OUT1 |
                                          COM_MODEM_CTRL_OUT2);
