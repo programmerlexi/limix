@@ -38,12 +38,11 @@ void _log(loglevel_t ll, char *s) {
   spinunlock(&lock);
 }
 void _logf(loglevel_t ll, char *s, ...) {
+  va_list a;
+  va_start(a);
   spinlock(&lock);
 
-  va_list a;
-  va_start(a, s);
   char *p = kvfprintf(s, a);
-  va_end(a);
 
   if (ll >= _current_serial_loglevel) {
     serial_writes(p);
@@ -55,6 +54,7 @@ void _logf(loglevel_t ll, char *s, ...) {
   }
   kfree(p);
   spinunlock(&lock);
+  va_end(a);
 }
 
 void log_lock() { spinlock(&lock); }
