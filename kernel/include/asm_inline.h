@@ -68,6 +68,10 @@ static inline unsigned long read_rsp(void) {
   return val;
 }
 
+static inline void write_rsp(u64 rsp) {
+  asm volatile("mov %0, %%rsp" ::"r"(rsp));
+}
+
 static inline void write_cr3(u64 cr3) {
   asm volatile("mov %0, %%cr3" ::"r"(cr3));
 }
