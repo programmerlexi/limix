@@ -1,10 +1,12 @@
 #include "kernel/io/serial/serial.h"
 #include "kernel/config.h"
 #include "kernel/io/pio.h"
+#include "libk/ipc/spinlock.h"
 #include <stdbool.h>
 #include <stddef.h>
 
 static bool _serial_available = false;
+static u32 _lock = 1;
 
 void serial_early_init() {
   outb(DEFAULT_COM + COM_INT_ENABLE, 0);
@@ -27,12 +29,15 @@ void serial_early_init() {
                                          COM_MODEM_CTRL_OUT1 |
                                          COM_MODEM_CTRL_OUT2);
   _serial_available = true;
+  spinunlock(&_lock);
 }
 char serial_read() {
+  spinlock(&_lock);
   if (!_serial_available)
     return 0;
   while (!serial_received())
     ;
+  spinunlock(&_lock);
   return inb(DEFAULT_COM + COM_DATA);
 }
 void serial_write(char c) {
@@ -40,7 +45,7 @@ void serial_write(char c) {
     return;
   while (!serial_can_send())
     ;
-  return outb(DEFAULT_COM + COM_DATA, c);
+  outb(DEFAULT_COM + COM_DATA, c);
 }
 
 bool serial_received() {
@@ -53,10 +58,13 @@ bool serial_can_send() {
 void serial_writes(char *s) {
   if (s == NULL)
     return;
+  spinlock(&_lock);
   if (!_serial_available)
     return;
   while (*s) {
-    serial_write(*s);
+    if (!((*s < 0x20 || (u8)*s > (u8)0x7f) && !(*s == '\n')))
+      serial_write(*s);
     s++;
   }
+  spinunlock(&_lock);
 }
