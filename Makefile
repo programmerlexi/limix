@@ -1,4 +1,4 @@
-COMMON_QEMU_FLAGS=-machine q35 -m 4G -smp 8 -serial stdio
+COMMON_QEMU_FLAGS=-machine q35 -m 4G -smp 8 -usb -device qemu-xhci -serial stdio
 
 INCLUDES=$(shell find kernel/include -type f) $(shell find libk/include -type f)
 
@@ -7,13 +7,19 @@ JOBS=$(shell nproc --all)
 OVMFDIR=/usr/share/edk2-ovmf/x64
 UEFI_OPTIONS=-drive if=pflash,format=raw,unit=0,file="$(OVMFDIR)/OVMF_CODE.fd",readonly=on
 
+ifeq ($(LIMINE),)
+LIMINE=limine
+endif
+
+LIMINE_BINARY=limine/limine
+
 all: hdd iso
 
 limine/limine.h: limine
 
 include: $(INCLUDES)
 	@mkdir -p include
-	@cp limine/limine.h include
+	@cp $(LIMINE)/limine.h include
 	@touch -m include
 	@$(foreach head,$?,mkdir -p $(dir $(patsubst kernel/include/%.h,include/kernel/%.h,$(patsubst libk/include/%,include/libk/%,$(head))));cp $(head) $(patsubst kernel/include/%.h,include/kernel/%.h,$(patsubst libk/include/%,include/libk/%,$(head)));)
 	@touch -m include
@@ -36,44 +42,48 @@ base: kernel util
 hdd: image.hdd
 iso: image.iso
 
-image.hdd: base limine
+image.hdd: base $(LIMINE) $(LIMINE_BINARY)
 	@echo "Making image.hdd"
 	@dd if=/dev/zero bs=1M count=0 seek=64 of=image.hdd
 	@dd if=/dev/zero bs=1M count=1 of=image.hdd
 	@dd if=/dev/zero bs=1M count=1 seek=63 of=image.hdd
 	@sgdisk image.hdd -n 1:2048 -t 1:ef00
-	@./limine/limine bios-install image.hdd
+	@$(LIMINE_BINARY) bios-install image.hdd
 	@mformat -i image.hdd@@1M
 	@mmd -i image.hdd@@1M ::/boot
 	@mcopy -i image.hdd@@1M kernel/bin/limix util/bin/font.lime util/bin/pci_devices.reg util/bin/pci_vendors.reg ::/boot
 	@mmd -i image.hdd@@1M ::/boot/limine
-	@mcopy -i image.hdd@@1M boot/limine.conf limine/limine-bios.sys ::/boot/limine
+	@mcopy -i image.hdd@@1M boot/limine.conf $(LIMINE)/limine-bios.sys ::/boot/limine
 	@mmd -i image.hdd@@1M ::/EFI
 	@mmd -i image.hdd@@1M ::/EFI/BOOT
-	@mcopy -i image.hdd@@1M limine/BOOTX64.EFI ::/EFI/BOOT
-	@mcopy -i image.hdd@@1M limine/BOOTIA32.EFI ::/EFI/BOOT
+	@mcopy -i image.hdd@@1M $(LIMINE)/BOOTX64.EFI ::/EFI/BOOT
+	@mcopy -i image.hdd@@1M $(LIMINE)/BOOTIA32.EFI ::/EFI/BOOT
 
-image.iso: base limine
+image.iso: base $(LIMINE) $(LIMINE_BINARY)
 	@echo "Making image.iso"
 	@mkdir -p iso_root
 	@mkdir -p iso_root/boot
 	@cp -v kernel/bin/limix util/bin/font.lime util/bin/pci_devices.reg util/bin/pci_vendors.reg iso_root/boot/
 	@mkdir -p iso_root/boot/limine
-	@cp -v boot/limine.conf limine/limine-bios.sys limine/limine-bios-cd.bin \
-		limine/limine-uefi-cd.bin iso_root/boot/limine/
+	@cp -v boot/limine.conf $(LIMINE)/limine-bios.sys $(LIMINE)/limine-bios-cd.bin \
+			$(LIMINE)/limine-uefi-cd.bin iso_root/boot/limine/
 	@mkdir -p iso_root/EFI/BOOT
-	@cp -v limine/BOOTX64.EFI iso_root/EFI/BOOT/
-	@cp -v limine/BOOTIA32.EFI iso_root/EFI/BOOT/
+	@cp -v $(LIMINE)/BOOTX64.EFI iso_root/EFI/BOOT/
+	@cp -v $(LIMINE)/BOOTIA32.EFI iso_root/EFI/BOOT/
 	@xorriso -as mkisofs -b boot/limine/limine-bios-cd.bin \
     		-no-emul-boot -boot-load-size 4 -boot-info-table \
     		--efi-boot boot/limine/limine-uefi-cd.bin \
     		-efi-boot-part --efi-boot-image --protective-msdos-label \
         	iso_root -o image.iso
-	@./limine/limine bios-install image.iso
+	@$(LIMINE_BINARY) bios-install image.iso
 
 limine:
 	@git clone https://github.com/limine-bootloader/limine.git --branch=v8.x-binary --depth=1
-	@make -j$(JOBS) -C limine
+	#@make -j$(JOBS) -C limine
+
+$(LIMINE_BINARY): $(LIMINE)
+	mkdir -p $(dir $@)
+	gcc -g -O2 -pipe -Wall -Wextra -std=c99 $(LIMINE)/limine.c -o $@
 
 run-hdd: image.hdd
 	qemu-system-x86_64 -hda image.hdd $(COMMON_QEMU_FLAGS)
