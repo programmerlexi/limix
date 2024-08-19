@@ -127,3 +127,4 @@ typedef struct AcpiMcfgStruct {
 void acpi_init();
 AcpiTable *acpi_get(char *id);
 bool acpi_check_table(AcpiTable *table);
+bool acpi_is_v2();

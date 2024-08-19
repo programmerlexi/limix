@@ -20,3 +20,4 @@ debug.log
 *.bak
 OVMF_VARS.fd
 .direnv/
+lai/

@@ -99,10 +99,10 @@ bin/$(KERNEL).a: Makefile $(OBJ)
 	@$(AR) $(ARFLAGS) $@ $(OBJ)
 
 # Link rules for the final kernel executable.
-bin/$(KERNEL): Makefile linker.ld bin/$(KERNEL).a ../libk/bin/libk.a
+bin/$(KERNEL): Makefile linker.ld $(OBJ) ../libk/bin/libk.a ../lai/build/liblai.a
 	@echo "[LD] Linking kernel"
 	@mkdir -p "$$(dirname $@)"
-	@$(LD) obj/main.c.o $@.a ../libk/bin/libk.a $(LDFLAGS) -o $@
+	@$(LD) $(OBJ) ../lai/build/liblai.a -L ../libk/bin -lk $(LDFLAGS) -o $@
 
 bin/$(KERNEL).gz: bin/$(KERNEL)
 	@echo "[GZIP] Compressing kernel"

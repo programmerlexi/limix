@@ -15,13 +15,14 @@ LIMINE_BINARY=limine/limine
 
 all: hdd iso
 
-limine/limine.h: limine
+limine/limine.h: $(LIMINE)
 
-include: $(INCLUDES)
+include: $(INCLUDES) lai $(LIMINE)/limine.h
 	@mkdir -p include
-	@cp $(LIMINE)/limine.h include
+	@cp -f $(LIMINE)/limine.h include
+	@cp -rf lai/include/* include/
 	@touch -m include
-	@$(foreach head,$?,mkdir -p $(dir $(patsubst kernel/include/%.h,include/kernel/%.h,$(patsubst libk/include/%,include/libk/%,$(head))));cp $(head) $(patsubst kernel/include/%.h,include/kernel/%.h,$(patsubst libk/include/%,include/libk/%,$(head)));)
+	@$(foreach head,$(INCLUDES),mkdir -p $(dir $(patsubst kernel/include/%.h,include/kernel/%.h,$(patsubst libk/include/%,include/libk/%,$(head))));cp $(head) $(patsubst kernel/include/%.h,include/kernel/%.h,$(patsubst libk/include/%,include/libk/%,$(head)));)
 	@touch -m include
 
 .PHONY: libk kernel util
@@ -31,8 +32,16 @@ libk: include
 release:
 	STRIP=strip make image.iso image.hdd
 
-kernel: libk include
+kernel: libk include lai/build/liblai.a
 	@make -j$(JOBS) -C kernel
+
+lai:
+	@git clone https://github.com/managarm/lai.git --depth 1
+	@patch -i patches/lai_meson_patch.diff lai/meson.build
+
+lai/build/liblai.a: lai
+	@mkdir -p $(dir $@)
+	@cd lai && meson setup build && cd build && meson compile
 
 util:
 	@make -j $(JOBS) -C util bin/font.lime bin/pci_devices.reg bin/pci_vendors.reg
@@ -63,13 +72,13 @@ image.iso: base $(LIMINE) $(LIMINE_BINARY)
 	@echo "Making image.iso"
 	@mkdir -p iso_root
 	@mkdir -p iso_root/boot
-	@cp -v kernel/bin/limix util/bin/font.lime util/bin/pci_devices.reg util/bin/pci_vendors.reg iso_root/boot/
+	@cp -vf kernel/bin/limix util/bin/font.lime util/bin/pci_devices.reg util/bin/pci_vendors.reg iso_root/boot/
 	@mkdir -p iso_root/boot/limine
-	@cp -v boot/limine.conf $(LIMINE)/limine-bios.sys $(LIMINE)/limine-bios-cd.bin \
+	@cp -vf boot/limine.conf $(LIMINE)/limine-bios.sys $(LIMINE)/limine-bios-cd.bin \
 			$(LIMINE)/limine-uefi-cd.bin iso_root/boot/limine/
 	@mkdir -p iso_root/EFI/BOOT
-	@cp -v $(LIMINE)/BOOTX64.EFI iso_root/EFI/BOOT/
-	@cp -v $(LIMINE)/BOOTIA32.EFI iso_root/EFI/BOOT/
+	@cp -vf $(LIMINE)/BOOTX64.EFI iso_root/EFI/BOOT/
+	@cp -vf $(LIMINE)/BOOTIA32.EFI iso_root/EFI/BOOT/
 	@xorriso -as mkisofs -b boot/limine/limine-bios-cd.bin \
     		-no-emul-boot -boot-load-size 4 -boot-info-table \
     		--efi-boot boot/limine/limine-uefi-cd.bin \
@@ -121,7 +130,7 @@ clean:
 	@rm -rf include
 
 cleanAll: clean
-	@rm -rf limine compile_commands.json
+	@rm -rf limine compile_commands.json lai
 
 genComp:
 	@mkdir -p build
