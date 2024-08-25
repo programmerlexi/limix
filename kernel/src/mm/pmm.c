@@ -104,10 +104,10 @@ void free_pages(void *physical, size_t count) {
 }
 
 void *request_page() {
-  for (u64 i = 0; i < page_bitmap_size * 8; i++) {
+  for (u64 i = last; i < page_bitmap_size * 8; i++) {
     if (!_pmm_bitmap_get(i)) {
-      last = i;
       _pmm_bitmap_set(i);
+      last = i;
       return (void *)(i << 12);
     }
   }
@@ -121,7 +121,7 @@ void *request_page() {
 
 void *request_pages(size_t count) {
   u64 c = 0;
-  for (u64 i = 0; i < page_bitmap_size * 8; i++) {
+  for (u64 i = last; i < page_bitmap_size * 8; i++) {
     if (!_pmm_bitmap_get(i))
       c++;
     else

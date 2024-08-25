@@ -12,7 +12,7 @@
 #define DEBUG_MODULE "gpt"
 
 void gpt_init(DevmanStorageAccessHandle ah) {
-  GptHeader *gpt = request_pages(sizeof(GptHeader) / 0x1000);
+  GptHeader *gpt = (GptHeader *)HHDM(request_pages(sizeof(GptHeader) / 0x1000));
   kmemset(gpt, 0, sizeof(GptHeader));
   if (!devman_read(ah, 0, sizeof(GptHeader) / 512, gpt))
     kernel_panic_error("Couldn't read gpt");
@@ -53,7 +53,7 @@ void gpt_init(DevmanStorageAccessHandle ah) {
     if (((u64 *)&(part->pt_guid[0]))[0] == 0 &&
         ((u64 *)&(part->pt_guid[0]))[1] == 0)
       continue;
-    logf(LOGLEVEL_INFO, "Found partition: ", &(part->partition_name[0]));
+    logf(LOGLEVEL_INFO, "Found partition: ", &part->partition_name);
     devman_add_partition(ah, part->start, part->end, i);
   }
   free_page((void *)PHY(parts));

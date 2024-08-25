@@ -116,12 +116,12 @@ void ahci_port_stop_cmd(AhciPort *p) {
 
 void ahci_port_configure(AhciPort *p) {
   ahci_port_stop_cmd(p);
-  void *new_base = request_page();
+  void *new_base = (void *)HHDM(request_page());
   p->hba_port->command_list_base = (u32)PHY(new_base);
   p->hba_port->command_list_base_upper = (u32)(PHY(new_base) >> 32);
   kmemset(new_base, 0, 1024);
 
-  void *fis_base = request_page();
+  void *fis_base = (void *)HHDM(request_page());
   p->hba_port->fis_base_address = (u32)PHY(fis_base);
   p->hba_port->fis_base_address_upper = (u32)(PHY(fis_base) >> 32);
   kmemset(fis_base, 0, 256);
@@ -129,7 +129,7 @@ void ahci_port_configure(AhciPort *p) {
   AhciCommandHeader *command_header = (AhciCommandHeader *)new_base;
   for (i32 i = 0; i < 32; i++) {
     command_header[i].prdt_length = 8;
-    void *command_base = request_page();
+    void *command_base = (void *)HHDM(request_page());
     u64 addr = PHY(command_base) + (i << 8);
     command_header[i].command_table_base_address = addr;
     command_header[i].command_table_base_address_upper = addr << 32;
