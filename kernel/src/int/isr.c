@@ -3,8 +3,8 @@
 #include "kernel/int/idt.h"
 #include "kernel/io/serial/serial.h"
 #include "kernel/kernel.h"
+#include "kernel/mm/vmm.h"
 #include "libk/utils/strings/strings.h"
-#include <stdint.h>
 
 static const char *exception_messages[] = {
     "Division Exception",
@@ -43,11 +43,23 @@ static const char *exception_messages[] = {
 
 void fault_handler(u64 int_no, u64 err_code, u64 rip, u64 rsp) {
   if (int_no < 32) {
-    if (int_no == 0xe)
-      logf(LOGLEVEL_FATAL, "Page fault address: 0x%l", read_cr2());
+    char b[16];
+    if (int_no == 0xe) {
+      ntos(b, read_cr2(), 16, 16, true, true);
+      serial_writes("0x");
+      serial_writes(b);
+      ntos(b, (usz)vmm_mapping((void *)read_cr2()), 16, 16, true, true);
+      serial_writes(" -> 0x");
+      serial_writes(b);
+      serial_writes((err_code & 1) ? ": protected page" : ": non-present page");
+      serial_writes((err_code & 2) ? " write" : " read");
+      serial_writes((err_code & 4) ? " in user-space" : " in kernel-space");
+      serial_writes((err_code & 8) ? " on broken paging entry" : "");
+      serial_writes("\n\r");
+    }
+    // logf(LOGLEVEL_FATAL, "Page fault address: 0x%l", read_cr2());
     serial_writes((char *)exception_messages[int_no]);
     serial_writes(" 0x");
-    char b[16];
     ntos(b, rip, 16, 16, true, true);
     serial_writes(b);
     serial_writes(" 0x");
