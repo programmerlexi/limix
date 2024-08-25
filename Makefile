@@ -1,4 +1,4 @@
-COMMON_QEMU_FLAGS=-machine q35 -m 4G -smp 8 -usb -device qemu-xhci -serial stdio
+COMMON_QEMU_FLAGS=-machine q35 -m 4G -usb -device qemu-xhci -serial stdio
 
 INCLUDES=$(shell find kernel/include -type f) $(shell find libk/include -type f)
 
