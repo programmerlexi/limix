@@ -8,7 +8,7 @@
 #include "kernel/kernel.h"
 #include "kernel/mm/heap.h"
 #include "kernel/mm/hhtp.h"
-#include "kernel/mm/mm.h"
+#include "kernel/mm/pmm.h"
 #include "libk/types.h"
 #include "libk/utils/memory/memory.h"
 #include "libk/utils/memory/safety.h"

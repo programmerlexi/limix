@@ -11,7 +11,7 @@
 #include "kernel/kernel.h"
 #include "kernel/mm/heap.h"
 #include "kernel/mm/hhtp.h"
-#include "kernel/mm/mm.h"
+#include "kernel/mm/pmm.h"
 #include "kernel/mm/vmm.h"
 #include "libk/utils/memory/memory.h"
 #include "limine.h"
@@ -40,13 +40,14 @@ void _start() {
   g_hhaddr = g_hhdm_request.response->offset;
   g_virtual_base = g_kernel_address_request.response->virtual_base;
   g_physical_base = g_kernel_address_request.response->physical_base;
-  if (!mm_init(g_mmap_request.response))
-    kernel_panic_error("MM init failed");
   gdt_init();
   idt_init();
+  pmm_init();
   vmm_init();
   heap_init();
+#if CONFIG_DYNCONF
   config_init();
+#endif
   drm_init();
   drm_switch(0);
   vt_init(0);

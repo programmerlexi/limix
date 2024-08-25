@@ -2,8 +2,7 @@
 #include "kernel/config.h"
 #include "kernel/debug.h"
 #include "kernel/kernel.h"
-#include "kernel/mm/hhtp.h"
-#include "kernel/mm/mm.h"
+#include "kernel/mm/pmm.h"
 #include "kernel/mm/vmm.h"
 #include "libk/ipc/spinlock.h"
 #include "libk/types.h"
@@ -30,16 +29,17 @@ static void _heap_check_canary(HeapSegment *seg) {
 }
 
 void heap_init() {
-  uptr heap_space = PHY(request_page_block(CONFIG_HEAP_INITIAL_PAGES));
+  uptr heap_space = (uptr)request_pages(CONFIG_HEAP_INITIAL_PAGES);
+  if (!heap_space)
+    kernel_panic_error("Not enough memory for heap");
   for (int i = 0; i < CONFIG_HEAP_INITIAL_PAGES; i++)
     vmm_map((void *)(HEAP_BASE + (i << 12)), (void *)(heap_space + (i << 12)),
-            VMM_WRITEABLE);
+            VMM_WRITEABLE | VMM_PRESENT);
   _heap_memory_free = CONFIG_HEAP_INITIAL_PAGES * 0x1000 - sizeof(HeapSegment);
   _heap_memory_used = sizeof(HeapSegment);
   _struct_overhead = sizeof(HeapSegment);
   _heap_first = (void *)HEAP_BASE;
   _heap_last = _heap_first;
-  kmemset(_heap_first, 0, CONFIG_HEAP_INITIAL_PAGES * 0x1000);
   _heap_first->next = NULL;
   _heap_first->prev = NULL;
   _heap_first->size =
@@ -48,6 +48,7 @@ void heap_init() {
   _heap_first->canary0 = HEAP_CANARY0;
   _heap_first->canary1 = HEAP_CANARY1;
   heap_top = HEAP_BASE + (CONFIG_HEAP_INITIAL_PAGES << 12);
+  _heap_check_canary(_heap_first);
 }
 
 static void _heap_combine_forward(HeapSegment *seg) {
@@ -90,8 +91,8 @@ void expand_heap(usz size) {
   }
   usz pages = size / 0x1000;
   for (usz i = 0; i < pages; i++) {
-    uptr new_space = PHY(request_page());
-    vmm_map((void *)heap_top, (void *)new_space, VMM_WRITEABLE);
+    void *new_space = request_page();
+    vmm_map((void *)heap_top, new_space, VMM_WRITEABLE | VMM_PRESENT);
     heap_top += 0x1000;
   }
   HeapSegment *new_seg =

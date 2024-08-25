@@ -1,13 +1,14 @@
 #include "kernel/fs/gpt.h"
 #include "kernel/hw/devman/devman.h"
 #include "kernel/kernel.h"
-#include "kernel/mm/mm.h"
+#include "kernel/mm/hhtp.h"
+#include "kernel/mm/pmm.h"
 #include "libk/printing.h"
 #include "libk/utils/memory/memory.h"
 #include "libk/utils/strings/strings.h"
 
 void gpt_init(DevmanStorageAccessHandle ah) {
-  GptHeader *gpt = request_page_block(sizeof(GptHeader) / 0x1000);
+  GptHeader *gpt = request_pages(sizeof(GptHeader) / 0x1000);
   kmemset(gpt, 0, sizeof(GptHeader));
   if (!devman_read(ah, 0, sizeof(GptHeader) / 512, gpt))
     kernel_panic_error("Couldn't read gpt");

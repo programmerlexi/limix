@@ -5,7 +5,8 @@
 #include "kernel/gfx/framebuffer.h"
 #include "kernel/kernel.h"
 #include "kernel/mm/heap.h"
-#include "kernel/mm/mm.h"
+#include "kernel/mm/hhtp.h"
+#include "kernel/mm/pmm.h"
 #include "libk/ipc/spinlock.h"
 #include "libk/math/lib.h"
 #include "libk/utils/errors.h"
@@ -34,7 +35,7 @@ void drm_init() {
     _drms[i].width = g_fb->width;
     _drms[i].height = g_fb->height;
     _drms[i].framebuffer =
-        (u32 *)request_page_block(((g_fb->width * g_fb->pitch) + 4095) / 4096);
+        (u32 *)HHDM(request_pages(((g_fb->width * g_fb->pitch) + 4095) / 4096));
     _drms[i].flags = 0;
     _drms[i].bpp = g_fb->bpp;
     _drms[i].pitch = g_fb->pitch;
@@ -54,8 +55,6 @@ void drm_switch(u64 drm) {
     return;
   if (drm >= MAX_DRMS)
     return;
-  kmemcpy(_drms[_active_drm].framebuffer, g_fb->address,
-          _drms[_active_drm].pitch * _drms[_active_drm].height);
   spinlock(&_drm_sys_lock);
   _active_drm = drm;
   _drm_sync_real();

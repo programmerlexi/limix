@@ -19,7 +19,7 @@
 #define VMM_PMI2ADDR(pdpi, pdi, pti, pi)                                       \
   mm_fix(VMM_PMI2ADDR_INTERNAL(pdpi, pdi, pti, pi))
 
-#define VMM_FRACTAL_INDEX 258
+#define VMM_FRACTAL_INDEX 260
 
 #define VMM_FRACTAL_PML4                                                       \
   VMM_PMI2ADDR(VMM_FRACTAL_INDEX, VMM_FRACTAL_INDEX, VMM_FRACTAL_INDEX,        \

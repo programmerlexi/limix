@@ -3,6 +3,7 @@
 #include "kernel/kernel.h"
 #include "kernel/mm/hhtp.h"
 #include "kernel/mm/mm.h"
+#include "kernel/mm/pmm.h"
 #include "libk/types.h"
 #include "libk/utils/memory/memory.h"
 #include <stddef.h>
@@ -11,6 +12,7 @@ void vmm_init() {
   u64 *pml4 = (u64 *)HHDM(read_cr3());
   pml4[VMM_FRACTAL_INDEX] =
       VMM_ADDRESS(PHY(pml4)) | VMM_PRESENT | VMM_WRITEABLE;
+  mark_pages((void *)read_cr3(), 1);
   write_cr3(read_cr3());
 }
 uptr vmm_new() {
@@ -33,7 +35,7 @@ bool vmm_map(void *v, void *p, u64 flags) {
   u64 pdpe = pml4[pdp_i];
   if (!(pdpe & VMM_PRESENT)) {
     pml4[pdp_i] =
-        VMM_ADDRESS(PHY(request_page())) | VMM_PRESENT | VMM_WRITEABLE;
+        VMM_ADDRESS((uptr)request_page()) | VMM_PRESENT | VMM_WRITEABLE;
     kmemset((void *)HHDM(VMM_ADDRESS(pml4[pdp_i])), 0, 0x1000);
   }
   if (pdpe & VMM_PAGE_SIZE)
@@ -42,7 +44,7 @@ bool vmm_map(void *v, void *p, u64 flags) {
   u64 *pdp = (u64 *)VMM_FRACTAL_PDP(pdp_i);
   u64 pde = pdp[pd_i];
   if (!(pde & VMM_PRESENT)) {
-    pdp[pd_i] = VMM_ADDRESS(PHY(request_page())) | VMM_PRESENT | VMM_WRITEABLE;
+    pdp[pd_i] = VMM_ADDRESS((uptr)request_page()) | VMM_PRESENT | VMM_WRITEABLE;
     kmemset((void *)HHDM(VMM_ADDRESS(pdp[pd_i])), 0, 0x1000);
   }
   if (pde & VMM_PAGE_SIZE)
@@ -51,7 +53,7 @@ bool vmm_map(void *v, void *p, u64 flags) {
   u64 *pd = (u64 *)VMM_FRACTAL_PD(pdp_i, pd_i);
   u64 pte = pd[pt_i];
   if (!(pte & VMM_PRESENT)) {
-    pd[pt_i] = VMM_ADDRESS(PHY(request_page())) | VMM_PRESENT | VMM_WRITEABLE;
+    pd[pt_i] = VMM_ADDRESS((uptr)request_page()) | VMM_PRESENT | VMM_WRITEABLE;
     kmemset((void *)HHDM(VMM_ADDRESS(pd[pt_i])), 0, 0x1000);
   }
   if (pte & VMM_PAGE_SIZE)
@@ -59,6 +61,7 @@ bool vmm_map(void *v, void *p, u64 flags) {
 
   u64 *pt = (u64 *)VMM_FRACTAL_PT(pdp_i, pd_i, pt_i);
   pt[p_i] = VMM_ADDRESS((uptr)p) | VMM_PRESENT | flags;
+  write_cr3(read_cr3());
   return true;
 }
 void *vmm_mapping(void *v) {
