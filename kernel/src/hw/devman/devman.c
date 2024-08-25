@@ -158,7 +158,7 @@ void devman_add_storage(DevmanStorageType type, void *driver_data,
     storages = 1;
   }
 
-  DevmanStorage *s = kmalloc(sizeof(*s));
+  DevmanStorage *s = kzalloc(sizeof(*s));
   s->type = type;
   s->driver_data = driver_data;
   s->read = read;
@@ -194,6 +194,10 @@ void devman_add_partition(DevmanStorageAccessHandle handle, u64 start, u64 end,
     kernel_panic_error("Attempted to add a partition to a partition");
   DevmanStorage *storage = _devman_get_storage(handle.storage_index);
   spinlock(&storage_lock);
+  if (!storage->partitions) {
+    storage->partitions = kmalloc(8);
+    storage->partition_count++;
+  }
   DevmanStoragePartition *partition =
       (DevmanStoragePartition *)kmalloc(sizeof(*partition));
   partition->id = id;

@@ -1,4 +1,5 @@
 #include "kernel/fs/gpt.h"
+#include "kernel/debug.h"
 #include "kernel/hw/devman/devman.h"
 #include "kernel/kernel.h"
 #include "kernel/mm/hhtp.h"
@@ -6,6 +7,9 @@
 #include "libk/printing.h"
 #include "libk/utils/memory/memory.h"
 #include "libk/utils/strings/strings.h"
+
+#undef DEBUG_MODULE
+#define DEBUG_MODULE "gpt"
 
 void gpt_init(DevmanStorageAccessHandle ah) {
   GptHeader *gpt = request_pages(sizeof(GptHeader) / 0x1000);
@@ -30,6 +34,27 @@ void gpt_init(DevmanStorageAccessHandle ah) {
   }
   kprint("\n\r");
 
-  kprintf("GPT partition entries: %u\n\r",
-          gpt->partition_header.partition_entries);
+  logf(LOGLEVEL_INFO, "GPT partition entries: %u",
+       gpt->partition_header.partition_entries);
+  logf(LOGLEVEL_INFO, "GPT partition entry size: %u",
+       gpt->partition_header.partition_entry_size);
+
+  void *parts = (void *)HHDM(request_page());
+  for (u32 i = 0; i < gpt->partition_header.partition_entries; i++) {
+    devman_read(ah,
+                gpt->partition_header.gp_array_lba +
+                    (i / (0x1000 / gpt->partition_header.partition_entry_size)),
+                8, parts);
+    GptPartition *part =
+        (GptPartition *)((u64)parts +
+                         ((i % (0x1000 /
+                                gpt->partition_header.partition_entry_size)) *
+                          gpt->partition_header.partition_entry_size));
+    if (((u64 *)&(part->pt_guid[0]))[0] == 0 &&
+        ((u64 *)&(part->pt_guid[0]))[1] == 0)
+      continue;
+    logf(LOGLEVEL_INFO, "Found partition: ", &(part->partition_name[0]));
+    devman_add_partition(ah, part->start, part->end, i);
+  }
+  free_page((void *)PHY(parts));
 }

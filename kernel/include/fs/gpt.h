@@ -22,6 +22,15 @@ typedef struct {
 } __attribute__((packed)) GptPartitionHeader;
 
 typedef struct {
+  u8 pt_guid[16];
+  u8 up_guid[16];
+  u64 start;
+  u64 end;
+  u64 attributes;
+  u8 partition_name[];
+} __attribute__((packed)) GptPartition;
+
+typedef struct {
   MbrBootsector pmbr __attribute__((aligned(0x200)));
   GptPartitionHeader partition_header __attribute__((aligned(0x200)));
 } __attribute__((packed)) GptHeader;
