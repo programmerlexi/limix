@@ -45,6 +45,7 @@ override CFLAGS += \
     -fno-stack-check \
     -fno-lto \
     -fPIE \
+		-fno-omit-frame-pointer \
     -m64 \
     -march=x86-64 \
     -mno-80387 \
