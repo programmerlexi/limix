@@ -6,7 +6,6 @@
 #include "kernel/hw/devman/devman.h"
 #include "kernel/hw/hid/kb/kb.h"
 
-
 void core_main() {
   cpu_init();
   logf(LOGLEVEL_DEBUG, "Running on a '%s'", cpu_vendor());
@@ -16,7 +15,7 @@ void core_main() {
 void hardware_enumerate() {
   acpi_init();
   kb_init();
-  devman_init();
+  devman_enumerate();
 }
 
 long long main() {
@@ -24,9 +23,11 @@ long long main() {
        KERNEL_PATCH);
 
   core_main();
+
+  devman_init();
+  devman_add_drivers();
+
   hardware_enumerate();
-
-
 
   return 0;
 }
