@@ -3,7 +3,7 @@
 #include "limine.h"
 #include <stddef.h>
 
-volatile LIMINE_BASE_REVISION(1);
+volatile LIMINE_BASE_REVISION(2);
 
 volatile struct limine_framebuffer_request g_framebuffer_request = {
     .id = LIMINE_FRAMEBUFFER_REQUEST, .revision = 0, .response = NULL};
