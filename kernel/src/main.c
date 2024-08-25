@@ -13,7 +13,6 @@
 #include "kernel/mm/hhtp.h"
 #include "kernel/mm/mm.h"
 #include "kernel/mm/vmm.h"
-#include "kernel/task/sched/global.h"
 #include "libk/utils/memory/memory.h"
 #include "limine.h"
 #include <stddef.h>
@@ -52,7 +51,6 @@ void _start() {
   drm_switch(0);
   vt_init(0);
   font_parse();
-  sched_glob_init();
   logf(LOGLEVEL_FATAL, "Kernel exit code: %i", main());
   log(LOGLEVEL_FATAL, "The kernel stopped executing (this should not happend)");
   hcf();

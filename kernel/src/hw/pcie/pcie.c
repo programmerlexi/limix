@@ -1,19 +1,8 @@
 #include "kernel/hw/pcie/pcie.h"
-#include "kernel/asm_inline.h"
-#include "kernel/config.h"
 #include "kernel/debug.h"
-#include "kernel/gfx/vt/vt.h"
 #include "kernel/hw/acpi/acpi.h"
-#include "kernel/hw/cpu/cpu.h"
-#include "kernel/hw/pci/codes.h"
 #include "kernel/hw/pci/pci.h"
-#include "kernel/hw/storage/ahci/ahci.h"
-#include "kernel/hw/storage/ide/ide.h"
-#include "kernel/hw/storage/nvme/nvme.h"
-#include "kernel/hw/usb/xhci/xhci.h"
 #include "kernel/mm/hhtp.h"
-#include "kernel/task/sched/common.h"
-#include "libk/printing.h"
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -36,39 +25,6 @@ PciHeader *pcie_get_device(u8 b, u8 s, u8 f) {
     return NULL;
   u64 rb = b - r->start;
   return (PciHeader *)((rb * 256 + s * 8 + f) * 0x1000 + r->base);
-}
-
-static void pci_handle_device(PciHeader *dev) {
-  switch (dev->class_code) {
-  case PCI_CLASS_MASS_STORAGE:
-    switch (dev->subclass) {
-    case PCI_SUBCLASS_MASS_STORAGE_SATA:
-      switch (dev->prog_if) {
-      case PCI_PROGIF_MASS_STORAGE_SATA_VENDOR_AHCI:
-        sched_create(ahci_init, cpu_get_random_cpu(), (u64)(PciType0 *)dev);
-        return;
-      }
-      return;
-    case PCI_SUBCLASS_MASS_STORAGE_NVM:
-      sched_create(nvme_init, cpu_get_random_cpu(), (u64)(PciType0 *)dev);
-      return;
-    case PCI_SUBCLASS_MASS_STORAGE_IDE:
-      sched_create(ide_init, cpu_get_random_cpu(), (u64)(PciType0 *)dev);
-      return;
-    }
-    return;
-  case PCI_CLASS_BUS:
-    switch (dev->subclass) {
-    case PCI_SUBCLASS_BUS_USB:
-      switch (dev->prog_if) {
-      case 0x30:
-        sched_create(xhci_init, cpu_get_random_cpu(), (u64)(PciType0 *)dev);
-        return;
-      }
-      return;
-    }
-    return;
-  }
 }
 
 bool pcie_init(void (*device_callback)(PciType0 *device)) {

@@ -5,9 +5,6 @@
 #include "kernel/gdt/gdt.h"
 #include "kernel/int/idt.h"
 #include "kernel/io/pio.h"
-#include "kernel/task/sched/common.h"
-#include "kernel/task/sched/global.h"
-#include "kernel/task/sched/local.h"
 #include "limine.h"
 
 #undef DEBUG_MODULE
@@ -19,12 +16,8 @@ void __attribute__((noreturn)) _smp_start(struct limine_smp_info *cpu_info) {
   logf(LOGLEVEL_DEBUG, "[CPU %u] Received startup", get_processor());
   gdt_init();
   idt_load();
-  sched_create(core_main, get_processor(), 0);
-  LocalScheduler *ls = sched_local_init(get_processor());
-  while (true) {
-    sched_glob_tick();
-    sched_local_tick(ls);
-  }
+  for (;;)
+    asm("hlt");
 }
 
 u64 smp_init() {
