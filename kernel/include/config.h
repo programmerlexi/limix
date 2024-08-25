@@ -39,3 +39,5 @@
 #define GFX_FONT_SCALE 1
 
 #define TASK_LIMIT 128
+
+#define PANIC_TRACE_LENGTH 20
