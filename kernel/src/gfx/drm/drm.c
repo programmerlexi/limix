@@ -39,6 +39,7 @@ void drm_init() {
     _drms[i].flags = 0;
     _drms[i].bpp = g_fb->bpp;
     _drms[i].pitch = g_fb->pitch;
+    kmemset(_drms[i].framebuffer, 0, (_drms[i].pitch * _drms[i].height));
     if (_drms[i].framebuffer == NULL) {
       kernel_panic_error("DRM init failed");
     }
