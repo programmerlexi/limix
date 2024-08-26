@@ -5,40 +5,85 @@
 #include "kernel/mm/hhtp.h"
 #include "kernel/mm/mm.h"
 #include "libk/math/lib.h"
+#include "libk/utils/memory/memory.h"
 #include "libk/utils/memory/safety.h"
 #include "limine.h"
 
-u8 *page_bitmap;
-u64 page_bitmap_size;
+#define MAX_TAGS 256
+
+MemoryTag *memory_tags;
+u64 memory_tag_list_size;
+u64 memory_tag_count;
 u64 memory_size;
 
-static void _pmm_bitmap_set(u64 i) {
-  if ((i / 8) > page_bitmap_size)
-    return;
-  u64 byi = i / 8;
-  u64 bti = i % 8;
-  page_bitmap[byi] |= 1 << bti;
+void _fix_memtags() {
+  u64 changes = 0;
+  for (u64 i = 0; i < memory_tag_count; i++) {
+    MemoryTag *memtag = &memory_tags[i];
+    if (memtag->length)
+      continue;
+    kmemmove(memtag, memtag + 1, sizeof(MemoryTag) * (memory_tag_count - i));
+    i--;
+    memory_tag_count--;
+    changes++;
+  }
+  for (u64 i = 0; i < memory_tag_count - 1; i++) {
+    for (u64 j = i + 1; j < memory_tag_count; j++) {
+      MemoryTag *memtag0 = &memory_tags[i];
+      MemoryTag *memtag1 = &memory_tags[j];
+      i64 sa = memtag0->start_index;
+      i64 sb = memtag1->start_index;
+      i64 ea = memtag0->start_index + memtag0->length;
+      i64 eb = memtag1->start_index + memtag1->length;
+      if (sb < sa)
+        continue;
+      if (sb <= ea) {
+        if (ea < eb)
+          ea = eb;
+        kmemmove(memtag1, memtag1 + 1,
+                 sizeof(MemoryTag) * (memory_tag_count - (i + 1)));
+        j--;
+        memory_tag_count--;
+        memtag0->start_index = sa;
+        memtag0->length = ea - sa;
+        changes++;
+        continue;
+      }
+    }
+  }
+  if (changes)
+    _fix_memtags();
 }
 
-static void _pmm_bitmap_reset(u64 i) {
-  if ((i / 8) > page_bitmap_size)
-    return;
-  u64 byi = i / 8;
-  u64 bti = i % 8;
-  page_bitmap[byi] &= ~(1 << bti);
-}
-
-static bool _pmm_bitmap_get(u64 i) {
-  if ((i / 8) > page_bitmap_size)
-    return true;
-  u64 byi = i / 8;
-  u64 bti = i % 8;
-  return page_bitmap[byi] & (1 << bti);
-}
-
-void mark_pages(void *start, size_t count) {
-  for (u64 i = 0; i < count; i++) {
-    _pmm_bitmap_set(((u64)start >> 12) + i);
+void mark_pages(void *start, size_t c) {
+  i64 idx = (u64)start >> 12;
+  i64 count = c;
+  for (u64 i = 0; i < memory_tag_count; i++) {
+    MemoryTag *memtag = &memory_tags[i];
+    if (memtag->start_index > idx)
+      continue;
+    if (memtag->start_index + memtag->length < idx)
+      continue;
+    if (idx == memtag->start_index) {
+      memtag->start_index += count;
+      memtag->length = max(memtag->length - count, 0);
+      _fix_memtags();
+      return;
+    }
+    if (idx == memtag->start_index + memtag->length) {
+      memtag->length = max(memtag->length - count, 0);
+      _fix_memtags();
+      return;
+    }
+    i64 ri = idx - memtag->start_index;
+    if (ri > memtag->length)
+      continue;
+    if (ri + count > memtag->length) {
+      memtag->length = ri;
+      _fix_memtags();
+      return;
+    }
+    kernel_panic_error("Splitting tags is not yet implemented");
   }
 }
 
@@ -52,7 +97,7 @@ void pmm_init() {
     struct limine_memmap_entry *e = g_mmap_request.response->entries[i];
     memory_size = max(memory_size, e->base + e->length);
   }
-  page_bitmap_size = memory_size >> 15;
+  memory_tag_list_size = MAX_TAGS * sizeof(MemoryTag);
 
   // Allocate memory for the memory allocator
   struct limine_memmap_entry *fit = NULL;
@@ -60,18 +105,18 @@ void pmm_init() {
     struct limine_memmap_entry *e = g_mmap_request.response->entries[i];
     if (e->type != LIMINE_MEMMAP_USABLE)
       continue;
-    if (e->length >= page_bitmap_size) {
+    if (e->length >= memory_tag_list_size) {
       fit = e;
       break;
     }
   }
 
   if (!fit)
-    kernel_panic_error("Not enough memory for memory bitmap");
+    kernel_panic_error("Not enough memory for memory tags");
 
-  fit->length -= page_bitmap_size;
+  fit->length -= memory_tag_list_size;
   fit->length = (fit->length >> 12) << 12;
-  page_bitmap = (void *)HHDM(fit->base + fit->length);
+  memory_tags = (void *)HHDM(fit->base + fit->length);
 
   // Mark memory
   u64 end_last = 0;
@@ -88,53 +133,43 @@ void pmm_init() {
   }
 }
 
-u64 last = 0;
-
 void free_page(void *addr) {
   if (mm_is_virtual((uptr)addr))
     kernel_panic_error("Got virtual address instead of physical (please fix)");
-  _pmm_bitmap_reset((u64)addr >> 12);
-  last = min(((u64)addr >> 12), last);
+  free_pages(addr, 1);
 }
 
 void free_pages(void *physical, size_t count) {
-  for (u64 i = 0; i < count; i++) {
-    free_page((void *)((u64)physical + (i << 12)));
-  }
+  if (mm_is_virtual((uptr)physical))
+    kernel_panic_error("Got virtual address instead of physical (please fix)");
+  i64 idx = (i64)physical >> 12;
+  if (memory_tag_count >= MAX_TAGS)
+    kernel_panic_error("Out of tags");
+  memory_tag_count++;
+  memory_tags[memory_tag_count - 1].start_index = idx;
+  memory_tags[memory_tag_count - 1].length = count;
+  _fix_memtags();
 }
 
 void *request_page() {
-  for (u64 i = last; i < page_bitmap_size * 8; i++) {
-    if (!_pmm_bitmap_get(i)) {
-      _pmm_bitmap_set(i);
-      last = i;
-      return (void *)(i << 12);
-    }
-  }
-  if (last != 0) {
-    last = 0;
-    return request_page();
+  if (memory_tag_count) {
+    void *a = (void *)(memory_tags[0].start_index << 12);
+    mark_pages(a, 1);
+    return a;
   }
   kernel_panic_error("Out of memory (physical)");
   return NULL;
 }
 
-void *request_pages(size_t count) {
-  u64 c = 0;
-  for (u64 i = last; i < page_bitmap_size * 8; i++) {
-    if (!_pmm_bitmap_get(i))
-      c++;
-    else
-      c = 0;
-    if (c == count) {
-      last = i;
-      mark_pages((void *)((i - c) << 12), c);
-      return (void *)((i - c) << 12);
-    }
-  }
-  if (last != 0) {
-    last = 0;
-    return request_pages(count);
+void *request_pages(size_t c) {
+  i64 count = c;
+  for (u64 i = 0; i < memory_tag_count; i++) {
+    MemoryTag *memory_tag = &memory_tags[i];
+    if (memory_tag->length < count)
+      continue;
+    void *a = (void *)(memory_tag->start_index << 12);
+    mark_pages(a, count);
+    return a;
   }
   kernel_panic_error("Out of memory (physical)");
   return NULL;

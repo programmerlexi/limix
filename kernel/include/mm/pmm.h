@@ -1,6 +1,12 @@
 #pragma once
 
+#include "libk/types.h"
 #include <stddef.h>
+
+typedef struct {
+  i64 start_index;
+  i64 length;
+} MemoryTag;
 
 void pmm_init();
 
