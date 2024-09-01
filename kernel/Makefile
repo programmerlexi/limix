@@ -32,13 +32,10 @@ $(eval $(call DEFAULT_VAR,LDFLAGS,$(DEFAULT_LDFLAGS)))
  
 override CFLAGS += \
     -Wall \
-    -Wextra \
+		-Wextra \
 		-Werror \
 		-Wno-unused-parameter \
 		-Wno-unused-function \
-		-Wno-implicit-fallthrough \
-		-Wno-multichar \
-		-Wno-write-strings \
 		-std=gnu2x \
     -ffreestanding \
     -fno-stack-protector \

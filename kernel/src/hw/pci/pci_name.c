@@ -221,6 +221,7 @@ static const char *_get_subclass_name(u8 cID, u8 scID) {
     case 0x00:
       return "VGA Compatible Controller";
     }
+    break;
   case 0x06:
     return _bridge_dev_subclass_name(scID);
   case 0x0C:
@@ -242,7 +243,9 @@ static const char *_get_progif_name(u8 cID, u8 scID, u8 prgIF) {
       case 0x02:
         return "Serial Storage Bus";
       }
+      break;
     }
+    break;
   case 0x03:
     switch (scID) {
     case 0x00:
@@ -253,6 +256,7 @@ static const char *_get_progif_name(u8 cID, u8 scID, u8 prgIF) {
         return "8514-Compatible Controller";
       }
     }
+    break;
   case 0x0C:
     switch (scID) {
     case 0x03:
@@ -271,6 +275,7 @@ static const char *_get_progif_name(u8 cID, u8 scID, u8 prgIF) {
         return "USB Device (Not a Host Controller)";
       }
     }
+    break;
   }
   return "-";
 }
