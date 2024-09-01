@@ -99,7 +99,7 @@ obj/%.c.o: src/%.c Makefile
  
 # Compilation rules for *.S files.
 obj/%.S.o: src/%.S Makefile
-	@echo "[CC] Building libk component $@"
+	@echo "[AS] Building libk component $@"
 	@mkdir -p "$$(dirname $@)"
 	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
  

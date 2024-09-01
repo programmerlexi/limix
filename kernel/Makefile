@@ -127,13 +127,13 @@ obj/%.c.o: src/%.c Makefile
  
 # Compilation rules for *.S files.
 obj/%.S.o: src/%.S Makefile
-	@echo "[CC] Building kernel component $@"
+	@echo "[AS] Building kernel component $@"
 	@mkdir -p "$$(dirname $@)"
 	@$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
  
 # Compilation rules for *.asm (nasm) files.
 obj/%.asm.o: src/%.asm Makefile
-	@echo "[CC] Building kernel component $@"
+	@echo "[NASM] Building kernel component $@"
 	@mkdir -p "$$(dirname $@)"
 	@nasm $(NASMFLAGS) $< -o $@
  
