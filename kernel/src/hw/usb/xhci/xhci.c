@@ -1,5 +1,7 @@
 #include "kernel/hw/usb/xhci/xhci.h"
 #include "kernel/debug.h"
+#include "kernel/hw/devman/devman.h"
+#include "kernel/hw/pci/codes.h"
 #include "kernel/hw/pci/pci.h"
 #include "kernel/mm/heap.h"
 #include "kernel/mm/hhtp.h"
@@ -8,7 +10,14 @@
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "xhci"
 
-Xhci *xhci_init(PciType0 *h) {
+static void dm_register_xhci() {
+  devman_register_driver(CLASSSUBCLASSPROGIF, PCI_CLASS_BUS,
+                         PCI_SUBCLASS_BUS_USB, 0x30, xhci_init);
+}
+__attribute__((used, section(".devman_construct"))) static void *reg =
+    dm_register_xhci;
+
+bool xhci_init(PciType0 *h) {
   Xhci *xhci = kmalloc(sizeof(*xhci));
   xhci->xhci_device = h;
   logf(LOGLEVEL_DEBUG, "%l %l", (u64)h->bar0, (u64)h->bar1);
@@ -18,10 +27,10 @@ Xhci *xhci_init(PciType0 *h) {
   if (!phy_addr) {
     kfree(xhci);
     log(LOGLEVEL_WARN2, "XHCI driver received nullptr");
-    return NULL;
+    return false;
   }
   xhci->cap = (void *)HHDM(phy_addr);
   logf(LOGLEVEL_INFO, "Initialized XHCI %l %u", xhci->cap,
        (u64)xhci->cap->cap_length);
-  return xhci;
+  return true;
 }

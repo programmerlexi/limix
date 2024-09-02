@@ -20,4 +20,4 @@ typedef struct {
   XhciCapabilityRegister *cap;
 } Xhci;
 
-Xhci *xhci_init(PciType0 *h);
+bool xhci_init(PciType0 *h);

@@ -1,9 +1,7 @@
 #include "kernel/hw/devman/devman.h"
 #include "kernel/debug.h"
 #include "kernel/fs/gpt.h"
-#include "kernel/hw/pci/codes.h"
 #include "kernel/hw/pcie/pcie.h"
-#include "kernel/hw/storage/ahci/ahci.h"
 #include "kernel/kernel.h"
 #include "kernel/mm/heap.h"
 #include "libk/ipc/spinlock.h"
@@ -73,11 +71,16 @@ void devman_init() {
   log(LOGLEVEL_INFO, "Initialized...");
 }
 
+typedef void (*func_ptr)(void);
+extern func_ptr _devman_construct_start[0], _devman_construct_end[0];
+
 void devman_add_drivers() {
   log(LOGLEVEL_INFO, "Adding drivers to driver list...");
-  devman_register_driver(CLASSSUBCLASSPROGIF, PCI_CLASS_MASS_STORAGE,
-                         PCI_SUBCLASS_MASS_STORAGE_SATA,
-                         PCI_PROGIF_MASS_STORAGE_SATA_VENDOR_AHCI, ahci_init);
+  logf(LOGLEVEL_DEBUG, "0x%x - 0x%x", _devman_construct_start,
+       _devman_construct_end);
+  for (func_ptr *c = _devman_construct_start; c != _devman_construct_end; c++) {
+    (*c)();
+  }
 }
 
 void devman_enumerate() {

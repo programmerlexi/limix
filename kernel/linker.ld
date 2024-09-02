@@ -1,6 +1,5 @@
 /* Tell the linker that we want an x86_64 ELF64 output file */
 OUTPUT_FORMAT(elf64-x86-64)
-OUTPUT_ARCH(i386:x86-64)
  
 /* We want the symbol _start to be our entry point */
 ENTRY(_start)
@@ -28,15 +27,24 @@ SECTIONS {
     /* Move to the next memory page for .rodata */
     . += CONSTANT(MAXPAGESIZE);
  
-    .rodata : {
+    .rodata : ALIGN(16) {
         *(.rodata .rodata.*)
     } :rodata
+
+    .construct : ALIGN(16) {
+      _devman_construct_start = .;
+        *(.devman_construct)
+    } :rodata
+    _devman_construct_end = .;
  
     /* Move to the next memory page for .data */
     . += CONSTANT(MAXPAGESIZE);
  
     .data : {
         *(.data .data.*)
+        KEEP(*(.requests_start_marker))
+        KEEP(*(.requests))
+        KEEP(*(.requests_end_marker))
     } :data
  
     /* Dynamic section for relocations, both in its own PHDR and inside data PHDR */

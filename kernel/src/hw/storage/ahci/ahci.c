@@ -2,6 +2,7 @@
 #include "kernel/asm_inline.h"
 #include "kernel/debug.h"
 #include "kernel/hw/devman/devman.h"
+#include "kernel/hw/pci/codes.h"
 #include "kernel/hw/pci/pci.h"
 #include "kernel/hw/storage/ide/ide.h"
 #include "kernel/io/pio.h"
@@ -16,6 +17,14 @@
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "ahci"
+
+static void dm_register_ahci() {
+  devman_register_driver(CLASSSUBCLASSPROGIF, PCI_CLASS_MASS_STORAGE,
+                         PCI_SUBCLASS_MASS_STORAGE_SATA,
+                         PCI_PROGIF_MASS_STORAGE_SATA_VENDOR_AHCI, ahci_init);
+}
+__attribute__((used, section(".devman_construct"))) static void *reg =
+    dm_register_ahci;
 
 bool ahci_init(PciType0 *h) {
   Ahci *ahci = kzalloc(sizeof(*ahci));

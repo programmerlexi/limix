@@ -89,4 +89,4 @@ typedef struct {
   u16 bar3;
 } Ide;
 
-Ide *ide_init(PciType0 *h);
+bool ide_init(PciType0 *h);
