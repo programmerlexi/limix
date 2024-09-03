@@ -32,6 +32,8 @@ static struct limine_file *pci_vendor_registry = NULL;
 static bool found_vendor_registry = false;
 
 static char *_get_vendor_name(u16 id) {
+  if (!g_module_request.response)
+    return "-";
   if (!found_vendor_registry) {
     for (u64 i = 0; i < g_module_request.response->module_count; i++) {
       struct limine_file *mod = g_module_request.response->modules[i];
@@ -71,6 +73,8 @@ static struct limine_file *pci_device_registry = NULL;
 static bool found_device_registry = false;
 
 static const char *_get_device_name(u16 vID, u16 dID) {
+  if (!g_module_request.response)
+    return "-";
   if (!found_device_registry) {
     for (u64 i = 0; i < g_module_request.response->module_count; i++) {
       struct limine_file *mod = g_module_request.response->modules[i];
