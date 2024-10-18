@@ -1,5 +1,5 @@
-#include "kernel/config/config.h"
-#include "kernel/mm/heap.h"
+#include <kernel/config/config.h>
+#include <kernel/mm/heap.h>
 #include <stddef.h>
 
 static ConfigVariable *_variables;

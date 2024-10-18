@@ -1,4 +1,4 @@
-#include "kernel/hw/smbios/smbios.h"
+#include <kernel/hw/smbios/smbios.h>
 
 void smb_init() {
   // TODO: Write a function to init SMB stuff

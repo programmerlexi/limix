@@ -1,7 +1,7 @@
-#include "kernel/io/serial/serial.h"
-#include "kernel/config.h"
-#include "kernel/io/pio.h"
-#include "libk/ipc/spinlock.h"
+#include <kernel/config.h>
+#include <kernel/io/pio.h>
+#include <kernel/io/serial/serial.h>
+#include <libk/ipc/spinlock.h>
 #include <stdbool.h>
 #include <stddef.h>
 

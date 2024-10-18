@@ -1,15 +1,15 @@
-#include "kernel/debug.h"
-#include "kernel/hw/acpi/acpi.h"
-#include "kernel/hw/pcie/pcie.h"
-#include "kernel/io/pio.h"
-#include "kernel/kernel.h"
-#include "kernel/mm/heap.h"
-#include "kernel/mm/hhtp.h"
-#include "lai/drivers/timer.h"
-#include "lai/error.h"
-#include "lai/host.h"
-#include "libk/utils/memory/heap_wrap.h"
-#include "libk/utils/strings/strings.h"
+#include <kernel/debug.h>
+#include <kernel/hw/acpi/acpi.h>
+#include <kernel/hw/pcie/pcie.h>
+#include <kernel/io/pio.h>
+#include <kernel/kernel.h>
+#include <kernel/mm/heap.h>
+#include <kernel/mm/hhtp.h>
+#include <lai/drivers/timer.h>
+#include <lai/error.h>
+#include <lai/host.h>
+#include <libk/utils/memory/heap_wrap.h>
+#include <libk/utils/strings/strings.h>
 #include <stdint.h>
 
 #undef DEBUG_MODULE

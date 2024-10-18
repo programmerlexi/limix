@@ -1,12 +1,12 @@
-#include "kernel/fs/gpt.h"
-#include "kernel/debug.h"
-#include "kernel/hw/devman/devman.h"
-#include "kernel/kernel.h"
-#include "kernel/mm/hhtp.h"
-#include "kernel/mm/pmm.h"
-#include "libk/printing.h"
-#include "libk/utils/memory/memory.h"
-#include "libk/utils/strings/strings.h"
+#include <kernel/debug.h>
+#include <kernel/fs/gpt.h>
+#include <kernel/hw/devman/devman.h>
+#include <kernel/kernel.h>
+#include <kernel/mm/hhtp.h>
+#include <kernel/mm/pmm.h>
+#include <libk/printing.h>
+#include <libk/utils/memory/memory.h>
+#include <libk/utils/strings/strings.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "gpt"

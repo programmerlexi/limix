@@ -1,13 +1,13 @@
-#include "kernel/mm/pmm.h"
-#include "kernel/boot/requests.h"
-#include "kernel/debug.h"
-#include "kernel/kernel.h"
-#include "kernel/mm/hhtp.h"
-#include "kernel/mm/mm.h"
-#include "libk/math/lib.h"
-#include "libk/utils/memory/memory.h"
-#include "libk/utils/memory/safety.h"
-#include "limine.h"
+#include <kernel/boot/requests.h>
+#include <kernel/debug.h>
+#include <kernel/kernel.h>
+#include <kernel/mm/hhtp.h>
+#include <kernel/mm/mm.h>
+#include <kernel/mm/pmm.h>
+#include <libk/math/lib.h>
+#include <libk/utils/memory/memory.h>
+#include <libk/utils/memory/safety.h>
+#include <limine.h>
 
 #define MAX_TAGS 256
 

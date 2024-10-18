@@ -1,6 +1,6 @@
-#include "libk/types.h"
-#include "libk/utils/memory/memory.h"
-#include "libk/utils/strings/strings.h"
+#include <libk/types.h>
+#include <libk/utils/memory/memory.h>
+#include <libk/utils/strings/strings.h>
 #include <stddef.h>
 
 i32 ntos(char *buf, isz i, u8 base, usz length, bool unsign, bool pad) {

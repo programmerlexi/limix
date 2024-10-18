@@ -1,10 +1,10 @@
-#include "kernel/hw/cpu/cpu.h"
-#include "kernel/asm_inline.h"
-#include "kernel/debug.h"
-#include "kernel/hw/cpu/cpuid.h"
-#include "kernel/mm/heap.h"
-#include "libk/crypt/rand.h"
-#include "libk/ipc/spinlock.h"
+#include <kernel/asm_inline.h>
+#include <kernel/debug.h>
+#include <kernel/hw/cpu/cpu.h>
+#include <kernel/hw/cpu/cpuid.h>
+#include <kernel/mm/heap.h>
+#include <libk/crypt/rand.h>
+#include <libk/ipc/spinlock.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "cpu"

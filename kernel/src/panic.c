@@ -1,8 +1,8 @@
-#include "kernel/config.h"
-#include "kernel/debug.h"
-#include "kernel/gfx/vt/vt.h"
-#include "kernel/io/serial/serial.h"
-#include "kernel/kernel.h"
+#include <kernel/config.h>
+#include <kernel/debug.h>
+#include <kernel/gfx/vt/vt.h>
+#include <kernel/io/serial/serial.h>
+#include <kernel/kernel.h>
 #include <stdint.h>
 
 __attribute__((noreturn)) void hcf(void) {

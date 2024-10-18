@@ -1,5 +1,5 @@
-#include "kernel/gdt/gdt.h"
-#include "libk/types.h"
+#include <kernel/gdt/gdt.h>
+#include <libk/types.h>
 
 __attribute__((aligned(0x1000))) Gdt g_gdt = {
     {0, 0, 0, 0x00, 0x00, 0}, // null

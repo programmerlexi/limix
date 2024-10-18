@@ -1,10 +1,10 @@
-#include "kernel/debug.h"
-#include "kernel/config.h"
-#include "kernel/gfx/vt/vt.h"
-#include "kernel/io/serial/serial.h"
-#include "kernel/mm/heap.h"
-#include "libk/ipc/spinlock.h"
-#include "libk/printing.h"
+#include <kernel/config.h>
+#include <kernel/debug.h>
+#include <kernel/gfx/vt/vt.h>
+#include <kernel/io/serial/serial.h>
+#include <kernel/mm/heap.h>
+#include <libk/ipc/spinlock.h>
+#include <libk/printing.h>
 #include <stdarg.h>
 
 static loglevel_t _current_loglevel = LOGLEVEL;

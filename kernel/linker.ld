@@ -31,6 +31,13 @@ SECTIONS {
         *(.rodata .rodata.*)
     } :rodata
 
+    .init_array : {
+        __init_array = .;
+        *(.init_array .init_array.*)
+        *(.ctors .ctors.*)
+        __init_array_end = .;
+    } :rodata
+
     .construct : ALIGN(16) {
       _devman_construct_start = .;
         *(.devman_construct)

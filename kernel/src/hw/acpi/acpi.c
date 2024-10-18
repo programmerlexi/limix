@@ -1,10 +1,10 @@
-#include "kernel/hw/acpi/acpi.h"
-#include "kernel/boot/requests.h"
-#include "kernel/debug.h"
-#include "kernel/kernel.h"
-#include "kernel/mm/hhtp.h"
-#include "lai/core.h"
-#include "libk/utils/strings/strings.h"
+#include <kernel/boot/requests.h>
+#include <kernel/debug.h>
+#include <kernel/hw/acpi/acpi.h>
+#include <kernel/kernel.h>
+#include <kernel/mm/hhtp.h>
+#include <lai/core.h>
+#include <libk/utils/strings/strings.h>
 #include <stdbool.h>
 #include <stddef.h>
 

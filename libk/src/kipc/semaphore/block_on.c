@@ -1,4 +1,4 @@
-#include "libk/ipc/semaphore.h"
+#include <libk/ipc/semaphore.h>
 
 void block_on(semaphore_t *s) {
   *s += 1;

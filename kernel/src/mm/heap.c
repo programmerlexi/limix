@@ -1,13 +1,13 @@
-#include "kernel/mm/heap.h"
-#include "kernel/config.h"
-#include "kernel/debug.h"
-#include "kernel/kernel.h"
-#include "kernel/mm/pmm.h"
-#include "kernel/mm/vmm.h"
-#include "libk/ipc/spinlock.h"
-#include "libk/types.h"
-#include "libk/utils/memory/memory.h"
-#include "libk/utils/memory/safety.h"
+#include <kernel/config.h>
+#include <kernel/debug.h>
+#include <kernel/kernel.h>
+#include <kernel/mm/heap.h>
+#include <kernel/mm/pmm.h>
+#include <kernel/mm/vmm.h>
+#include <libk/ipc/spinlock.h>
+#include <libk/types.h>
+#include <libk/utils/memory/memory.h>
+#include <libk/utils/memory/safety.h>
 #include <stdbool.h>
 #include <stddef.h>
 
@@ -153,7 +153,7 @@ void kfree(void *addr) {
   spinunlock(&_heap_lock);
 }
 
-void *kmalloc(usz size) {
+void *_kmalloc(usz size) {
   if (size % 0x10 > 0) {
     size -= size % 0x10;
     size += 0x10;
@@ -190,6 +190,12 @@ void *kmalloc(usz size) {
   expand_heap((size + sizeof(HeapSegment)));
   spinunlock(&_heap_lock);
   return kmalloc(size);
+}
+
+void *kmalloc(usz size) {
+  void *a = _kmalloc(size);
+  kmemset(a, 0, size);
+  return a;
 }
 
 void *kcalloc(usz size, usz value) {

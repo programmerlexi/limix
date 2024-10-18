@@ -1,5 +1,5 @@
-#include "kernel/hw/pci/pci.h"
-#include "kernel/hw/pcie/pcie.h"
+#include <kernel/hw/pci/pci.h>
+#include <kernel/hw/pcie/pcie.h>
 
 u16 pci_get_count(u16 vendor, u16 device) {
   u16 c = 0;

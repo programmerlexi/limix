@@ -1,9 +1,9 @@
-#include "kernel/gfx/font/font.h"
-#include "kernel/boot/requests.h"
-#include "kernel/debug.h"
-#include "kernel/gfx/font/parsers/limefont.h"
-#include "kernel/gfx/vt/vt.h"
-#include "libk/utils/strings/strings.h"
+#include <kernel/boot/requests.h>
+#include <kernel/debug.h>
+#include <kernel/gfx/font/font.h>
+#include <kernel/gfx/font/parsers/limefont.h>
+#include <kernel/gfx/vt/vt.h>
+#include <libk/utils/strings/strings.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "font"

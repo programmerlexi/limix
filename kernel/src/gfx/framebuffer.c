@@ -1,6 +1,6 @@
-#include "kernel/gfx/framebuffer.h"
-#include "kernel/gfx/font/font.h"
-#include "limine.h"
+#include <kernel/gfx/font/font.h>
+#include <kernel/gfx/framebuffer.h>
+#include <limine.h>
 
 struct limine_framebuffer *g_fb;
 

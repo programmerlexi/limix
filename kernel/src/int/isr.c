@@ -1,10 +1,10 @@
-#include "kernel/asm_inline.h"
-#include "kernel/debug.h"
-#include "kernel/int/idt.h"
-#include "kernel/io/serial/serial.h"
-#include "kernel/kernel.h"
-#include "kernel/mm/vmm.h"
-#include "libk/utils/strings/strings.h"
+#include <kernel/asm_inline.h>
+#include <kernel/debug.h>
+#include <kernel/int/idt.h>
+#include <kernel/io/serial/serial.h>
+#include <kernel/kernel.h>
+#include <kernel/mm/vmm.h>
+#include <libk/utils/strings/strings.h>
 
 static const char *exception_messages[] = {
     "Division Exception",

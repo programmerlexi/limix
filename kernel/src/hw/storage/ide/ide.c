@@ -1,9 +1,9 @@
-#include "kernel/hw/storage/ide/ide.h"
-#include "kernel/debug.h"
-#include "kernel/hw/devman/devman.h"
-#include "kernel/hw/pci/codes.h"
-#include "kernel/hw/pci/pci.h"
-#include "kernel/mm/heap.h"
+#include <kernel/debug.h>
+#include <kernel/hw/devman/devman.h>
+#include <kernel/hw/pci/codes.h>
+#include <kernel/hw/pci/pci.h>
+#include <kernel/hw/storage/ide/ide.h>
+#include <kernel/mm/heap.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "ide"

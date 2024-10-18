@@ -1,13 +1,13 @@
-#include "kernel/gfx/vt/vt.h"
-#include "kernel/config.h"
-#include "kernel/gfx/drm.h"
-#include "kernel/gfx/vt/ansi.h"
-#include "kernel/kernel.h"
-#include "kernel/mm/hhtp.h"
-#include "kernel/mm/pmm.h"
-#include "libk/ipc/spinlock.h"
-#include "libk/math/lib.h"
-#include "libk/utils/memory/memory.h"
+#include <kernel/config.h>
+#include <kernel/gfx/drm.h>
+#include <kernel/gfx/vt/ansi.h>
+#include <kernel/gfx/vt/vt.h>
+#include <kernel/kernel.h>
+#include <kernel/mm/hhtp.h>
+#include <kernel/mm/pmm.h>
+#include <libk/ipc/spinlock.h>
+#include <libk/math/lib.h>
+#include <libk/utils/memory/memory.h>
 #include <stdbool.h>
 #include <stddef.h>
 

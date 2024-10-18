@@ -1,5 +1,5 @@
-#include "kernel/debug.h"
-#include "kernel/int/idt.h"
+#include <kernel/debug.h>
+#include <kernel/int/idt.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "syscall"

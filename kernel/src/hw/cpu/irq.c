@@ -1,7 +1,7 @@
-#include "kernel/hw/cpu/pic.h"
-#include "kernel/int/idt.h"
-#include "libk/types.h"
-#include "libk/utils/memory/memory.h"
+#include <kernel/hw/cpu/pic.h>
+#include <kernel/int/idt.h>
+#include <libk/types.h>
+#include <libk/utils/memory/memory.h>
 
 void irq_0();
 void irq_1();

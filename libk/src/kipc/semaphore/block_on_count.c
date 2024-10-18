@@ -1,5 +1,5 @@
-#include "libk/ipc/semaphore.h"
-#include "libk/types.h"
+#include <libk/ipc/semaphore.h>
+#include <libk/types.h>
 
 void block_on_count(semaphore_t *s, u64 count) {
   *s += count;

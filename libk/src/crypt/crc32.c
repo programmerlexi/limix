@@ -1,5 +1,5 @@
-#include "libk/crypt/crc32.h"
-#include "libk/types.h"
+#include <libk/crypt/crc32.h>
+#include <libk/types.h>
 #include <stdbool.h>
 
 static u32 _crc32_poly(u8 i) {

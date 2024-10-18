@@ -1,5 +1,5 @@
-#include "libk/utils/memory/memory.h"
-#include "string.h"
+#include <libk/utils/memory/memory.h>
+#include <string.h>
 
 void *memcpy(void *a, const void *b, size_t c) { return kmemcpy(a, b, c); }
 void *memset(void *a, int b, size_t c) { return kmemset(a, b, c); }

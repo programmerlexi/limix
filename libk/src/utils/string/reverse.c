@@ -1,5 +1,5 @@
-#include "libk/types.h"
-#include "libk/utils/strings/strings.h"
+#include <libk/types.h>
+#include <libk/utils/strings/strings.h>
 
 i32 reverse(char *s, usz len) {
   if (!len || !s)

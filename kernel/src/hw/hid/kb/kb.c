@@ -1,6 +1,6 @@
-#include "kernel/hw/hid/kb/kb.h"
-#include "kernel/debug.h"
-#include "libk/utils/memory/memory.h"
+#include <kernel/debug.h>
+#include <kernel/hw/hid/kb/kb.h>
+#include <libk/utils/memory/memory.h>
 #include <stdbool.h>
 
 #undef DEBUG_MODULE

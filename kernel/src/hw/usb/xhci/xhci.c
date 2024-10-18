@@ -1,10 +1,10 @@
-#include "kernel/hw/usb/xhci/xhci.h"
-#include "kernel/debug.h"
-#include "kernel/hw/devman/devman.h"
-#include "kernel/hw/pci/codes.h"
-#include "kernel/hw/pci/pci.h"
-#include "kernel/mm/heap.h"
-#include "kernel/mm/hhtp.h"
+#include <kernel/debug.h>
+#include <kernel/hw/devman/devman.h>
+#include <kernel/hw/pci/codes.h>
+#include <kernel/hw/pci/pci.h>
+#include <kernel/hw/usb/xhci/xhci.h>
+#include <kernel/mm/heap.h>
+#include <kernel/mm/hhtp.h>
 #include <stddef.h>
 
 #undef DEBUG_MODULE

@@ -1,11 +1,11 @@
-#include "kernel/hw/devman/devman.h"
-#include "kernel/debug.h"
-#include "kernel/fs/gpt.h"
-#include "kernel/hw/pcie/pcie.h"
-#include "kernel/kernel.h"
-#include "kernel/mm/heap.h"
-#include "libk/ipc/spinlock.h"
-#include "libk/utils/memory/heap_wrap.h"
+#include <kernel/debug.h>
+#include <kernel/fs/gpt.h>
+#include <kernel/hw/devman/devman.h>
+#include <kernel/hw/pcie/pcie.h>
+#include <kernel/kernel.h>
+#include <kernel/mm/heap.h>
+#include <libk/ipc/spinlock.h>
+#include <libk/utils/memory/heap_wrap.h>
 #include <stddef.h>
 
 #undef DEBUG_MODULE

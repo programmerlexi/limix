@@ -1,8 +1,8 @@
-#include "kernel/hw/pcie/pcie.h"
-#include "kernel/debug.h"
-#include "kernel/hw/acpi/acpi.h"
-#include "kernel/hw/pci/pci.h"
-#include "kernel/mm/hhtp.h"
+#include <kernel/debug.h>
+#include <kernel/hw/acpi/acpi.h>
+#include <kernel/hw/pci/pci.h>
+#include <kernel/hw/pcie/pcie.h>
+#include <kernel/mm/hhtp.h>
 #include <stdbool.h>
 #include <stddef.h>
 

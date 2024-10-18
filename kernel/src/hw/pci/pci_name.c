@@ -1,13 +1,13 @@
-#include "kernel/boot/requests.h"
-#include "kernel/hw/pci/codes.h"
-#include "kernel/hw/pci/pci.h"
-#include "kernel/hw/pcie/pcie.h"
-#include "kernel/mm/heap.h"
-#include "kernel/mm/hhtp.h"
-#include "libk/types.h"
-#include "libk/utils/memory/memory.h"
-#include "libk/utils/strings/strings.h"
-#include "limine.h"
+#include <kernel/boot/requests.h>
+#include <kernel/hw/pci/codes.h>
+#include <kernel/hw/pci/pci.h>
+#include <kernel/hw/pcie/pcie.h>
+#include <kernel/mm/heap.h>
+#include <kernel/mm/hhtp.h>
+#include <libk/types.h>
+#include <libk/utils/memory/memory.h>
+#include <libk/utils/strings/strings.h>
+#include <limine.h>
 #include <stddef.h>
 
 static const char *_device_class_names[] = {

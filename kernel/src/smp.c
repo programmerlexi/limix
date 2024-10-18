@@ -1,11 +1,11 @@
-#include "kernel/smp.h"
-#include "kernel/asm_inline.h"
-#include "kernel/boot/requests.h"
-#include "kernel/debug.h"
-#include "kernel/gdt/gdt.h"
-#include "kernel/int/idt.h"
-#include "kernel/io/pio.h"
-#include "limine.h"
+#include <kernel/asm_inline.h>
+#include <kernel/boot/requests.h>
+#include <kernel/debug.h>
+#include <kernel/gdt/gdt.h>
+#include <kernel/int/idt.h>
+#include <kernel/io/pio.h>
+#include <kernel/smp.h>
+#include <limine.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "smp"

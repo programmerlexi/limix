@@ -1,7 +1,7 @@
-#include "kernel/mm/heap.h"
-#include "libk/math/lib.h"
-#include "libk/utils/memory/heap_wrap.h"
-#include "libk/utils/memory/memory.h"
+#include <kernel/mm/heap.h>
+#include <libk/math/lib.h>
+#include <libk/utils/memory/heap_wrap.h>
+#include <libk/utils/memory/memory.h>
 
 void *krealloc(void *p, usz s, usz o) {
   if (s == o)

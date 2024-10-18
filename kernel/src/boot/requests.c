@@ -1,6 +1,6 @@
-#include "kernel/boot/requests.h"
-#include "kernel/config.h"
-#include "limine.h"
+#include <kernel/boot/requests.h>
+#include <kernel/config.h>
+#include <limine.h>
 #include <stddef.h>
 
 __attribute__((used, section(".requests"))) volatile LIMINE_BASE_REVISION(2);

@@ -1,10 +1,10 @@
-#include "kernel/int/idt.h"
-#include "kernel/asm_inline.h"
-#include "kernel/debug.h"
-#include "kernel/int/syscall.h"
-#include "kernel/panic.h"
-#include "libk/ipc/spinlock.h"
-#include "libk/utils/memory/memory.h"
+#include <kernel/asm_inline.h>
+#include <kernel/debug.h>
+#include <kernel/int/idt.h>
+#include <kernel/int/syscall.h>
+#include <kernel/panic.h>
+#include <libk/ipc/spinlock.h>
+#include <libk/utils/memory/memory.h>
 
 __attribute__((aligned(0x10))) IdtGate g_idt[256];
 

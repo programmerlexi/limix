@@ -1,10 +1,11 @@
-#include "kernel/config.h"
-#include "kernel/debug.h"
-#include "kernel/hw/acpi/acpi.h"
-#include "kernel/hw/cpu/apic.h"
-#include "kernel/hw/cpu/cpu.h"
-#include "kernel/hw/devman/devman.h"
-#include "kernel/hw/hid/kb/kb.h"
+#include <kernel/config.h>
+#include <kernel/debug.h>
+#include <kernel/hw/acpi/acpi.h>
+#include <kernel/hw/cpu/apic.h>
+#include <kernel/hw/cpu/cpu.h>
+#include <kernel/hw/devman/devman.h>
+#include <kernel/hw/hid/kb/kb.h>
+#include <kernel/initgraph.h>
 
 void core_main() {
   cpu_init();
@@ -19,6 +20,7 @@ void hardware_enumerate() {
 }
 
 long long main() {
+  initgraph_run("vt");
   logf(LOGLEVEL_ALWAYS, "Starting limix v%u.%u.%u", KERNEL_MAJ, KERNEL_MIN,
        KERNEL_PATCH);
 
