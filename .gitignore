@@ -10,7 +10,7 @@ util/bin/
 util/pci_devices_gen.asm
 util/pci_vendors.asm
 util/pci.ids
-/include
+sysroot
 image.*
 compile_commands.json
 .cache/

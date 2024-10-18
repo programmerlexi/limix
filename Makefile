@@ -2,7 +2,9 @@ COMMON_QEMU_FLAGS=-machine q35 -m 4G -usb -device qemu-xhci -serial stdio
 
 INCLUDES=$(shell find kernel/include -type f) $(shell find libk/include -type f)
 
-JOBS=$(shell nproc --all)
+SYSROOT=sysroot
+
+JOBS?=$(shell nproc --all)
 
 OVMFDIR=/usr/share/edk2-ovmf/x64
 UEFI_OPTIONS=-drive if=pflash,format=raw,unit=0,file="$(OVMFDIR)/OVMF_CODE.fd",readonly=on
@@ -17,23 +19,23 @@ all: hdd iso
 
 limine/limine.h: $(LIMINE)
 
-include: $(INCLUDES) lai $(LIMINE)/limine.h
-	@mkdir -p include
-	@cp -f $(LIMINE)/limine.h include
-	@cp -rf lai/include/* include/
-	@touch -m include
-	@$(foreach head,$(INCLUDES),mkdir -p $(dir $(patsubst kernel/include/%.h,include/kernel/%.h,$(patsubst libk/include/%,include/libk/%,$(head))));cp $(head) $(patsubst kernel/include/%.h,include/kernel/%.h,$(patsubst libk/include/%,include/libk/%,$(head)));)
-	@touch -m include
+$(SYSROOT): $(INCLUDES) lai $(LIMINE)/limine.h
+	@mkdir -p $@/usr/include
+	@rm -rf $@/usr/include/*
+	@cp -f $(LIMINE)/limine.h $(SYSROOT)/usr/include
+	@cp -rf lai/include/* $(SYSROOT)/usr/include/
+	@cp -rf kernel/include/* $(SYSROOT)/usr/include/
+	@cp -rf libk/include/* $(SYSROOT)/usr/include/
 
 .PHONY: libk kernel util
-libk: include
-	@make -j$(JOBS) -C libk
+libk: $(SYSROOT)
+	@SYSROOT=$(SYSROOT) make -j$(JOBS) -C libk
 
 release:
 	STRIP=strip make image.iso image.hdd
 
-kernel: libk include lai/build/liblai.a
-	@make -j$(JOBS) -C kernel
+kernel: libk $(SYSROOT) lai/build/liblai.a
+	@SYSROOT=$(SYSROOT) make -j$(JOBS) -C kernel
 
 lai:
 	@git clone https://github.com/managarm/lai.git --depth 1
@@ -41,7 +43,7 @@ lai:
 
 lai/build/liblai.a: lai
 	@mkdir -p $(dir $@)
-	@cd lai && meson setup build && cd build && meson compile
+	@cd lai && meson setup --cross-file ../patches/meson_cross.ini build && cd build && meson compile
 
 util:
 	@make -j $(JOBS) -C util bin/font.lime bin/pci_devices.reg bin/pci_vendors.reg

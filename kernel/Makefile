@@ -12,10 +12,10 @@ define DEFAULT_VAR =
     endif
 endef
  
-override DEFAULT_CC := gcc
+override DEFAULT_CC := x86_64-elf-gcc
 $(eval $(call DEFAULT_VAR,CC,$(DEFAULT_CC)))
  
-override DEFAULT_LD := ld
+override DEFAULT_LD := x86_64-elf-ld
 $(eval $(call DEFAULT_VAR,LD,$(DEFAULT_LD)))
  
 override DEFAULT_CFLAGS := -g -Os -pipe
@@ -31,29 +31,28 @@ override DEFAULT_LDFLAGS :=
 $(eval $(call DEFAULT_VAR,LDFLAGS,$(DEFAULT_LDFLAGS)))
  
 override CFLAGS += \
-    -Wall \
-		-Wextra \
-		-Werror \
+		--sysroot=../$(SYSROOT) -isystem=../$(SYSROOT)/usr/include --no-sysroot-suffix -I../$(SYSROOT)/usr/include \
+    -Wall -Wextra -Werror \
 		-Wno-unused-parameter \
-		-Wno-unused-function \
 		-std=gnu2x \
     -ffreestanding \
     -fno-stack-protector \
     -fno-stack-check \
     -fno-lto \
-    -fPIE \
 		-fno-omit-frame-pointer \
+		-ffunction-sections \
+    -fdata-sections \
     -m64 \
     -march=x86-64 \
     -mno-80387 \
     -mno-mmx \
     -mno-sse \
     -mno-sse2 \
-    -mno-red-zone
+    -mno-red-zone \
+		-mcmodel=kernel
 
 # Internal C preprocessor flags that should not be changed by the user.
 override CPPFLAGS := \
-		-I ../include \
     $(CPPFLAGS) \
     -MMD \
     -MP
@@ -63,7 +62,6 @@ override LDFLAGS += \
     -m elf_x86_64 \
     -nostdlib \
     -static \
-    -pie \
     --no-dynamic-linker \
     -z text \
     -z max-page-size=0x1000 \
@@ -76,7 +74,7 @@ override NASMFLAGS += \
     -f elf64
 
 override ARFLAGS = qc
-override AR = ar
+override AR = x86_64-elf-ar
  
 # Use "find" to glob all *.c, *.S, and *.asm files in the tree and obtain the
 # object and header dependency file names.
@@ -86,6 +84,9 @@ override NASMFILES := $(shell cd src && find -L * -type f -name '*.asm')
 override OBJ := $(addprefix obj/,$(CFILES:.c=.c.o) $(ASFILES:.S=.S.o) $(NASMFILES:.asm=.asm.o))
 override HEADER_DEPS := $(addprefix obj/,$(CFILES:.c=.c.d) $(ASFILES:.S=.S.d))
  
+CRTBEGIN_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtbegin.o)
+CRTEND_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtend.o)
+
 # Default target.
 .PHONY: all
 all: bin/$(KERNEL)
@@ -132,7 +133,7 @@ obj/%.S.o: src/%.S Makefile
 obj/%.asm.o: src/%.asm Makefile
 	@echo "[NASM] Building kernel component $@"
 	@mkdir -p "$$(dirname $@)"
-	@nasm $(NASMFLAGS) $< -o $@
+	nasm $(NASMFLAGS) $< -o $@
  
 # Remove object files and the final executable.
 .PHONY: clean

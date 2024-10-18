@@ -1,6 +1,6 @@
 { pkgs ? import <nixpkgs> {}, limine-bootloader }:
-  pkgs.mkShell {
+  pkgs.pkgsCross.x86_64-embedded.mkShell {
     name = "limix";
-    packages = with pkgs; [ gcc binutils gnumake python3 nasm xorriso mtools gptfdisk git qemu bear c3c meson ninja gdb ];
+    packages = with pkgs; [ wget gcc binutils gnumake python3 nasm xorriso mtools gptfdisk git qemu meson ninja gdb ];
     LIMINE = "${limine-bootloader}";
 }
