@@ -1,13 +1,20 @@
 #include <kernel/asm_inline.h>
+#include <kernel/constructors.h>
 #include <kernel/debug.h>
 #include <kernel/hw/cpu/apic.h>
 #include <kernel/hw/cpu/cpu.h>
 #include <kernel/hw/cpu/pic.h>
+#include <kernel/initgraph.h>
 #include <kernel/kernel.h>
 #include <kernel/mm/hhtp.h>
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "lapic"
+
+CONSTRUCTOR(apic) {
+  INITGRAPH_NODE("apic", apic_init);
+  INITGRAPH_NODE_STAGE("apic", "irq");
+}
 
 bool apic_check() { return cpu_has(CPU_FEAT_APIC); }
 

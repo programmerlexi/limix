@@ -16,7 +16,7 @@ void vmm_init() {
   write_cr3(read_cr3());
 }
 uptr vmm_new() {
-  u64 *pml4 = (u64 *)HHDM(request_page());
+  u64 *pml4 = (u64 *)HHDM(request_normal(1));
   u64 *op = (u64 *)HHDM((read_cr3() & ~0xfff));
   kmemcpy(pml4, op, 0x1000);
   kmemset(pml4, 0, 0x800);
@@ -35,7 +35,7 @@ bool vmm_map(void *v, void *p, u64 flags) {
   u64 pdpe = pml4[pdp_i];
   if (!(pdpe & VMM_PRESENT)) {
     pml4[pdp_i] =
-        VMM_ADDRESS((uptr)request_page()) | VMM_PRESENT | VMM_WRITEABLE;
+        VMM_ADDRESS((uptr)request_normal(1)) | VMM_PRESENT | VMM_WRITEABLE;
     kmemset((void *)HHDM(VMM_ADDRESS(pml4[pdp_i])), 0, 0x1000);
   }
   if (pdpe & VMM_PAGE_SIZE)
@@ -44,7 +44,8 @@ bool vmm_map(void *v, void *p, u64 flags) {
   u64 *pdp = (u64 *)VMM_FRACTAL_PDP(pdp_i);
   u64 pde = pdp[pd_i];
   if (!(pde & VMM_PRESENT)) {
-    pdp[pd_i] = VMM_ADDRESS((uptr)request_page()) | VMM_PRESENT | VMM_WRITEABLE;
+    pdp[pd_i] =
+        VMM_ADDRESS((uptr)request_normal(1)) | VMM_PRESENT | VMM_WRITEABLE;
     kmemset((void *)HHDM(VMM_ADDRESS(pdp[pd_i])), 0, 0x1000);
   }
   if (pde & VMM_PAGE_SIZE)
@@ -53,7 +54,8 @@ bool vmm_map(void *v, void *p, u64 flags) {
   u64 *pd = (u64 *)VMM_FRACTAL_PD(pdp_i, pd_i);
   u64 pte = pd[pt_i];
   if (!(pte & VMM_PRESENT)) {
-    pd[pt_i] = VMM_ADDRESS((uptr)request_page()) | VMM_PRESENT | VMM_WRITEABLE;
+    pd[pt_i] =
+        VMM_ADDRESS((uptr)request_normal(1)) | VMM_PRESENT | VMM_WRITEABLE;
     kmemset((void *)HHDM(VMM_ADDRESS(pd[pt_i])), 0, 0x1000);
   }
   if (pte & VMM_PAGE_SIZE)

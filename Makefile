@@ -129,10 +129,9 @@ clean:
 	@make -C libk clean
 	@make -C util clean
 	@rm -rf image.* iso_root build
-	@rm -rf include
 
 cleanAll: clean
-	@rm -rf limine compile_commands.json lai
+	@rm -rf limine compile_commands.json lai sysroot
 
 genComp:
 	@mkdir -p build

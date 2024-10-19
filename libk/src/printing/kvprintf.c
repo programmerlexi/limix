@@ -23,7 +23,7 @@ static char *_string_op(char *s, u64 sl, u64 *dl) {
 }
 
 char *kvfprintf(char *s, va_list args) {
-  char *r = kzalloc(16);
+  char *r = kmalloc(16);
   u64 rl = 0;
   u64 dl = 16;
   bool format = false;

@@ -38,8 +38,8 @@ void vt_init(u64 attached_to_drm) {
   _attached_drm = attached_to_drm;
   _vt_width = drm_width(_attached_drm) / (8 * GFX_FONT_SCALE);
   _vt_height = drm_height(_attached_drm) / (16 * GFX_FONT_SCALE);
-  _vt_buffer = (VtChar *)HHDM(
-      request_pages(((_vt_width * _vt_height * sizeof(VtChar)) + 4095) / 4096));
+  _vt_buffer = (VtChar *)HHDM(request_kernel(
+      ((_vt_width * _vt_height * sizeof(VtChar)) + 4095) / 4096));
   if (_vt_buffer == NULL) {
     kernel_panic_error("Couldn't initialize VT!");
   }

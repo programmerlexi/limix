@@ -11,6 +11,7 @@ PHDRS {
     rodata  PT_LOAD    FLAGS((1 << 2)) ;            /* Read only */
     data    PT_LOAD    FLAGS((1 << 1) | (1 << 2)) ; /* Write + Read */
     dynamic PT_DYNAMIC FLAGS((1 << 1) | (1 << 2)) ; /* Dynamic PHDR for relocations */
+    requests PT_LOAD;
 }
  
 SECTIONS {
@@ -19,15 +20,22 @@ SECTIONS {
     /* Any address in this region will do, but often 0xffffffff80000000 is chosen as */
     /* that is the beginning of the region. */
     . = 0xffffffff80000000;
+
+    .requests : {
+        KEEP(*(.requests_start_marker))
+        KEEP(*(.requests))
+        KEEP(*(.requests_end_marker))
+    } :requests
+
+    . = ALIGN(CONSTANT(MAXPAGESIZE));
  
     .text : {
         *(.text .text.*)
     } :text
  
-    /* Move to the next memory page for .rodata */
-    . += CONSTANT(MAXPAGESIZE);
+    . = ALIGN(CONSTANT(MAXPAGESIZE));
  
-    .rodata : ALIGN(16) {
+    .rodata : {
         *(.rodata .rodata.*)
     } :rodata
 
@@ -37,15 +45,8 @@ SECTIONS {
         *(.ctors .ctors.*)
         __init_array_end = .;
     } :rodata
-
-    .construct : ALIGN(16) {
-      _devman_construct_start = .;
-        *(.devman_construct)
-    } :rodata
-    _devman_construct_end = .;
  
-    /* Move to the next memory page for .data */
-    . += CONSTANT(MAXPAGESIZE);
+    . = ALIGN(CONSTANT(MAXPAGESIZE));
  
     .data : {
         *(.data .data.*)
@@ -54,15 +55,10 @@ SECTIONS {
         KEEP(*(.requests_end_marker))
     } :data
  
-    /* Dynamic section for relocations, both in its own PHDR and inside data PHDR */
     .dynamic : {
         *(.dynamic)
     } :data :dynamic
  
-    /* NOTE: .bss needs to be the last thing mapped to :data, otherwise lots of */
-    /* unnecessary zeros will be written to the binary. */
-    /* If you need, for example, .init_array and .fini_array, those should be placed */
-    /* above this. */
     _bss_start = .;
     .bss : {
         *(.bss .bss.*)
@@ -70,7 +66,6 @@ SECTIONS {
     } :data
     _bss_end = .;
  
-    /* Discard .note.* and .eh_frame since they may cause issues on some hosts. */
     /DISCARD/ : {
         *(.eh_frame)
         *(.note .note.*)

@@ -7,29 +7,15 @@
 #include <kernel/hw/hid/kb/kb.h>
 #include <kernel/initgraph.h>
 
-void core_main() {
-  cpu_init();
-  logf(LOGLEVEL_DEBUG, "Running on a '%s'", cpu_vendor());
-  apic_init();
-}
-
-void hardware_enumerate() {
-  acpi_init();
-  kb_init();
-  devman_enumerate();
-}
-
 long long main() {
-  initgraph_run("vt");
   logf(LOGLEVEL_ALWAYS, "Starting limix v%u.%u.%u", KERNEL_MAJ, KERNEL_MIN,
        KERNEL_PATCH);
 
-  core_main();
+  INITGRAPH_STAGE("irq", NULL);
+  INITGRAPH_STAGE("drivers", "irq");
+  INITGRAPH_STAGE("enumeration", "drivers");
 
-  devman_init();
-  devman_add_drivers();
-
-  hardware_enumerate();
+  initgraph_run("enumeration");
 
   return 0;
 }

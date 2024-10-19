@@ -1,6 +1,8 @@
 #include <kernel/boot/requests.h>
+#include <kernel/constructors.h>
 #include <kernel/debug.h>
 #include <kernel/hw/acpi/acpi.h>
+#include <kernel/initgraph.h>
 #include <kernel/kernel.h>
 #include <kernel/mm/hhtp.h>
 #include <lai/core.h>
@@ -10,6 +12,8 @@
 
 #undef DEBUG_MODULE
 #define DEBUG_MODULE "acpi"
+
+CONSTRUCTOR(acpi) { INITGRAPH_NODE("acpi", acpi_init); }
 
 static bool initialized = false;
 static bool got_xsdt = false;

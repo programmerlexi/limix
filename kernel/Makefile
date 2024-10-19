@@ -18,7 +18,7 @@ $(eval $(call DEFAULT_VAR,CC,$(DEFAULT_CC)))
 override DEFAULT_LD := x86_64-elf-ld
 $(eval $(call DEFAULT_VAR,LD,$(DEFAULT_LD)))
  
-override DEFAULT_CFLAGS := -g -Os -pipe
+override DEFAULT_CFLAGS := -g -O2 -pipe
 $(eval $(call DEFAULT_VAR,CFLAGS,$(DEFAULT_CFLAGS)))
  
 override DEFAULT_CPPFLAGS :=
@@ -84,35 +84,15 @@ override NASMFILES := $(shell cd src && find -L * -type f -name '*.asm')
 override OBJ := $(addprefix obj/,$(CFILES:.c=.c.o) $(ASFILES:.S=.S.o) $(NASMFILES:.asm=.asm.o))
 override HEADER_DEPS := $(addprefix obj/,$(CFILES:.c=.c.d) $(ASFILES:.S=.S.d))
  
-CRTBEGIN_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtbegin.o)
-CRTEND_OBJ:=$(shell $(CC) $(CFLAGS) -print-file-name=crtend.o)
-
 # Default target.
 .PHONY: all
 all: bin/$(KERNEL)
-
-bin/$(KERNEL).a: Makefile $(OBJ)
-	@echo "[AR] Packing kernel"
-	@mkdir -p "$$(dirname $@)"
-	@rm -f $@
-	@$(AR) $(ARFLAGS) $@ $(OBJ)
 
 # Link rules for the final kernel executable.
 bin/$(KERNEL): Makefile linker.ld $(OBJ) ../libk/bin/libk.a ../lai/build/liblai.a
 	@echo "[LD] Linking kernel"
 	@mkdir -p "$$(dirname $@)"
 	@$(LD) $(OBJ) ../lai/build/liblai.a -L ../libk/bin -lk $(LDFLAGS) -o $@
-
-bin/$(KERNEL).gz: bin/$(KERNEL)
-	@echo "[GZIP] Compressing kernel"
-	@rm -f $@
-	@gzip -k $<
-
-strip: bin/$(KERNEL)
-	@echo "[GZIP] Compressing kernel"
-	@rm -f $@
-	@strip $<
-	@gzip -kf $<
 
 # Include header dependencies.
 -include $(HEADER_DEPS)
@@ -133,7 +113,7 @@ obj/%.S.o: src/%.S Makefile
 obj/%.asm.o: src/%.asm Makefile
 	@echo "[NASM] Building kernel component $@"
 	@mkdir -p "$$(dirname $@)"
-	nasm $(NASMFLAGS) $< -o $@
+	@nasm $(NASMFLAGS) $< -o $@
  
 # Remove object files and the final executable.
 .PHONY: clean

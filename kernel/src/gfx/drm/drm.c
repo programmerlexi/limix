@@ -34,8 +34,8 @@ void drm_init() {
   for (i32 i = 0; i < MAX_DRMS; i++) {
     _drms[i].width = g_fb->width;
     _drms[i].height = g_fb->height;
-    _drms[i].framebuffer =
-        (u32 *)HHDM(request_pages(((g_fb->width * g_fb->pitch) + 4095) / 4096));
+    _drms[i].framebuffer = (u32 *)HHDM(
+        request_kernel(((g_fb->width * g_fb->pitch) + 4095) / 4096));
     _drms[i].flags = 0;
     _drms[i].bpp = g_fb->bpp;
     _drms[i].pitch = g_fb->pitch;

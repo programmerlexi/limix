@@ -6,6 +6,8 @@
 #include <kernel/gfx/drm.h>
 #include <kernel/gfx/font/font.h>
 #include <kernel/gfx/framebuffer.h>
+#include <kernel/gfx/vt/vt.h>
+#include <kernel/hw/cpu/cpu.h>
 #include <kernel/initgraph.h>
 #include <kernel/int/idt.h>
 #include <kernel/io/serial/serial.h>
@@ -17,6 +19,9 @@
 #include <libk/utils/memory/memory.h>
 #include <limine.h>
 #include <stddef.h>
+
+#undef DEBUG_MODULE
+#define DEBUG_MODULE "init"
 
 uint64_t g_hhaddr;
 uint64_t g_virtual_base;
@@ -47,27 +52,20 @@ void _start() {
   gdt_init();
   idt_init();
   pmm_init();
-  vmm_init();
   heap_init();
+  cpu_init();
+  drm_init();
+  drm_switch(0);
+  vt_init(0);
+  font_parse();
   initgraph_init();
-  for (size_t i = 0; &__init_array[i] != __init_array_end; i++)
+  for (size_t i = 0; &__init_array[i] != __init_array_end; i++) {
+    logf(LOGLEVEL_ANALYZE, "Running global constructor at 0x%x",
+         __init_array[i]);
     __init_array[i]();
+  }
+  log(LOGLEVEL_DEBUG, "Global constructors done");
   logf(LOGLEVEL_FATAL, "Kernel exit code: %i", main());
   log(LOGLEVEL_FATAL, "The kernel stopped executing (this should not happend)");
   hcf();
-}
-
-__attribute__((constructor)) void drm_constructor() {
-  initgraph_add_node("drm", 0, NULL, 0, NULL, drm_init);
-}
-
-void vt_node() { vt_init(0); }
-__attribute__((constructor)) void vt_constructor() {
-  char *deps[] = {"drm"};
-  initgraph_add_node("vt", 1, deps, 0, NULL, vt_node);
-}
-__attribute__((constructor)) void font_constructor() {
-  char *deps[] = {"drm"};
-  char *reqs[] = {"vt"};
-  initgraph_add_node("font", 1, deps, 1, reqs, font_parse);
 }

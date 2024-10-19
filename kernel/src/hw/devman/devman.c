@@ -1,7 +1,9 @@
+#include <kernel/constructors.h>
 #include <kernel/debug.h>
 #include <kernel/fs/gpt.h>
 #include <kernel/hw/devman/devman.h>
 #include <kernel/hw/pcie/pcie.h>
+#include <kernel/initgraph.h>
 #include <kernel/kernel.h>
 #include <kernel/mm/heap.h>
 #include <libk/ipc/spinlock.h>
@@ -17,6 +19,16 @@ static u64 storages;
 static u64 highest_storage;
 static u32 storage_lock = 1;
 static u32 driver_lock;
+
+CONSTRUCTOR(devman) {
+  INITGRAPH_NODE("devman", devman_init);
+  INITGRAPH_NODE_STAGE("devman", "drivers");
+
+  INITGRAPH_NODE("devman_enumerate_pcie", devman_enumerate);
+  INITGRAPH_NODE_STAGE("devman_enumerate_pcie", "enumeration");
+  INITGRAPH_NODE_DEP("devman_enumerate_pcie", "acpi");
+  INITGRAPH_NODE_DEP("devman_enumerate_pcie", "drivers");
+}
 
 static void devman_handle_pcie_device(PciType0 *device) {
   spinlock(&driver_lock);
@@ -69,18 +81,6 @@ void devman_init() {
   highest_storage = 0;
   spinunlock(&storage_lock);
   log(LOGLEVEL_INFO, "Initialized...");
-}
-
-typedef void (*func_ptr)(void);
-extern func_ptr _devman_construct_start[0], _devman_construct_end[0];
-
-void devman_add_drivers() {
-  log(LOGLEVEL_INFO, "Adding drivers to driver list...");
-  logf(LOGLEVEL_DEBUG, "0x%x - 0x%x", _devman_construct_start,
-       _devman_construct_end);
-  for (func_ptr *c = _devman_construct_start; c != _devman_construct_end; c++) {
-    (*c)();
-  }
 }
 
 void devman_enumerate() {
@@ -157,11 +157,11 @@ void devman_add_storage(DevmanStorageType type, void *driver_data,
                         bool (*check_attached)(void *)) {
   spinlock(&storage_lock);
   if (!storage_pointers) {
-    storage_pointers = kzalloc(sizeof(void *));
+    storage_pointers = kmalloc(sizeof(void *));
     storages = 1;
   }
 
-  DevmanStorage *s = kzalloc(sizeof(*s));
+  DevmanStorage *s = kmalloc(sizeof(*s));
   s->type = type;
   s->driver_data = driver_data;
   s->read = read;

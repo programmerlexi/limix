@@ -1,8 +1,10 @@
+#include <kernel/constructors.h>
 #include <kernel/debug.h>
 #include <kernel/hw/devman/devman.h>
 #include <kernel/hw/pci/codes.h>
 #include <kernel/hw/pci/pci.h>
 #include <kernel/hw/usb/xhci/xhci.h>
+#include <kernel/initgraph.h>
 #include <kernel/mm/heap.h>
 #include <kernel/mm/hhtp.h>
 #include <stddef.h>
@@ -14,8 +16,12 @@ static void dm_register_xhci() {
   devman_register_driver(CLASSSUBCLASSPROGIF, PCI_CLASS_BUS,
                          PCI_SUBCLASS_BUS_USB, 0x30, xhci_init);
 }
-__attribute__((used, section(".devman_construct"))) static void *reg =
-    dm_register_xhci;
+
+CONSTRUCTOR(xhci) {
+  INITGRAPH_NODE("xhci_driver", dm_register_xhci);
+  INITGRAPH_NODE_DEP("xhci_driver", "devman");
+  INITGRAPH_NODE_STAGE("xhci_driver", "drivers");
+}
 
 bool xhci_init(PciType0 *h) {
   Xhci *xhci = kmalloc(sizeof(*xhci));

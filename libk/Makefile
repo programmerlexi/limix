@@ -36,20 +36,18 @@ override CFLAGS += \
     -Wextra \
 		-Wno-implicit-fallthrough \
 		-Werror \
-    -std=gnu11 \
+		-std=gnu2x \
     -ffreestanding \
     -fno-stack-protector \
     -fno-stack-check \
     -fno-lto \
-    -fPIE \
     -m64 \
     -march=x86-64 \
     -mno-80387 \
     -mno-mmx \
     -mno-sse \
     -mno-sse2 \
-    -mno-red-zone \
-		-std=gnu2x
+    -mno-red-zone
  
 # Internal C preprocessor flags that should not be changed by the user.
 override CPPFLAGS := \
@@ -103,7 +101,7 @@ obj/%.S.o: src/%.S Makefile
 obj/%.asm.o: src/%.asm Makefile
 	@echo "[NASM] Building libk component $@"
 	@mkdir -p "$$(dirname $@)"
-	nasm $(NASMFLAGS) $< -o $@
+	@nasm $(NASMFLAGS) $< -o $@
 
 # Remove object files and the final executable.
 .PHONY: clean
