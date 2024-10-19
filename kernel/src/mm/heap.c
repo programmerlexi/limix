@@ -13,6 +13,7 @@
 
 static HeapSegment *_heap_first;
 static HeapSegment *_heap_last;
+static HeapSegment *_heap_search;
 static u32 _heap_lock;
 static uptr heap_top;
 
@@ -40,14 +41,15 @@ void heap_init() {
   _struct_overhead = sizeof(HeapSegment);
   _heap_first = (void *)HEAP_BASE;
   _heap_last = _heap_first;
-  _heap_first->next = NULL;
-  _heap_first->prev = NULL;
+  _heap_first->next = _heap_first;
+  _heap_first->prev = _heap_first;
   _heap_first->size =
       (CONFIG_HEAP_INITIAL_PAGES * 0x1000) - sizeof(HeapSegment);
   _heap_first->used = false;
   _heap_first->canary0 = HEAP_CANARY0;
   _heap_first->canary1 = HEAP_CANARY1;
   heap_top = HEAP_BASE + (CONFIG_HEAP_INITIAL_PAGES << 12);
+  _heap_search = _heap_first;
   _heap_check_canary(_heap_first);
 }
 
@@ -63,6 +65,9 @@ static void _heap_combine_forward(HeapSegment *seg) {
     return;
   if (seg->next == _heap_last)
     _heap_last = seg;
+  if (seg->next == _heap_search) {
+    _heap_search = seg;
+  }
   if (seg->next->next != NULL)
     seg->next->next->prev = seg;
   seg->size = seg->size + seg->next->size + sizeof(HeapSegment);
@@ -104,7 +109,8 @@ void expand_heap(usz size) {
   new_seg->canary1 = HEAP_CANARY1;
   _heap_last->next = new_seg;
   _heap_last = new_seg;
-  new_seg->next = NULL;
+  _heap_first->prev = new_seg;
+  new_seg->next = _heap_first;
   new_seg->size = size - sizeof(HeapSegment);
   _struct_overhead += sizeof(HeapSegment);
   _heap_memory_used += sizeof(HeapSegment);
@@ -161,7 +167,7 @@ void *_kmalloc(usz size) {
   if (size == 0)
     return NULL;
   spinlock(&_heap_lock);
-  HeapSegment *seg = _heap_first;
+  HeapSegment *seg = _heap_search;
   while (true) {
     if (!seg)
       kernel_panic_error("Heap segment missing");
@@ -172,6 +178,7 @@ void *_kmalloc(usz size) {
         seg->used = true;
         _heap_memory_free -= seg->size;
         _heap_memory_used += seg->size;
+        _heap_search = seg;
         spinunlock(&_heap_lock);
         return (void *)((usz)seg + sizeof(HeapSegment));
       }
@@ -179,14 +186,16 @@ void *_kmalloc(usz size) {
         seg->used = true;
         _heap_memory_free -= seg->size;
         _heap_memory_used += seg->size;
+        _heap_search = seg;
         spinunlock(&_heap_lock);
         return (void *)((usz)seg + sizeof(HeapSegment));
       }
     }
-    if (seg->next == NULL)
+    if (seg->next == _heap_search)
       break;
     seg = seg->next;
   }
+  _heap_search = seg;
   expand_heap((size + sizeof(HeapSegment)));
   spinunlock(&_heap_lock);
   return kmalloc(size);
