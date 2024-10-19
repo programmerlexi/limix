@@ -1,8 +1,10 @@
+#include <kernel/constructors.h>
 #include <kernel/debug.h>
 #include <kernel/hw/devman/devman.h>
 #include <kernel/hw/pci/codes.h>
 #include <kernel/hw/pci/pci.h>
 #include <kernel/hw/storage/ide/ide.h>
+#include <kernel/initgraph.h>
 #include <kernel/mm/heap.h>
 
 #undef DEBUG_MODULE
@@ -12,8 +14,12 @@ static void dm_register_ide() {
   devman_register_driver(CLASSSUBCLASS, PCI_CLASS_MASS_STORAGE,
                          PCI_SUBCLASS_MASS_STORAGE_IDE, 0, ide_init);
 }
-__attribute__((used, section(".devman_construct"))) static void *reg =
-    dm_register_ide;
+
+CONSTRUCTOR(ide) {
+  INITGRAPH_NODE("ide_driver", dm_register_ide);
+  INITGRAPH_NODE_DEP("ide_driver", "devman");
+  INITGRAPH_NODE_STAGE("ide_driver", "drivers");
+}
 
 bool ide_init(PciType0 *h) {
   Ide *ide = kmalloc(sizeof(*ide));

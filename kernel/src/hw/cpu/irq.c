@@ -1,4 +1,6 @@
+#include <kernel/constructors.h>
 #include <kernel/hw/cpu/pic.h>
+#include <kernel/initgraph.h>
 #include <kernel/int/idt.h>
 #include <libk/types.h>
 #include <libk/utils/memory/memory.h>
@@ -49,3 +51,10 @@ void irq_init() {
   irq_attach();
 }
 void irq_register(void (*handler)(), u8 irq) { handlers[irq] = handler; }
+
+CONSTRUCTOR(irq) {
+  INITGRAPH_NODE("irq_init", irq_init);
+  INITGRAPH_NODE("irq_attach", irq_attach);
+  INITGRAPH_NODE_STAGE("irq_init", "irq");
+  INITGRAPH_NODE_DEP("irq_init", "irq_attach");
+}

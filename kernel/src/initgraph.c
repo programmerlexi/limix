@@ -105,6 +105,8 @@ void initgraph_run(char *name) {
              "Got empty dependency in node '%s' (dependency %i)", name, i);
         continue;
       }
+      if (node->dependencies[i]->done)
+        continue;
       logf(LOGLEVEL_DEBUG, "Calling '%s' dependency node %i at 0x%x", name, i,
            node->dependencies[i]);
       initgraph_run(node->dependencies[i]->name);
