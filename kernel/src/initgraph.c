@@ -107,13 +107,13 @@ void initgraph_run(char *name) {
       }
       if (node->dependencies[i]->done)
         continue;
-      logf(LOGLEVEL_DEBUG, "Calling '%s' dependency node %i at 0x%x", name, i,
+      logf(LOGLEVEL_ANALYZE, "Calling '%s' dependency node %i at 0x%x", name, i,
            node->dependencies[i]);
       initgraph_run(node->dependencies[i]->name);
     }
   if (!node->done) {
     if (node->call) {
-      logf(LOGLEVEL_INFO, "Running initgraph node '%s'", node->name);
+      logf(LOGLEVEL_DEBUG, "Running initgraph node '%s'", node->name);
       node->call();
     }
     if (node->type == InitGraphStage)
